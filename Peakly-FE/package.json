@@ -17,6 +17,7 @@
   },
   "private": true,
   "devDependencies": {
+    "prettier": "^3.8.0",
     "react-native-svg-transformer": "^1.5.2"
   }
 }
