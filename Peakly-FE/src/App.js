@@ -1,6 +1,8 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import { useFonts } from 'expo-font';
+import TM01 from './TM/TM01';
+import Category from './component/Category'
 
 function App() {
   const [fontsLoaded] = useFonts({
@@ -12,7 +14,8 @@ function App() {
 
   return (
     <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
+      <TM01/>
+      <Category/>
       <StatusBar style="auto" />
     </View>
   );
