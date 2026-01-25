@@ -1,6 +1,8 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { View } from 'react-native';
 import { useFonts } from 'expo-font';
+import DayReport from './screens/reportScreens/DayReport';
+import WeekReport from './screens/reportScreens/WeekReport';
 
 function App() {
   const [fontsLoaded] = useFonts({
@@ -11,20 +13,11 @@ function App() {
   if (!fontsLoaded) return null;
 
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
+    <View style={{ flex: 1 }}>
       <StatusBar style="auto" />
+      <WeekReport />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
 
 export default App;
