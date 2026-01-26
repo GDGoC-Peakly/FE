@@ -14,8 +14,8 @@ function App() {
 
   return (
     <View style={{ flex: 1 }}>
-      <StatusBar style="auto" />
-      <WeekReport />
+      <StatusBar style="light" />
+      <DayReport />
     </View>
   );
 }

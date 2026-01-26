@@ -3,6 +3,7 @@ import { BarChart, chartTypes, PieChart } from 'react-native-gifted-charts';
 import { colors } from '../../styles/colors';
 import { getProgressData } from '../../utils/getProgressData';
 import PeakTimeTable from '../../components/PeakTimeTable';
+import ReportTab from '../../components/ReportTab';
 
 function DayReport() {
   const initialData = [
@@ -20,56 +21,59 @@ function DayReport() {
     { startTime: '19:30', endTime: '20:15' }, // 케이스 4: 19:30부터 시작해서 예상(21시)보다 일찍 끝남
   ];
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.dateText}>2026년 2월 23일 월요일</Text>
-      <View style={styles.reviewContainer}>
-        <Text style={styles.reviewTitle}>오늘 집중도 총평</Text>
-        <Text style={styles.reviewText}>최상의 리듬입니다! 🌊</Text>
-      </View>
-      <View style={styles.rateContainer}>
-        <View style={styles.rateRectangle}>
-          <Text style={styles.rateText}>달성률</Text>
-          <View style={styles.chartWrapper}>
-            <PieChart
-              data={getProgressData(75)}
-              donut
-              radius={65}
-              innerRadius={48}
-              innerCircleBorderColor={colors.primary[600]}
-              innerCircleBorderWidth={1}
-              strokeColor={colors.primary[600]}
-              strokeWidth={1}
-              centerLabelComponent={() => {
-                return <Text style={styles.percentageText}>75%</Text>;
-              }}
-            />
+    <ScrollView style={styles.container} overScrollMode="never" bounces={false}>
+      <ReportTab />
+      <View style={styles.contentWrapper}>
+        <Text style={styles.dateText}>2026년 2월 23일 월요일</Text>
+        <View style={styles.reviewContainer}>
+          <Text style={styles.reviewTitle}>오늘 집중도 총평</Text>
+          <Text style={styles.reviewText}>최상의 리듬입니다! 🌊</Text>
+        </View>
+        <View style={styles.rateContainer}>
+          <View style={styles.rateRectangle}>
+            <Text style={styles.rateText}>달성률</Text>
+            <View style={styles.chartWrapper}>
+              <PieChart
+                data={getProgressData(75)}
+                donut
+                radius={65}
+                innerRadius={48}
+                innerCircleBorderColor={colors.primary[600]}
+                innerCircleBorderWidth={1}
+                strokeColor={colors.primary[600]}
+                strokeWidth={1}
+                centerLabelComponent={() => {
+                  return <Text style={styles.percentageText}>75%</Text>;
+                }}
+              />
+            </View>
+          </View>
+          <View style={styles.rateRectangle}>
+            <View style={styles.rateTextWrapper}>
+              <Text style={styles.rateText}>적중률</Text>
+              <Text style={styles.statusText}>리듬 일치</Text>
+            </View>
+            <View style={styles.chartWrapper}>
+              <PieChart
+                data={getProgressData(90)}
+                donut
+                radius={65}
+                innerRadius={48}
+                innerCircleBorderColor={colors.primary[600]}
+                innerCircleBorderWidth={1}
+                strokeColor={colors.primary[600]}
+                strokeWidth={1}
+                centerLabelComponent={() => {
+                  return <Text style={styles.percentageText}>90%</Text>;
+                }}
+              />
+            </View>
           </View>
         </View>
-        <View style={styles.rateRectangle}>
-          <View style={styles.rateTextWrapper}>
-            <Text style={styles.rateText}>적중률</Text>
-            <Text style={styles.statusText}>리듬 일치</Text>
-          </View>
-          <View style={styles.chartWrapper}>
-            <PieChart
-              data={getProgressData(90)}
-              donut
-              radius={65}
-              innerRadius={48}
-              innerCircleBorderColor={colors.primary[600]}
-              innerCircleBorderWidth={1}
-              strokeColor={colors.primary[600]}
-              strokeWidth={1}
-              centerLabelComponent={() => {
-                return <Text style={styles.percentageText}>90%</Text>;
-              }}
-            />
-          </View>
+        <View style={styles.peakTimeRectangle}>
+          <Text style={styles.peakTimeText}>피크타임 적중률 비교</Text>
+          <PeakTimeTable data={initialData} actualData={actualStudyData} />
         </View>
-      </View>
-      <View style={styles.peakTimeRectangle}>
-        <Text style={styles.peakTimeText}>피크타임 적중률 비교</Text>
-        <PeakTimeTable data={initialData} actualData={actualStudyData} />
       </View>
     </ScrollView>
   );
@@ -82,7 +86,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.grayscale[900],
     paddingTop: Platform.OS === 'android' ? 35 : 70,
+  },
+  contentWrapper: {
     paddingHorizontal: 20,
+    paddingVertical: 20,
   },
   dateText: {
     fontFamily: 'Pretendard-Bold',
@@ -150,11 +157,12 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor: colors.grayscale[100],
     borderRadius: 20,
-    height: 800,
+    height: 750,
     paddingLeft: 20,
     paddingRight: 120,
     paddingTop: 20,
     gap: 20,
+    marginBottom: 50,
   },
   peakTimeText: {
     fontFamily: 'Pretendard-Bold',
