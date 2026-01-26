@@ -1,6 +1,8 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { View } from 'react-native';
 import { useFonts } from 'expo-font';
+import DayReport from './screens/reportScreens/DayReport';
+import WeekReport from './screens/reportScreens/WeekReport';
 import TM01 from './TM/TM01';
 import Category from './component/Category'
 
@@ -13,21 +15,10 @@ function App() {
   if (!fontsLoaded) return null;
 
   return (
-    <View style={styles.container}>
-      <TM01/>
-      <Category/>
-      <StatusBar style="auto" />
-    </View>
+    <View style={{ flex: 1 }}>
+      <StatusBar style="light" />
+      <DayReport />
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
 
 export default App;
