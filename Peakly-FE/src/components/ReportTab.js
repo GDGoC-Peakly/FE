@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
   dateText: {
     fontFamily: 'Pretendard-Bold',
     fontSize: 14,
-    color: colors.grayscale[600],
+    color: colors.grayscale[500],
   },
   activeDateText: {
     color: colors.grayscale[1000],
