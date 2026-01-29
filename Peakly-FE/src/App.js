@@ -7,6 +7,7 @@ import TM01 from '../src/TM/TM01'
 import TM02 from '../src/TM/TM02'
 import TM02_Card from '../src/TM/TM02_Card'
 import TM_Modal from '../src/TM/TM_Modal'
+import TM_Modal4 from '../src/TM/TM_Modal4'
 
 function App() {
   const [fontsLoaded] = useFonts({
@@ -23,7 +24,8 @@ function App() {
       {/* <TM01/> */}
       <TM02/>
       {/* <TM02_Card/> */}
-      <TM_Modal/>
+      {/* <TM_Modal/> */}
+      <TM_Modal4/>
     </View>
   );
 }
