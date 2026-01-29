@@ -6,6 +6,7 @@ import WeekReport from './screens/reportScreens/WeekReport';
 import TM01 from '../src/TM/TM01'
 import TM02 from '../src/TM/TM02'
 import TM02_Card from '../src/TM/TM02_Card'
+import TM_Modal from '../src/TM/TM_Modal'
 
 function App() {
   const [fontsLoaded] = useFonts({
@@ -21,7 +22,8 @@ function App() {
       {/* <DayReport /> */}
       {/* <TM01/> */}
       <TM02/>
-      <TM02_Card/>
+      {/* <TM02_Card/> */}
+      <TM_Modal/>
     </View>
   );
 }
