@@ -3,7 +3,7 @@ import { Modal, View, Text, StyleSheet, Pressable } from 'react-native';
 import { BlurView } from 'expo-blur'; 
 import { colors } from '../styles/colors.js';
 import ModalFooter from '../component/ModalFooter.jsx'; 
-import TimerBox from '../component/TimerBox.jsx'; // 1. 타이머 컴포넌트 임포트
+import TimerBox from '../component/TimerBox.jsx'; 
 
 const TM_Modal4 = ({ visible, onClose, time, onConfirm }) => {
   return (
@@ -62,14 +62,14 @@ const styles = StyleSheet.create({
   titleText: {
     color: colors.grayscale[100],
     fontSize: 24,
-    fontWeight: 'bold',
+    fontFamily: 'Pretendard-Bold',
     marginBottom: 10,
     textAlign: 'left',
   },
   subTitleText: {
     color: colors.grayscale[100],
     fontSize: 24,
-    fontWeight: 'bold',
+    fontFamily: 'Pretendard-Bold',
     textAlign: 'left',
   },
 });

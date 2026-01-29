@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
   mainText: {
     color: colors.grayscale[100],
     fontSize: 24,
-    fontWeight: 'bold',
+    fontFamily: 'Pretendard-Bold',
     textAlign: 'left', 
     lineHeight: 32,
   },

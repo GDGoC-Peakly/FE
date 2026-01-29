@@ -24,12 +24,12 @@ function App() {
       <StatusBar style="light" />
       {/* <DayReport /> */}
 
-      {/* <TM01/> */}
+      <TM01/>
       {/* <TM02/> */}
       {/* <TM02_Card/> */}
       {/* <TM_Modal/> */}
       {/* <TM_Modal4/> */}
-      <TM_05/>
+      {/* <TM_05/> */}
     </View>
   );
 }

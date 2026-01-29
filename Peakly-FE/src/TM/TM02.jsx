@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
   statusTextWhite: {
     color: colors.grayscale[100],
     fontSize: 14,
-    fontWeight: 'bold',
+    fontFamily: 'Pretendard-Bold',
     marginHorizontal: 14,
   },
   subjectChip: {
@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
   },
   subjectText: {
     color: colors.primary[600],
-    fontWeight: 'bold',
+    fontFamily: 'Pretendard-Bold',
     fontSize: 12,
   },
   scrollContainer: {
@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
   hourLabel: {
     color: colors.grayscale[100], 
     fontSize: 12,
-    fontWeight: '600',
+    fontFamily: 'Pretendard-Bold',
   },
   dashedLine: {
     flex: 1,
@@ -168,6 +168,6 @@ const styles = StyleSheet.create({
   peakBadgeText: {
     color: colors.grayscale[100],
     fontSize: 10,
-    fontWeight: 'bold',
+    fontFamily: 'Pretendard-Bold',
   },
 });

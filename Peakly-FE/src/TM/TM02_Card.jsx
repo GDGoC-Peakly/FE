@@ -3,22 +3,20 @@ import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Svg, { Circle, Path, Defs, LinearGradient as SvgGradient, Stop } from 'react-native-svg';
 import { colors } from '../styles/colors.js';
-import TM_Modal4 from './TM_Modal4.jsx'; // 1. 모달 컴포넌트 임포트
+import TM_Modal4 from './TM_Modal4.jsx'; 
 
 const TM02_Card = () => {
   const [isPaused, setIsPaused] = useState(false);
-  const [isModalVisible, setIsModalVisible] = useState(false); // 2. 모달 가시성 상태 추가
+  const [isModalVisible, setIsModalVisible] = useState(false); 
 
   const activeColor = isPaused ? colors.grayscale[500] : colors.primary[600];
   const gradientStart = isPaused ? colors.grayscale[300] : colors.primary[400];
   
-  // 누적 시간 변수 (모달에 전달)
   const accumulatedTime = "00 : 38 : 41";
 
   const handleConfirmExit = () => {
     setIsModalVisible(false);
     console.log("집중모드 종료가 확정되었습니다.");
-    // 여기에 네비게이션 이동 로직을 추가하세요 (예: navigation.navigate('Result'))
   };
 
   return (
@@ -136,7 +134,7 @@ const styles = StyleSheet.create({
   },
   timeTagText: {
     color: colors.primary[600],
-    fontWeight: 'bold',
+    fontFamily: 'Pretendard-Bold',
     fontSize: 12,
   },
   headerRow: {
@@ -148,6 +146,7 @@ const styles = StyleSheet.create({
   headerText: {
     color: colors.grayscale[100],
     fontSize: 14,
+    fontFamily: 'Pretendard-regular',
   },
   timerBadge: {
     backgroundColor: colors.grayscale[1000],
@@ -158,7 +157,7 @@ const styles = StyleSheet.create({
   timerBadgeText: {
     color: colors.grayscale[100],
     fontSize: 12,
-    fontWeight: 'bold',
+    fontFamily: 'Pretendard-Bold',
     paddingVertical: 5,
     paddingHorizontal: 7,
   },
@@ -181,13 +180,13 @@ const styles = StyleSheet.create({
   statsLabel: {
     color: colors.grayscale[100],
     fontSize: 14,
-    fontWeight: '600',
+    fontFamily: 'Pretendard-Bold',
     marginBottom: 6,
   },
   statsValue: {
     color: colors.grayscale[100],
     fontSize: 28,
-    fontWeight: 'bold',
+    fontFamily: 'Pretendard-Bold',
   },
   footerRow: {
     flexDirection: 'row',
@@ -210,8 +209,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   exitButtonText: {
-    color: '#FFF',
+    color: colors.grayscale[100],
     fontSize: 16,
-    fontWeight: 'bold',
+    fontFamily: 'Pretendard-Bold',
   },
 });

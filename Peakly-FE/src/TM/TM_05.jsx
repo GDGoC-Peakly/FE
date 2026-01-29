@@ -37,7 +37,6 @@ const TM_05 = () => {
         <View style={styles.card}>
           <Text style={styles.cardTitle}>목표 시간 달성률</Text>
           <View style={styles.graphPlaceholder}>
-            {/* 목표 시간 달성률 컴포넌트 */}
           </View>
         </View>
 
@@ -95,10 +94,9 @@ const styles = StyleSheet.create({
   },
   titleText: {
     fontSize: 28,
-    fontWeight: 'bold',
+    fontFamily: 'Pretendard-Bold',
     color: colors.grayscale[100],
   },
-  // TimerBox 상하 간격을 위한 스타일
   timerWrapper: {
     marginVertical: 18,
   },
@@ -119,7 +117,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     color: colors.grayscale[100],
     fontSize: 16,
-    fontWeight: 'bold',
+    fontFamily: 'Pretendard-Bold',
     textAlign: 'center',
     marginBottom: 29,
   },
@@ -146,11 +144,11 @@ const styles = StyleSheet.create({
   infoLabel: {
     color: colors.grayscale[100],
     fontSize: 12,
-    fontWeight: 'bold',
+    fontFamily: 'Pretendard-Bold',
   },
   infoValue: {
     color: colors.grayscale[100],
     fontSize: 10,
-    fontWeight: '500',
+    fontFamily: 'Pretendard-regular',
   },
 });

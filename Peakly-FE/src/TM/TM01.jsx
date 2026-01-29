@@ -44,9 +44,7 @@ const TM01 = ({ isVisible, onClose }) => {
 
   const getNoiseText = (val) => {
     if (val <= 0) return "조용해요";
-    if (val <= 25) return "조금 조용해요";
     if (val <= 50) return "보통이에요";
-    if (val <= 75) return "조금 시끄러워요";
     return "시끄러워요";
   };
 
@@ -78,7 +76,7 @@ const TM01 = ({ isVisible, onClose }) => {
             <View style={styles.whiteCard}>
               <ConditionSlider label="피로도" value={fatigue} step={25} onValueChange={setFatigue} valueText={getFatigueText(fatigue)} dotCount={5} />              
               <ConditionSlider label="카페인 섭취" subLabel="최근 6시간 이내" value={caffeine} step={50} onValueChange={setCaffeine} valueText={getCaffeineText(caffeine)} dotCount={3} />
-              <ConditionSlider label="현재 주변 소음" value={noise} step={25} onValueChange={setNoise} valueText={getNoiseText(noise)} isLast dotCount={5} />
+              <ConditionSlider label="현재 주변 소음" value={noise} step={50} onValueChange={setNoise} valueText={getNoiseText(noise)} isLast dotCount={3} />
             </View>
 
             <Text style={styles.sectionTitle}>목표 시간</Text>
@@ -102,7 +100,6 @@ const TM01 = ({ isVisible, onClose }) => {
   );
 };
 
-// --- 에러가 발생하지 않는 WheelPicker (FlatList 제거 버전) ---
 const WheelPicker = ({ data, selected, onSelect, label }) => {
   return (
     <View style={styles.wheelWrapper}>
@@ -115,7 +112,7 @@ const WheelPicker = ({ data, selected, onSelect, label }) => {
           const index = Math.round(e.nativeEvent.contentOffset.y / ITEM_HEIGHT);
           if (data[index] !== undefined) onSelect(data[index]);
         }}
-        contentContainerStyle={{ paddingVertical: ITEM_HEIGHT }} // 상하단 공백 확보
+        contentContainerStyle={{ paddingVertical: ITEM_HEIGHT }} 
       >
         {data.map((item) => (
           <View key={item} style={styles.itemWrapper}>
@@ -130,7 +127,7 @@ const WheelPicker = ({ data, selected, onSelect, label }) => {
   );
 };
 
-// --- 커스텀 슬라이더 컴포넌트 (동일) ---
+
 const ConditionSlider = ({ label, subLabel, value, onValueChange, valueText, isLast, step, dotCount }) => {
   const dots = Array.from({ length: dotCount }, (_, i) => (100 / (dotCount - 1)) * i);
   const availableWidth = SCREEN_WIDTH - (PADDING_HORIZONTAL * 2) - (SLIDER_CONTAINER_PADDING * 2);
@@ -165,18 +162,18 @@ const ConditionSlider = ({ label, subLabel, value, onValueChange, valueText, isL
 };
 
 const styles = StyleSheet.create({
-  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'flex-end' },
+  modalOverlay: { flex: 1, backgroundColor: colors.grayscale[100], justifyContent: 'flex-end' },
   topDismiss: { flex: 1 },
   sheetContainer: { backgroundColor: colors.grayscale[200], borderTopLeftRadius: 22, borderTopRightRadius: 22, height: SCREEN_HEIGHT * 0.88 },
   handle: { width: 95, height: 6, backgroundColor: colors.grayscale[300], borderRadius: 20, alignSelf: 'center', marginVertical: 10 },
   scrollContent: { paddingHorizontal: PADDING_HORIZONTAL, paddingBottom: 20 },
-  sectionTitle: { fontSize: 24, fontWeight: '700', color: colors.grayscale[1000], marginBottom: 12, marginTop: 10 },
+  sectionTitle: { fontSize: 24,  fontFamily: 'Pretendard-Bold', color: colors.grayscale[1000], marginBottom: 12, marginTop: 10 },
   whiteCard: { backgroundColor: colors.grayscale[100], borderRadius: 20, padding: SLIDER_CONTAINER_PADDING, marginBottom: 35 },
   categoryWrapper: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   conditionItem: { marginBottom: 14 },
   labelRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4 },
-  label: { fontSize: 16, fontWeight: '700', color: colors.grayscale[900] },
-  subLabel: { fontSize: 10, color: colors.grayscale[500] },
+  label: { fontSize: 16,  fontFamily: 'Pretendard-Bold', color: colors.grayscale[900] },
+  subLabel: {  fontFamily: 'Pretendard-regulat', color: colors.grayscale[500] },
   sliderWrapper: { height: 40, justifyContent: 'center', marginVertical: 9 },
   sliderBackgroundLine: { position: 'absolute', width: '100%', height: 2, backgroundColor: colors.grayscale[200], flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 2 },
   sliderDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#E5E5E5' }, 
@@ -184,13 +181,13 @@ const styles = StyleSheet.create({
   customThumbContainer: { position: 'absolute', zIndex: 3, width: 24, height: 24, justifyContent: 'center', alignItems: 'center' },
   customThumbOuter: { width: 20, height: 20, borderRadius: 10, backgroundColor: colors.primary[600], justifyContent: 'center', alignItems: 'center' },
   customThumbInner: { width: 14, height: 14, borderRadius: 6, backgroundColor: colors.primary[100] },
-  valueText: { textAlign: 'center', fontSize: 13, color: colors.primary[600], fontWeight: '600', marginTop: -4 },
+  valueText: { textAlign: 'center', fontSize: 13, color: colors.primary[600],  fontFamily: 'Pretendard-Bold', marginTop: -4 },
   pickerContainer: { flexDirection: 'row', alignItems: 'center', height: ITEM_HEIGHT * 3 },
   wheelWrapper: { flex: 1, height: ITEM_HEIGHT * 3 },
   itemWrapper: { height: ITEM_HEIGHT, justifyContent: 'center', alignItems: 'center' },
-  itemText: { fontSize: 18, color: colors.grayscale[300] },
-  selectedItemText: { color: colors.primary[600], fontWeight: '800', fontSize: 22 },
-  unitText: { fontSize: 15, fontWeight: '400', color: colors.primary[600] },
+  itemText: { fontFamily: 'Pretendard-Bold', color: colors.grayscale[300] },
+  selectedItemText: { color: colors.primary[600],  fontFamily: 'Pretendard-Bold', fontSize: 22 },
+  unitText: { fontSize: 15,  fontFamily: 'Pretendard-regular', color: colors.primary[600] },
   selectionIndicator: { position: 'absolute', left: 0, right: 0, height: ITEM_HEIGHT, borderWidth: 1.5, borderColor: colors.primary[600], borderRadius: 18, top: ITEM_HEIGHT, backgroundColor: colors.primary[100] },
   bottomWrapper: { position: 'absolute', bottom: 0, width: '100%', height: 100 },
 });
