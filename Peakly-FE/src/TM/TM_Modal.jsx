@@ -22,7 +22,6 @@ const CustomBottomModal = ({ visible, onClose, title, onConfirm }) => {
               <Text style={styles.mainText}>기록할까요?</Text>
             </View>
 
-            {/* 별도 파일에서 가져온 버튼 컴포넌트 */}
             <ModalFooter 
               onCancel={onClose} 
               onConfirm={onConfirm} 

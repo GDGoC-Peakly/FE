@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, ScrollView, FlatList, Dimensions, Modal, Platform } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity, ScrollView, Dimensions, Modal, Platform } from 'react-native';
 import Slider from '@react-native-community/slider';
 import Category from '../component/Category.jsx';
+import Button from '../component/Button.jsx'; 
 import { colors } from '../styles/colors.js';
 
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -18,7 +19,6 @@ const TM01 = ({ isVisible, onClose }) => {
   const [hour, setHour] = useState(2);
   const [min, setMin] = useState(0);
   const [sec, setSec] = useState(0);
-  const [scrollEnabled, setScrollEnabled] = useState(true);
 
   const categories = [
     { id: 'logic', name: '논리·사고', icon: require('../../assets/img/TM/logic_icon_g.png'), activeIcon: require('../../assets/img/TM/logic_icon_b.png') },
@@ -57,7 +57,7 @@ const TM01 = ({ isVisible, onClose }) => {
         <View style={styles.sheetContainer}>
           <View style={styles.handle} />
           
-          <ScrollView scrollEnabled={scrollEnabled} showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+          <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
             <Text style={styles.sectionTitle}>카테고리 선택</Text>
             <View style={styles.whiteCard}>
               <View style={styles.categoryWrapper}>
@@ -82,21 +82,19 @@ const TM01 = ({ isVisible, onClose }) => {
             </View>
 
             <Text style={styles.sectionTitle}>목표 시간</Text>
-            <View style={styles.whiteCard} onStartShouldSetResponderCapture={() => { setScrollEnabled(false); return false; }}>
+            <View style={styles.whiteCard}>
               <View style={styles.pickerContainer}>
                 <View style={styles.selectionIndicator} />
-                <WheelPicker data={[...Array(24).keys()]} selected={hour} onSelect={(val) => {setHour(val); setScrollEnabled(true);}} label="시간" />
-                <WheelPicker data={[...Array(60).keys()]} selected={min} onSelect={(val) => {setMin(val); setScrollEnabled(true);}} label="분" />
-                <WheelPicker data={[...Array(60).keys()]} selected={sec} onSelect={(val) => {setSec(val); setScrollEnabled(true);}} label="초" />
+                <WheelPicker data={[...Array(24).keys()]} selected={hour} onSelect={setHour} label="시간" />
+                <WheelPicker data={[...Array(60).keys()]} selected={min} onSelect={setMin} label="분" />
+                <WheelPicker data={[...Array(60).keys()]} selected={sec} onSelect={setSec} label="초" />
               </View>
             </View>
-            <View style={{ height: 30 }} />
+            <View style={{ height: 120 }} />
           </ScrollView>
 
           <View style={styles.bottomWrapper}>
-            <TouchableOpacity style={styles.startBtn} onPress={onClose}>
-              <Text style={styles.startBtnText}>▶  집중모드 시작</Text>
-            </TouchableOpacity>
+            <Button text="▶  집중모드 시작" onPress={onClose} />
           </View>
         </View>
       </View>
@@ -104,10 +102,37 @@ const TM01 = ({ isVisible, onClose }) => {
   );
 };
 
-// --- 커스텀 슬라이더 컴포넌트 ---
+// --- 에러가 발생하지 않는 WheelPicker (FlatList 제거 버전) ---
+const WheelPicker = ({ data, selected, onSelect, label }) => {
+  return (
+    <View style={styles.wheelWrapper}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        snapToInterval={ITEM_HEIGHT}
+        snapToAlignment="center"
+        decelerationRate="fast"
+        onMomentumScrollEnd={(e) => {
+          const index = Math.round(e.nativeEvent.contentOffset.y / ITEM_HEIGHT);
+          if (data[index] !== undefined) onSelect(data[index]);
+        }}
+        contentContainerStyle={{ paddingVertical: ITEM_HEIGHT }} // 상하단 공백 확보
+      >
+        {data.map((item) => (
+          <View key={item} style={styles.itemWrapper}>
+            <Text style={[styles.itemText, selected === item && styles.selectedItemText]}>
+              {item}
+              {selected === item && <Text style={styles.unitText}> {label}</Text>}
+            </Text>
+          </View>
+        ))}
+      </ScrollView>
+    </View>
+  );
+};
+
+// --- 커스텀 슬라이더 컴포넌트 (동일) ---
 const ConditionSlider = ({ label, subLabel, value, onValueChange, valueText, isLast, step, dotCount }) => {
   const dots = Array.from({ length: dotCount }, (_, i) => (100 / (dotCount - 1)) * i);
-  
   const availableWidth = SCREEN_WIDTH - (PADDING_HORIZONTAL * 2) - (SLIDER_CONTAINER_PADDING * 2);
   const thumbSize = 24;
   const left = (value / 100) * availableWidth;
@@ -124,29 +149,14 @@ const ConditionSlider = ({ label, subLabel, value, onValueChange, valueText, isL
             <View key={idx} style={styles.sliderDot} /> 
           ))}
         </View>
-        
-        <View 
-          style={[
-            styles.customThumbContainer, 
-            { left: left - (thumbSize / 2) }
-          ]} 
-          pointerEvents="none"
-        >
-          <View style={styles.customThumbOuter}>
-             <View style={styles.customThumbInner} />
-          </View>
+        <View style={[styles.customThumbContainer, { left: left - (thumbSize / 2) }]} pointerEvents="none">
+          <View style={styles.customThumbOuter}><View style={styles.customThumbInner} /></View>
         </View>
-
         <Slider 
           style={styles.actualSlider}
-          minimumValue={0} 
-          maximumValue={100} 
-          step={step} 
-          value={value} 
-          onValueChange={onValueChange} 
-          minimumTrackTintColor="transparent" 
-          maximumTrackTintColor="transparent"
-          thumbTintColor="transparent"
+          minimumValue={0} maximumValue={100} step={step} value={value} 
+          onValueChange={onValueChange} minimumTrackTintColor="transparent" 
+          maximumTrackTintColor="transparent" thumbTintColor="transparent"
         />
       </View>
       <Text style={styles.valueText}>{valueText}</Text>
@@ -154,41 +164,12 @@ const ConditionSlider = ({ label, subLabel, value, onValueChange, valueText, isL
   );
 };
 
-// --- 휠 피커 ---
-const WheelPicker = ({ data, selected, onSelect, label }) => {
-  const modifiedData = ['', ...data, ''];
-  return (
-    <View style={styles.wheelWrapper}>
-      <FlatList
-        data={modifiedData}
-        keyExtractor={(_, index) => index.toString()}
-        renderItem={({ item }) => (
-          <View style={styles.itemWrapper}>
-            <Text style={[styles.itemText, selected === item && styles.selectedItemText]}>
-              {item !== '' ? item : ''}
-              {item !== '' && selected === item && <Text style={styles.unitText}> {label}</Text>}
-            </Text>
-          </View>
-        )}
-        showsVerticalScrollIndicator={false}
-        snapToInterval={ITEM_HEIGHT}
-        snapToAlignment="center"
-        decelerationRate="fast"
-        onMomentumScrollEnd={(e) => {
-          const index = Math.round(e.nativeEvent.contentOffset.y / ITEM_HEIGHT);
-          if (data[index] !== undefined) onSelect(data[index]);
-        }}
-      />
-    </View>
-  );
-};
-
 const styles = StyleSheet.create({
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'flex-end' },
   topDismiss: { flex: 1 },
-  sheetContainer: { backgroundColor: colors.grayscale[200], borderTopLeftRadius: 22, borderTopRightRadius: 22, height: SCREEN_HEIGHT * 0.88, paddingHorizontal: PADDING_HORIZONTAL },
+  sheetContainer: { backgroundColor: colors.grayscale[200], borderTopLeftRadius: 22, borderTopRightRadius: 22, height: SCREEN_HEIGHT * 0.88 },
   handle: { width: 95, height: 6, backgroundColor: colors.grayscale[300], borderRadius: 20, alignSelf: 'center', marginVertical: 10 },
-  scrollContent: { paddingBottom: 20 },
+  scrollContent: { paddingHorizontal: PADDING_HORIZONTAL, paddingBottom: 20 },
   sectionTitle: { fontSize: 24, fontWeight: '700', color: colors.grayscale[1000], marginBottom: 12, marginTop: 10 },
   whiteCard: { backgroundColor: colors.grayscale[100], borderRadius: 20, padding: SLIDER_CONTAINER_PADDING, marginBottom: 35 },
   categoryWrapper: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
@@ -196,29 +177,22 @@ const styles = StyleSheet.create({
   labelRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4 },
   label: { fontSize: 16, fontWeight: '700', color: colors.grayscale[900] },
   subLabel: { fontSize: 10, color: colors.grayscale[500] },
-  
-  sliderWrapper: { height: 40, justifyContent: 'center', marginVertical: 9},
+  sliderWrapper: { height: 40, justifyContent: 'center', marginVertical: 9 },
   sliderBackgroundLine: { position: 'absolute', width: '100%', height: 2, backgroundColor: colors.grayscale[200], flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 2 },
   sliderDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#E5E5E5' }, 
   actualSlider: { width: '100%', height: 40, zIndex: 2 },
-  
-  // 커스텀 핸들 스타일
   customThumbContainer: { position: 'absolute', zIndex: 3, width: 24, height: 24, justifyContent: 'center', alignItems: 'center' },
   customThumbOuter: { width: 20, height: 20, borderRadius: 10, backgroundColor: colors.primary[600], justifyContent: 'center', alignItems: 'center' },
   customThumbInner: { width: 14, height: 14, borderRadius: 6, backgroundColor: colors.primary[100] },
-
   valueText: { textAlign: 'center', fontSize: 13, color: colors.primary[600], fontWeight: '600', marginTop: -4 },
-
   pickerContainer: { flexDirection: 'row', alignItems: 'center', height: ITEM_HEIGHT * 3 },
-  wheelWrapper: { flex: 1, height: ITEM_HEIGHT * 3},
+  wheelWrapper: { flex: 1, height: ITEM_HEIGHT * 3 },
   itemWrapper: { height: ITEM_HEIGHT, justifyContent: 'center', alignItems: 'center' },
   itemText: { fontSize: 18, color: colors.grayscale[300] },
   selectedItemText: { color: colors.primary[600], fontWeight: '800', fontSize: 22 },
   unitText: { fontSize: 15, fontWeight: '400', color: colors.primary[600] },
-  selectionIndicator: { position: 'absolute', left: 0, right: 0, height: ITEM_HEIGHT, borderWidth: 1.5, borderColor: colors.primary[600], borderRadius: 18, top: ITEM_HEIGHT,  backgroundColor: colors.primary[100] },
-  bottomWrapper: { paddingBottom: Platform.OS === 'ios' ? 30 : 20, paddingTop: 10 },
-  startBtn: { backgroundColor: colors.primary[600], borderRadius: 14, height: 52, alignItems: 'center', justifyContent: 'center' },
-  startBtnText: { color: '#FFF', fontSize: 18, fontWeight: '700' }
+  selectionIndicator: { position: 'absolute', left: 0, right: 0, height: ITEM_HEIGHT, borderWidth: 1.5, borderColor: colors.primary[600], borderRadius: 18, top: ITEM_HEIGHT, backgroundColor: colors.primary[100] },
+  bottomWrapper: { position: 'absolute', bottom: 0, width: '100%', height: 100 },
 });
 
 export default TM01;

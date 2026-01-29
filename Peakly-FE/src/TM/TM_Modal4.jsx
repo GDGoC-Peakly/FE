@@ -2,7 +2,8 @@ import React from 'react';
 import { Modal, View, Text, StyleSheet, Pressable } from 'react-native';
 import { BlurView } from 'expo-blur'; 
 import { colors } from '../styles/colors.js';
-import ModalFooter from '../component/ModalFooter.jsx'; // 공통 푸터 임포트
+import ModalFooter from '../component/ModalFooter.jsx'; 
+import TimerBox from '../component/TimerBox.jsx'; // 1. 타이머 컴포넌트 임포트
 
 const TM_Modal4 = ({ visible, onClose, time, onConfirm }) => {
   return (
@@ -20,15 +21,11 @@ const TM_Modal4 = ({ visible, onClose, time, onConfirm }) => {
             <View style={styles.contentContainer}>
               <Text style={styles.titleText}>집중을 시작한 지</Text>
               
-              {/* TM_M4 전용 타이머 박스 */}
-              <View style={styles.timerBox}>
-                <Text style={styles.timerText}>{time || "00 : 38 : 41"}</Text>
-              </View>
+              <TimerBox time={time || "00 : 38 : 41"} />
 
               <Text style={styles.subTitleText}>집중모드를 종료하시겠어요?</Text>
             </View>
 
-            {/* 공통 푸터 사용 (버튼 스타일은 ModalFooter.jsx가 관리) */}
             <ModalFooter 
               onCancel={onClose} 
               onConfirm={onConfirm} 
@@ -68,23 +65,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 10,
     textAlign: 'left',
-  },
-  timerBox: {
-    backgroundColor: colors.primary[100],
-    borderWidth: 1,
-    borderColor: colors.primary[600],
-    width: 259, 
-    height: 58,
-    borderRadius: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 39,
-  },
-  timerText: {
-    color: colors.primary[600],
-    fontSize: 32,
-    fontWeight: '700',
-    letterSpacing: 2,
   },
   subTitleText: {
     color: colors.grayscale[100],
