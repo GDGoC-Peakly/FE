@@ -9,8 +9,8 @@ const TM02_Card = () => {
   const [isPaused, setIsPaused] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false); 
 
-  const activeColor = isPaused ? colors.grayscale[500] : colors.primary[600];
-  const gradientStart = isPaused ? colors.grayscale[300] : colors.primary[400];
+  const activeColor = isPaused ? colors.grayscale[500] : colors.sub[200];
+  const gradientStart = isPaused ? colors.grayscale[300] : colors.sub[100];
   
   const accumulatedTime = "00 : 38 : 41";
 
@@ -124,16 +124,14 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: -15,
     left: 20,
-    backgroundColor: colors.primary[100],
-    paddingHorizontal: 14,
-    paddingVertical: 6,
+    backgroundColor: colors.sub[200],
+    paddingHorizontal: 12,
+    paddingVertical: 4.5,
     borderRadius: 20,
-    borderWidth: 1,
-    borderColor: colors.primary[600],
     zIndex: 10,
   },
   timeTagText: {
-    color: colors.primary[600],
+    color: colors.grayscale[1000],
     fontFamily: 'Pretendard-Bold',
     fontSize: 12,
   },
@@ -184,7 +182,7 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   statsValue: {
-    color: colors.grayscale[100],
+    color: colors.sub[200],
     fontSize: 28,
     fontFamily: 'Pretendard-Bold',
   },
@@ -193,7 +191,7 @@ const styles = StyleSheet.create({
     gap: 19,
   },
   pauseButton: {
-    width: 52,
+    width: 38,
     height: 38,
     backgroundColor: colors.grayscale[100],
     borderRadius: 12,
@@ -203,7 +201,7 @@ const styles = StyleSheet.create({
   exitButton: {
     flex: 1,
     height: 38,
-    backgroundColor: colors.primary[600],
+    backgroundColor: colors.primary[500],
     borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',

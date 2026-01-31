@@ -2,11 +2,11 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { colors } from '../styles/colors';
 
-const Button = ({ onPress, text = "완료" }) => {
+const Button = ({ onPress, text = "완료", bgColor = colors.primary[500] }) => {
   return (
     <View style={styles.buttonWrapper}>
       <TouchableOpacity 
-        style={styles.completeButton} 
+        style={[styles.completeButton, { backgroundColor: bgColor }]} 
         activeOpacity={0.7}
         onPress={onPress}
       >
@@ -26,15 +26,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18, 
   },
   completeButton: {
-    backgroundColor: colors.primary[600],
     width: '100%',
     height: 52,
-    borderRadius: 16,
+    borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
   },
   completeButtonText: {
-    color: colors.grayscale[100],
+    color: colors.grayscale[1000],
     fontSize: 20,
     fontWeight: 'bold',
   },

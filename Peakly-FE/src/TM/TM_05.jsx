@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, SafeAreaView, StatusBar } from 'react-native';
 import Category from '../component/Category'; 
 import Button from '../component/Button'; 
-import TimerBox from '../component/TimerBox'; // 1. 타이머 컴포넌트 임포트
+import TimerBox from '../component/TimerBox'; 
+import { LinearGradient } from 'expo-linear-gradient';
 import { colors } from '../styles/colors';
 
 const TM_05 = () => {
@@ -11,8 +12,6 @@ const TM_05 = () => {
   const categoryData = {
     id: 1,
     name: "논리·사고",
-    icon: require('../../assets/img/TM/logic_icon_g.png'), 
-    activeIcon: require('../../assets/img/TM/logic_icon_b.png'), 
   };
 
   const handleComplete = () => {
@@ -20,62 +19,66 @@ const TM_05 = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" />
-      
-      <View style={styles.headerContainer}>
-        <Text style={styles.titleText}>Peakly와 함께 집중모드로</Text>
+    <LinearGradient
+      colors={[colors.grayscale[100], colors.primary[100]]} 
+      style={styles.container}
+    >
+      <SafeAreaView style={{ flex: 1, alignItems: 'center' }}>
+        <StatusBar barStyle="dark-content" /> 
         
-        <View style={styles.timerWrapper}>
-          <TimerBox time="00 : 38 : 41" />
-        </View>
-        
-        <Text style={styles.titleText}>동안 집중했어요!</Text>
-      </View>
-
-      <View style={styles.cardRow}>
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>목표 시간 달성률</Text>
-          <View style={styles.graphPlaceholder}>
+        <View style={styles.headerContainer}>
+          <Text style={styles.titleText}>Peakly와 함께 집중모드로</Text>
+          
+          <View style={styles.timerWrapper}>
+            <TimerBox time="00 : 38 : 41" textColor={colors.primary[600]} />
           </View>
+          
+          <Text style={styles.titleText}>동안 집중했어요!</Text>
         </View>
 
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>주변 환경</Text>
-          
-          <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>피로도</Text>
-            <Text style={styles.infoValue}>조금 피곤해요</Text>
+        <View style={styles.cardRow}>
+          <View style={styles.card}>
+            <Text style={styles.cardTitle}>목표 시간 달성률</Text>
+            <View style={styles.graphPlaceholder}>
+              {/* 그래프 영역 */}
+            </View>
           </View>
-          
-          <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>카페인</Text>
-            <Text style={styles.infoValue}>적당히 마셨어요</Text>
-          </View>
-          
-          <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>주변 소음</Text>
-            <Text style={styles.infoValue}>조용해요</Text>
-          </View>
-          
-          <View style={styles.categoryRow}>
-            <Text style={styles.infoLabel}>카테고리</Text>
-            <View style={styles.categoryWrapper}>
-              <Category
-                name={categoryData.name}
-                icon={categoryData.icon}
-                activeIcon={categoryData.activeIcon}
-                isSelected={selectedCategory === categoryData.name}
-                onPress={() => {}} 
-              />
+
+          <View style={styles.card}>
+            <Text style={styles.cardTitle}>주변 환경</Text>
+            
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>피로도</Text>
+              <Text style={styles.infoValue}>조금 피곤해요</Text>
+            </View>
+            
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>카페인</Text>
+              <Text style={styles.infoValue}>적당히 마셨어요</Text>
+            </View>
+            
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>주변 소음</Text>
+              <Text style={styles.infoValue}>조용해요</Text>
+            </View>
+            
+            <View style={styles.categoryRow}>
+              <Text style={styles.infoLabel}>카테고리</Text>
+              <View style={styles.categoryWrapper}>
+                <Category
+                  name={categoryData.name}
+                  isSelected={selectedCategory === categoryData.name}
+                  onPress={() => {}} 
+                />
+              </View>
             </View>
           </View>
         </View>
-      </View>
 
-      <Button text="완료" onPress={handleComplete} />
-      
-    </SafeAreaView>
+        <Button text="완료" onPress={handleComplete} />
+        
+      </SafeAreaView>
+    </LinearGradient>
   );
 };
 
@@ -84,8 +87,6 @@ export default TM_05;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.grayscale[900],
-    alignItems: 'center',
   },
   headerContainer: {
     marginTop: 100,
@@ -95,7 +96,7 @@ const styles = StyleSheet.create({
   titleText: {
     fontSize: 28,
     fontFamily: 'Pretendard-Bold',
-    color: colors.grayscale[100],
+    color: colors.grayscale[1000],
   },
   timerWrapper: {
     marginVertical: 18,
@@ -107,7 +108,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 33,
   },
   card: {
-    backgroundColor: colors.grayscale[800],
+    backgroundColor: colors.grayscale[100],
     width: '48%', 
     borderRadius: 20,
     padding: 12,
@@ -115,7 +116,7 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     marginTop: 10,
-    color: colors.grayscale[100],
+    color: colors.grayscale[1000],
     fontSize: 16,
     fontFamily: 'Pretendard-Bold',
     textAlign: 'center',
@@ -135,20 +136,20 @@ const styles = StyleSheet.create({
   categoryRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
   },
   categoryWrapper: {
-    transform: [{ scale: 0.5 }], 
-    marginTop: -17,
-    marginRight: -35, 
+    transform: [{ scale: 0.8 }], 
+    marginRight: -10, 
   },
   infoLabel: {
-    color: colors.grayscale[100],
+    color: colors.grayscale[1000],
     fontSize: 12,
     fontFamily: 'Pretendard-Bold',
   },
   infoValue: {
-    color: colors.grayscale[100],
+    color: colors.grayscale[1000],
     fontSize: 10,
-    fontFamily: 'Pretendard-regular',
+    fontFamily: 'Pretendard-Bold',
   },
 });

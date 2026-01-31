@@ -25,7 +25,7 @@ const ModalFooter = ({ onCancel, onConfirm, cancelText = "아니요", confirmTex
 const footerStyles = StyleSheet.create({
   buttonContainer: {
     flexDirection: 'row',
-    gap: 12,
+    gap: 20,
     marginTop: 'auto',
   },
   button: {
@@ -36,20 +36,20 @@ const footerStyles = StyleSheet.create({
     alignItems: 'center',
   },
   cancelButton: {
-    backgroundColor: colors.grayscale[100],
+    backgroundColor: colors.grayscale[200],
   },
   confirmButton: {
-    backgroundColor: colors.primary[600],
+    backgroundColor: colors.primary[500],
   },
   cancelButtonText: {
-    color: colors.primary[600],
+    color: colors.primary[900],
     fontSize: 16,
-    fontWeight: 'bold',
+    fontFamily: 'Pretendard-Bold',
   },
   confirmButtonText: {
     color: colors.grayscale[100],
     fontSize: 16,
-    fontWeight: 'bold',
+    fontFamily: 'Pretendard-Bold',
   },
 });
 
