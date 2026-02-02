@@ -11,6 +11,9 @@ import TM_Modal from '../src/TM/TM_Modal'
 import TM_Modal4 from '../src/TM/TM_Modal4'
 import TM_05 from './TM/TM_05';
 
+import HM_Daily_Checkin from './HM/HM_Daily_Checkin';
+import TimeCard from './component/TimeCard';
+
 function App() {
   const [fontsLoaded] = useFonts({
     'Pretendard-Bold': require('../assets/fonts/Pretendard-Bold.otf'),
@@ -24,7 +27,9 @@ function App() {
       <StatusBar style="light" />
       {/* <DayReport /> */}
 
-      <TM01/>
+      <HM_Daily_Checkin/>
+
+      {/* <TM01/> */}
       {/* <TM02/> */}
       {/* <TM02_Card/> */}
       {/* <TM_Modal/> */}
