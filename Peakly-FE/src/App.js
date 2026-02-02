@@ -28,8 +28,8 @@ function App() {
       <StatusBar style="light" />
       {/* <DayReport /> */}
 
-      {/* <HM_Daily_Checkin01/> */}
-      <HM_Daily_Checkin02/>
+      <HM_Daily_Checkin01/>
+      {/* <HM_Daily_Checkin02/> */}
 
       {/* <TM01/> */}
       {/* <TM02/> */}

@@ -7,7 +7,7 @@ import back_icon from '../../assets/img/HM/back_icon.png';
 
 const HM_Daily_Checkin01 = ({ navigation, route }) => {
   const mode = route?.params?.mode || 'onboarding';
-//   const mode = 'edit';
+  // const mode = 'edit';
   const isEditMode = mode === 'edit';
 
   return (
@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
     justifyContent: 'left',
     gap: 102,
     height: 60,
-    marginLeft: 21,
+    marginLeft: 12,
     marginBottom: 58,
   },
   backButton: {
@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   titleText: {
-    fontSize: 24,
+    fontSize: 28,
     fontFamily: 'Pretendard-Bold',
     color: colors.grayscale[1000],
     marginBottom: 8,
@@ -135,8 +135,4 @@ const styles = StyleSheet.create({
     fontFamily: 'Pretendard-Bold',
     color: colors.grayscale[1000],
   },
-  buttonContainer: {
-    marginBottom: 20,
-    width: '100%',
-  }
 });
