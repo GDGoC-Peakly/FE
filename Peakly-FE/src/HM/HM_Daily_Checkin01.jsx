@@ -5,7 +5,7 @@ import Button from '../component/Button';
 import TimeCard from '../component/TimeCard';
 import back_icon from '../../assets/img/HM/back_icon.png'; 
 
-const HM_Daily_Checkin = ({ navigation, route }) => {
+const HM_Daily_Checkin01 = ({ navigation, route }) => {
   const mode = route?.params?.mode || 'onboarding';
 //   const mode = 'edit';
   const isEditMode = mode === 'edit';
@@ -61,7 +61,7 @@ const HM_Daily_Checkin = ({ navigation, route }) => {
   );
 };
 
-export default HM_Daily_Checkin;
+export default HM_Daily_Checkin01;
 
 const styles = StyleSheet.create({
   container: {
@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
     height: 14,
   },
   navTitle: {
-    fontSize: 18,
+    fontSize: 24,
     fontFamily: 'Pretendard-Bold',
     color: colors.grayscale[1000],
   },
