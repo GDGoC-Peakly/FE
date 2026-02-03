@@ -1,20 +1,23 @@
 import { StyleSheet, Text, View, Platform, ScrollView } from 'react-native';
 import { colors } from '../../styles/colors';
 import ReportPieChart from '../../components/ReportPieChart';
-import WeeklyHeatMap from '../../components/WeeklyHeatMap';
+import MonthlyHeatMap from '../../components/MonthlyHeatMap';
+import MonthlyPatternChart from '../../components/MonthlyPatternChart';
 import ReasonCard from '../../components/ReasonCard';
 import ManyReasonCard from '../../components/ManyReasonCard';
-import WeeklyPatternChart from '../../components/WeeklyPatternChart';
 
-const WeekReport = () => {
-  const dummyData = [
-    { weekday: 'MON', avgFocusScore: 0.0 },
-    { weekday: 'TUE', avgFocusScore: 3.1 },
-    { weekday: 'WED', avgFocusScore: 2.8 },
-    { weekday: 'THU', avgFocusScore: 0.9 },
-    { weekday: 'FRI', avgFocusScore: 5.0 },
-    { weekday: 'SAT', avgFocusScore: 0.0 },
-    { weekday: 'SUN', avgFocusScore: 5.0 },
+const MonthReport = () => {
+  const weeklyPatterns = [
+    { weekOfMonth: 1, avgFocusScore: 2.3 },
+    { weekOfMonth: 2, avgFocusScore: 4.8 },
+    { weekOfMonth: 3, avgFocusScore: 3.5 },
+    { weekOfMonth: 4, avgFocusScore: 1.2 },
+    { weekOfMonth: 5, avgFocusScore: 4.0 },
+  ];
+  const basicReasons = [
+    { reasonId: 1, code: 'SLEEPY', name: '졸림 ', count: 14 },
+    { reasonId: 2, code: 'NOISE', name: '소음', count: 9 },
+    { reasonId: 3, code: 'PHONE', name: '휴대폰', count: 7 },
   ];
   return (
     <ScrollView style={styles.container} overScrollMode="never" bounces={false}>
@@ -26,23 +29,23 @@ const WeekReport = () => {
         </View>
         <View style={styles.heatMap}>
           <Text style={styles.heatMapText}>집중 잔디</Text>
-          <WeeklyHeatMap />
+          <MonthlyHeatMap />
         </View>
         <View>
-          <WeeklyPatternChart weeklyPattern={dummyData} />
+          <MonthlyPatternChart weeklyPattern={weeklyPatterns} />
         </View>
         <View>
-          <ReasonCard />
+          <ReasonCard reasons={basicReasons} />
         </View>
         <View style={{ marginBottom: 80 }}>
-          <ManyReasonCard />
+          <ManyReasonCard reasons={basicReasons} />
         </View>
       </View>
     </ScrollView>
   );
 };
 
-export default WeekReport;
+export default MonthReport;
 
 const styles = StyleSheet.create({
   container: {
@@ -92,5 +95,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.grayscale[1000],
     marginLeft: 20,
+    marginBottom: 10,
   },
 });

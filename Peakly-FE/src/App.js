@@ -1,10 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
-import { View } from 'react-native';
 import { useFonts } from 'expo-font';
-import DayReport from './screens/reportScreens/DayReport';
-import WeekReport from './screens/reportScreens/WeekReport';
-import TM01 from './TM/TM01';
-import Category from './component/Category'
+import { NavigationContainer } from '@react-navigation/native';
+import ReportTab from './navigations/ReportTab';
 
 function App() {
   const [fontsLoaded] = useFonts({
@@ -15,9 +12,10 @@ function App() {
   if (!fontsLoaded) return null;
 
   return (
-    <View style={{ flex: 1 }}>
+    <NavigationContainer>
       <StatusBar style="light" />
-      <DayReport />
+      <ReportTab />
+    </NavigationContainer>
   );
 }
 
