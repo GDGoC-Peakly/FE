@@ -11,6 +11,9 @@ import TM_Modal from '../src/TM/TM_Modal'
 import TM_Modal4 from '../src/TM/TM_Modal4'
 import TM_05 from './TM/TM_05';
 
+import HM from './HM/HM';
+import HM_Footer from './HM/HM_Footer';
+import HM_Modal from './HM/HM_Modal';
 import TimeCard from './component/TimeCard';
 import HM_Daily_Checkin01 from './HM/HM_Daily_Checkin01';
 import HM_Daily_Checkin02 from './HM/HM_Daily_Checkin02';
@@ -28,7 +31,10 @@ function App() {
       <StatusBar style="light" />
       {/* <DayReport /> */}
 
-      <HM_Daily_Checkin01/>
+      <HM/>
+      <HM_Footer/>
+      {/* <HM_Modal/> */}
+      {/* <HM_Daily_Checkin01/> */}
       {/* <HM_Daily_Checkin02/> */}
 
       {/* <TM01/> */}
