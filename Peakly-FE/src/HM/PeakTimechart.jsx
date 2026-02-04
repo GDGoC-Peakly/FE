@@ -60,7 +60,7 @@ const PeakTimechart = () => {
       {/* 4. 하단 X축 라벨 */}
       <View style={styles.xAxis}>
         <Text style={styles.xAxisText}>오전 5시 (23일)</Text>
-        <Text style={styles.xAxisText}>오전 5시</Text>
+        <Text style={styles.xAxisText}>오후 5시</Text>
       </View>
     </View>
   );
