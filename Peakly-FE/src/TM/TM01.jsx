@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, ScrollView, Dimensions, Modal } from 'react-native';
 import Slider from '@react-native-community/slider';
 import Category from '../component/Category.jsx';
+import Tag from '../component/Tag.jsx'; 
 import Button from '../component/Button.jsx'; 
 import { colors } from '../styles/colors.js';
 
@@ -12,6 +13,7 @@ const SLIDER_CONTAINER_PADDING = 20;
 
 const TM01 = ({ isVisible, onClose }) => {
   const [selectedCategory, setSelectedCategory] = useState('논리·사고');
+  const [selectedTag, setSelectedTag] = useState(''); 
   const [fatigue, setFatigue] = useState(50);
   const [caffeine, setCaffeine] = useState(50);
   const [noise, setNoise] = useState(0); 
@@ -27,6 +29,15 @@ const TM01 = ({ isVisible, onClose }) => {
     { id: 'repeat', name: '반복' },
     { id: 'creativity', name: '창의·구상' },
   ];
+
+  const tags = [
+    { id: 'tag1', name: 'TAG 1' },
+    { id: 'tag2', name: 'TAG 1' },
+    { id: 'tag3', name: 'TAG 1' },
+  ];
+
+  const firstRowCats = categories.slice(0, 3);
+  const secondRowCats = categories.slice(3, 5);
 
   const getFatigueText = (val) => {
     if (val <= 0) return "전혀 안 피곤해요";
@@ -56,15 +67,41 @@ const TM01 = ({ isVisible, onClose }) => {
           <View style={styles.handle} />
           
           <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+            
             <Text style={styles.sectionTitle}>카테고리 선택</Text>
             <View style={styles.whiteCard}>
-              <View style={styles.categoryWrapper}>
-                {categories.map((item) => (
+              {/* 카테고리 첫 번째 줄 (3개) */}
+              <View style={styles.row}>
+                {firstRowCats.map((item) => (
                   <Category
                     key={item.id}
                     name={item.name}
                     isSelected={selectedCategory === item.name}
                     onPress={() => setSelectedCategory(item.name)}
+                  />
+                ))}
+              </View>
+
+              {/* 카테고리 두 번째 줄 (2개) */}
+              <View style={[styles.row, { marginTop: 12 }]}>
+                {secondRowCats.map((item) => (
+                  <Category
+                    key={item.id}
+                    name={item.name}
+                    isSelected={selectedCategory === item.name}
+                    onPress={() => setSelectedCategory(item.name)}
+                  />
+                ))}
+              </View>
+
+              {/* 태그 줄 (이미지처럼 아래에 배치) */}
+              <View style={[styles.row, { marginTop: 20 }]}>
+                {tags.map((item, index) => (
+                  <Tag
+                    key={`${item.id}-${index}`}
+                    name={item.name}
+                    isSelected={selectedTag === `${item.id}-${index}`}
+                    onPress={() => setSelectedTag(`${item.id}-${index}`)}
                   />
                 ))}
               </View>
@@ -86,6 +123,7 @@ const TM01 = ({ isVisible, onClose }) => {
                 <WheelPicker data={[...Array(60).keys()]} selected={sec} onSelect={setSec} label="초" />
               </View>
             </View>
+            
             <View style={{ height: 120 }} />
           </ScrollView>
 
@@ -159,35 +197,36 @@ const ConditionSlider = ({ label, subLabel, value, onValueChange, valueText, isL
 };
 
 const styles = StyleSheet.create({
-  modalOverlay: { 
-    flex: 1, 
-    justifyContent: 'flex-end' 
-  },
+  modalOverlay: { flex: 1, justifyContent: 'flex-end' },
   topDismiss: { flex: 1 },
   sheetContainer: { backgroundColor: colors.grayscale[200], borderTopLeftRadius: 22, borderTopRightRadius: 22, height: SCREEN_HEIGHT * 0.88 },
   handle: { width: 95, height: 6, backgroundColor: colors.grayscale[300], borderRadius: 20, alignSelf: 'center', marginVertical: 10 },
   scrollContent: { paddingHorizontal: PADDING_HORIZONTAL, paddingBottom: 20 },
-  sectionTitle: { fontSize: 24,  fontFamily: 'Pretendard-Bold', color: colors.grayscale[1000], marginBottom: 12, marginTop: 10 },
+  sectionTitle: { fontSize: 24, fontFamily: 'Pretendard-Bold', color: colors.grayscale[1000], marginBottom: 12, marginTop: 10 },
   whiteCard: { backgroundColor: colors.grayscale[100], borderRadius: 20, padding: SLIDER_CONTAINER_PADDING, marginBottom: 35 },
-  categoryWrapper: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+  
+  row: { flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', gap: 10 },
+
   conditionItem: { marginBottom: 14 },
   labelRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4 },
-  label: { fontSize: 16,  fontFamily: 'Pretendard-Bold', color: colors.grayscale[900] },
-  subLabel: {  fontFamily: 'Pretendard-regular', color: colors.grayscale[500] }, // 오타 수정: regulat -> regular
+  label: { fontSize: 16, fontFamily: 'Pretendard-Bold', color: colors.grayscale[900] },
+  subLabel: { fontFamily: 'Pretendard-regular', color: colors.grayscale[500] }, 
+
   sliderWrapper: { height: 40, justifyContent: 'center', marginVertical: 9 },
   sliderBackgroundLine: { position: 'absolute', width: '100%', height: 3, backgroundColor: colors.grayscale[200], flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 2 },
   sliderDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: colors.grayscale[200] }, 
   actualSlider: { width: '100%', height: 40, zIndex: 2 },
   customThumbContainer: { position: 'absolute', zIndex: 3, width: 24, height: 24, justifyContent: 'center', alignItems: 'center' },
   customThumbOuter: { width: 20, height: 20, borderRadius: 10, backgroundColor: colors.primary[500], justifyContent: 'center', alignItems: 'center' },
-  customThumbInner: { width: 14, height: 14, borderRadius: 6, backgroundColor: colors.primary[50] }, // colors.primary[50]이 없다면 [100] 권장
-  valueText: { textAlign: 'center', fontSize: 13, color: colors.primary[600],  fontFamily: 'Pretendard-Bold', marginTop: -4 },
+  customThumbInner: { width: 14, height: 14, borderRadius: 6, backgroundColor: colors.primary[50] }, 
+  valueText: { textAlign: 'center', fontSize: 13, color: colors.primary[600], fontFamily: 'Pretendard-Bold', marginTop: -4 },
+  
   pickerContainer: { flexDirection: 'row', alignItems: 'center', height: ITEM_HEIGHT * 3 },
   wheelWrapper: { flex: 1, height: ITEM_HEIGHT * 3 },
   itemWrapper: { height: ITEM_HEIGHT, justifyContent: 'center', alignItems: 'center' },
   itemText: { fontFamily: 'Pretendard-Bold', color: colors.grayscale[300] },
-  selectedItemText: { color: colors.primary[500],  fontFamily: 'Pretendard-Bold', fontSize: 22 },
-  unitText: { fontSize: 15,  fontFamily: 'Pretendard-regular', color: colors.primary[600] },
+  selectedItemText: { color: colors.primary[500], fontFamily: 'Pretendard-Bold', fontSize: 22 },
+  unitText: { fontSize: 15, fontFamily: 'Pretendard-regular', color: colors.primary[600] },
   selectionIndicator: { position: 'absolute', left: 0, right: 0, height: ITEM_HEIGHT, borderWidth: 1.5, borderColor: colors.primary[500], borderRadius: 18, top: ITEM_HEIGHT, backgroundColor: colors.primary[50] },
   bottomWrapper: { position: 'absolute', bottom: 0, width: '100%', height: 100 },
 });
