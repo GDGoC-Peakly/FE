@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { useFonts } from 'expo-font';
-import { NavigationContainer } from '@react-navigation/native';
-import ReportTab from './navigations/ReportTab';
+import { View } from 'react-native';
+import TM03 from './TM/TM03';
 
 function App() {
   const [fontsLoaded] = useFonts({
@@ -12,10 +12,10 @@ function App() {
   if (!fontsLoaded) return null;
 
   return (
-    <NavigationContainer>
-      <StatusBar style="light" />
-      <ReportTab />
-    </NavigationContainer>
+    <View style={{ flex: 1 }}>
+      <StatusBar style="auto" />
+      <TM03 />
+    </View>
   );
 }
 
