@@ -3,12 +3,21 @@ import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Svg, { Circle, Path, Defs, LinearGradient as SvgGradient, Stop } from 'react-native-svg';
 import { colors } from '../styles/colors.js';
+import TM_Modal4 from './TM_Modal4.jsx'; 
 
 const TM02_Card = () => {
   const [isPaused, setIsPaused] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false); 
 
-  const activeColor = isPaused ? colors.grayscale[500] : colors.primary[600];
-  const gradientStart = isPaused ? colors.grayscale[300] : colors.primary[400];
+  const activeColor = isPaused ? colors.grayscale[500] : colors.sub[200];
+  const gradientStart = isPaused ? colors.grayscale[300] : colors.sub[100];
+  
+  const accumulatedTime = "00 : 38 : 41";
+
+  const handleConfirmExit = () => {
+    setIsModalVisible(false);
+    console.log("집중모드 종료가 확정되었습니다.");
+  };
 
   return (
     <View style={styles.cardContainer}>
@@ -58,7 +67,7 @@ const TM02_Card = () => {
         <View style={styles.statsContainer}>
           <Text style={styles.statsLabel}>누적시간</Text>
           <Text style={[styles.statsValue, isPaused && { color: colors.grayscale[400] }]}>
-            00 : 38 : 41
+            {accumulatedTime}
           </Text>
         </View>
       </View>
@@ -75,119 +84,131 @@ const TM02_Card = () => {
           />
         </TouchableOpacity>
         
-        <TouchableOpacity style={styles.exitButton}>
+        {/* 3. 버튼 클릭 시 모달 열기 */}
+        <TouchableOpacity 
+          style={styles.exitButton} 
+          onPress={() => setIsModalVisible(true)}
+        >
           <Text style={styles.exitButtonText}>집중모드 종료</Text>
         </TouchableOpacity>
       </View>
+
+      {/* 4. TM_Modal4 컴포넌트 배치 */}
+      <TM_Modal4 
+        visible={isModalVisible}
+        onClose={() => setIsModalVisible(false)}
+        time={accumulatedTime}
+        onConfirm={handleConfirmExit}
+      />
     </View>
   );
 };
 
 export default TM02_Card;
+
 const styles = StyleSheet.create({
-cardContainer: {
-width: 351,
-height: 244,
-backgroundColor: colors.grayscale[900],
-borderRadius: 20,
-paddingHorizontal: 20,
-paddingVertical: 20,
-alignSelf: 'center',
-justifyContent: 'space-between',
-position: 'absolute',
-top: '40%',
-zIndex: 100,
-},
-timeTag: {
-position: 'absolute',
-top: -15,
-left: 20,
-backgroundColor: colors.primary[100],
-paddingHorizontal: 14,
-paddingVertical: 6,
-borderRadius: 20,
-borderWidth: 1,
-borderColor: colors.primary[600],
-zIndex: 10,
-},
-timeTagText: {
-color: colors.primary[600],
-fontWeight: 'bold',
-fontSize: 12,
-},
-headerRow: {
-flexDirection: 'row',
-justifyContent: 'center',
-alignItems: 'center',
-marginTop: 10,
-},
-headerText: {
-color: colors.grayscale[100],
-fontSize: 14,
-},
-timerBadge: {
-backgroundColor: colors.grayscale[1000],
-paddingHorizontal: 10,
-borderRadius: 20,
-marginHorizontal: 10,
-},
-timerBadgeText: {
-color: colors.grayscale[100],
-fontSize: 12,
-fontWeight: 'bold',
-paddingVertical: 5,
-paddingHorizontal: 7,
-},
-contentRow: {
-flexDirection: 'row',
-alignItems: 'center',
-justifyContent: 'center',
-gap: 35,
-flex: 1,
-},
-gaugeWrapper: {
-width: 115,
-height: 115,
-justifyContent: 'center',
-alignItems: 'center',
-},
-statsContainer: {
-alignItems: 'center',
-},
-statsLabel: {
-color: colors.grayscale[100],
-fontSize: 14,
-fontWeight: '600',
-marginBottom: 6,
-},
-statsValue: {
-color: colors.grayscale[100],
-fontSize: 28,
-fontWeight: 'bold',
-},
-footerRow: {
-flexDirection: 'row',
-gap: 19,
-},
-pauseButton: {
-width: 52,
-height: 38,
-backgroundColor: colors.grayscale[100],
-borderRadius: 12,
-justifyContent: 'center',
-alignItems: 'center',
-},
-exitButton: {
-flex: 1,
-height: 38,
-backgroundColor: colors.primary[600],
-borderRadius: 12,
-justifyContent: 'center',
-alignItems: 'center',
-},
-exitButtonText: {
-color: '#FFF',
-fontSize: 16,
-fontWeight: 'bold',
-},
+  cardContainer: {
+    width: 351,
+    height: 244,
+    backgroundColor: colors.grayscale[900],
+    borderRadius: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 20,
+    alignSelf: 'center',
+    justifyContent: 'space-between',
+    position: 'absolute',
+    top: '40%',
+    zIndex: 100,
+  },
+  timeTag: {
+    position: 'absolute',
+    top: -15,
+    left: 20,
+    backgroundColor: colors.sub[200],
+    paddingHorizontal: 12,
+    paddingVertical: 4.5,
+    borderRadius: 20,
+    zIndex: 10,
+  },
+  timeTagText: {
+    color: colors.grayscale[1000],
+    fontFamily: 'Pretendard-Bold',
+    fontSize: 12,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  headerText: {
+    color: colors.grayscale[100],
+    fontSize: 14,
+    fontFamily: 'Pretendard-regular',
+  },
+  timerBadge: {
+    backgroundColor: colors.grayscale[1000],
+    paddingHorizontal: 10,
+    borderRadius: 20,
+    marginHorizontal: 10,
+  },
+  timerBadgeText: {
+    color: colors.grayscale[100],
+    fontSize: 12,
+    fontFamily: 'Pretendard-Bold',
+    paddingVertical: 5,
+    paddingHorizontal: 7,
+  },
+  contentRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 35,
+    flex: 1,
+  },
+  gaugeWrapper: {
+    width: 115,
+    height: 115,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  statsContainer: {
+    alignItems: 'center',
+  },
+  statsLabel: {
+    color: colors.grayscale[100],
+    fontSize: 14,
+    fontFamily: 'Pretendard-Bold',
+    marginBottom: 6,
+  },
+  statsValue: {
+    color: colors.sub[200],
+    fontSize: 28,
+    fontFamily: 'Pretendard-Bold',
+  },
+  footerRow: {
+    flexDirection: 'row',
+    gap: 19,
+  },
+  pauseButton: {
+    width: 38,
+    height: 38,
+    backgroundColor: colors.grayscale[100],
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  exitButton: {
+    flex: 1,
+    height: 38,
+    backgroundColor: colors.primary[500],
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  exitButtonText: {
+    color: colors.grayscale[100],
+    fontSize: 16,
+    fontFamily: 'Pretendard-Bold',
+  },
 });
