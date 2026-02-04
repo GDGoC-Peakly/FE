@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, Text, ScrollView } from 'react-native';
-import { colors } from '../styles/colors';
+import { colors } from '../../../styles/colors';
 
 const HOUR_WIDTH = 80; 
 const START_HOUR = 0;   
@@ -24,12 +24,10 @@ const PeakTimeline = () => {
       >
         <View style={{ width: CONTENT_WIDTH }}>
           
-          {/* 1. 상단 시간 레이어 (00 01 02 포맷) */}
           <View style={styles.timeHeaderContainer}>
             <View style={styles.timeHeaderRow}>
               {Array.from({ length: TOTAL_HOURS }).map((_, i) => {
                 const hour = START_HOUR + i;
-                // 숫자를 2자리 문자열로 변환 (예: 1 -> "01")
                 const formattedHour = String(hour).padStart(2, '0');
                 
                 return (

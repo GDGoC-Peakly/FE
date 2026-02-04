@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, View, Text, ScrollView, SafeAreaView, Dimensions,} from 'react-native';
-import { colors } from '../styles/colors.js';
+import { colors } from '../../styles/colors.js';
+import TimerRunningCard from './TimerRunningCard.jsx';
 
 const { width, height } = Dimensions.get('window');
 const HOUR_HEIGHT = 100;
 
-export default function CleanTimelineScreen() {
+export default function TimerRunning() {
   const scrollViewRef = useRef(null);
 
   const peakStartTime = 11; // 11:00 AM
@@ -38,6 +39,8 @@ export default function CleanTimelineScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
+      <TimerRunningCard/>
+
       <View style={styles.fixedHeader}>
         <View style={styles.statusChip}>
           <Text style={styles.statusTextWhite}>지금은</Text>

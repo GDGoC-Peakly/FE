@@ -2,11 +2,11 @@ import React from 'react';
 import { Modal, View, Text, StyleSheet, Pressable } from 'react-native';
 import { BlurView } from 'expo-blur'; 
 import { LinearGradient } from 'expo-linear-gradient'; // 1. 임포트 추가
-import { colors } from '../styles/colors.js';
-import ModalFooter from '../component/ModalFooter.jsx'; 
-import TimerBox from '../component/TimerBox.jsx'; 
+import { colors } from '../../../styles/colors.js';
+import ModalFooter from '../../../components/ModalFooter.jsx'; 
+import TimerBox from '../../../components/TimerBox.jsx'; 
 
-const TM_Modal4 = ({ visible, onClose, time, onConfirm }) => {
+const TimerStopModal = ({ visible, onClose, time, onConfirm }) => {
   return (
     <Modal
       transparent={true}
@@ -85,4 +85,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default TM_Modal4;
+export default TimerStopModal;

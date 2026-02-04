@@ -1,12 +1,12 @@
 import React from 'react';
 import { Modal, View, Text, StyleSheet, Pressable, Image } from 'react-native';
 import { BlurView } from 'expo-blur'; 
-import { LinearGradient } from 'expo-linear-gradient'; // 1. 임포트 추가
-import { colors } from '../styles/colors.js';
-import timer_icon from '../../assets/img/TM/timer_icon.png';
-import ModalFooter from '../component/ModalFooter.jsx';
+import { LinearGradient } from 'expo-linear-gradient'; 
+import { colors } from '../../../styles/colors.js';
+import timer_icon from '../../../../assets/img/timerScreens/timer_icon.png'
+import ModalFooter from '../../../components/ModalFooter.jsx';
 
-const TM_Modal = ({ visible, onClose, title, onConfirm }) => {
+const TimerModal = ({ visible, onClose, title, onConfirm }) => {
   return (
     <Modal transparent={true} visible={visible} animationType="slide" onRequestClose={onClose}>
       <BlurView intensity={20} tint="dark" style={StyleSheet.absoluteFill}>
@@ -78,4 +78,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default TM_Modal;
+export default TimerModal;

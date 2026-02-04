@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, ScrollView, Dimensions, Modal } from 'react-native';
 import Slider from '@react-native-community/slider';
-import Category from '../component/Category.jsx';
-import Tag from '../component/Tag.jsx'; 
-import Button from '../component/Button.jsx'; 
-import { colors } from '../styles/colors.js';
+import Category from '../../components/Category.jsx';
+import Tag from '../../components/Tag.jsx'; 
+import Button from '../../components/Button.jsx'; 
+import { colors } from '../../styles/colors.js';
 
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
 const ITEM_HEIGHT = 44; 
 const PADDING_HORIZONTAL = 20; 
 const SLIDER_CONTAINER_PADDING = 20;
 
-const TM01 = ({ isVisible, onClose }) => {
+const TimerSetup = ({ isVisible, onClose }) => {
   const [selectedCategory, setSelectedCategory] = useState('논리·사고');
   const [selectedTag, setSelectedTag] = useState(''); 
   const [fatigue, setFatigue] = useState(50);
@@ -231,4 +231,4 @@ const styles = StyleSheet.create({
   bottomWrapper: { position: 'absolute', bottom: 0, width: '100%', height: 100 },
 });
 
-export default TM01;
+export default TimerSetup;

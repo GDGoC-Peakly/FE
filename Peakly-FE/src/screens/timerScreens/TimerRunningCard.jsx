@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Svg, { Circle, Path, Defs, LinearGradient as SvgGradient, Stop } from 'react-native-svg';
-import { colors } from '../styles/colors.js';
-import TM_Modal4 from './TM_Modal4.jsx'; 
+import { colors } from '../../styles/colors.js';
+import TM_Modal4 from './timerComponents/TimerStopModal.jsx'; 
 
 const TM02_Card = () => {
   const [isPaused, setIsPaused] = useState(false);
