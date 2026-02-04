@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { useFonts } from 'expo-font';
 import { View } from 'react-native';
-import TM03 from './TM/TM03';
+import TM04 from './TM/TM04';
 
 function App() {
   const [fontsLoaded] = useFonts({
@@ -14,7 +14,7 @@ function App() {
   return (
     <View style={{ flex: 1 }}>
       <StatusBar style="auto" />
-      <TM03 />
+      <TM04 />
     </View>
   );
 }
