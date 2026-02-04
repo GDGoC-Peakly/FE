@@ -12,11 +12,11 @@ import TM_Modal4 from '../src/TM/TM_Modal4'
 import TM_05 from './TM/TM_05';
 
 import HM from './HM/HM';
-import HM_Footer from './HM/HM_Footer';
 import HM_Modal from './HM/HM_Modal';
-import TimeCard from './component/TimeCard';
 import HM_Daily_Checkin01 from './HM/HM_Daily_Checkin01';
 import HM_Daily_Checkin02 from './HM/HM_Daily_Checkin02';
+import PeakTimeline from './HM/PeakTimeline';
+import HM_PeakTimeline from './HM/HM_PeakTimeline';
 
 function App() {
   const [fontsLoaded] = useFonts({
@@ -31,9 +31,10 @@ function App() {
       <StatusBar style="light" />
       {/* <DayReport /> */}
 
-      <HM/>
-      <HM_Footer/>
+      {/* <HM/> */}
+      <HM_PeakTimeline/>
       {/* <HM_Modal/> */}
+      
       {/* <HM_Daily_Checkin01/> */}
       {/* <HM_Daily_Checkin02/> */}
 

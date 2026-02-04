@@ -4,6 +4,8 @@ import Peakly from '../../assets/img/HM/Peakly.png'
 import character2 from '../../assets/img/HM/character2.png' 
 import talkbox from '../../assets/img/HM/talkbox.jpg'
 import { colors } from '../styles/colors'
+import HM_Footer from './HM_Footer'
+import PeakTimeline from './PeakTimeline'
 
 const HM = () => {
   return (
@@ -22,7 +24,7 @@ const HM = () => {
             
             {/* 시간 차트 섹션 */}
             <View style={styles.timeChartPlaceholder}>
-                
+                <PeakTimeline style={{flex : 1}}/>
             </View>
           </View>
         </View>
@@ -69,6 +71,7 @@ const HM = () => {
           </View>
         </View>
       </ScrollView>
+      <HM_Footer/>
     </SafeAreaView>
   )
 }
@@ -210,11 +213,12 @@ const styles = StyleSheet.create({
     color: colors.primary[500],
   },
   timeChartPlaceholder: { 
-    height: 145, 
-    justifyContent: 'center', 
-    alignItems: 'center', 
-    borderRadius: 10 
-  },
+    width: '100%', 
+    height: 150, 
+    marginTop: 10,
+
+    overflow: 'hidden', 
+},
   barChartPlaceholder: { 
     height: 100, 
     justifyContent: 'center', 
