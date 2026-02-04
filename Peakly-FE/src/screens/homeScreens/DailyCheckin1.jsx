@@ -1,11 +1,11 @@
 import React from 'react';
 import { StyleSheet, Text, View, SafeAreaView, TouchableOpacity, Image } from 'react-native'; // Image 추가
-import { colors } from '../styles/colors';
-import Button from '../component/Button';
-import TimeCard from '../component/TimeCard';
-import back_icon from '../../assets/img/HM/back_icon.png'; 
+import { colors } from '../../styles/colors';
+import Button from '../../components/Button';
+import TimeCard from '../../components/TimeCard';
+import Backicon from '../../../assets/img/homeScreens/back_icon.svg'
 
-const HM_Daily_Checkin01 = ({ navigation, route }) => {
+const DailyCheckin1 = ({ navigation, route }) => {
   const mode = route?.params?.mode || 'onboarding';
   // const mode = 'edit';
   const isEditMode = mode === 'edit';
@@ -15,8 +15,7 @@ const HM_Daily_Checkin01 = ({ navigation, route }) => {
       {isEditMode ? (
         <View style={styles.navBar}>
           <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-            <Image 
-              source={back_icon} 
+            <Backicon 
               style={styles.backIconStyle} 
               resizeMode="contain" 
             />
@@ -61,7 +60,7 @@ const HM_Daily_Checkin01 = ({ navigation, route }) => {
   );
 };
 
-export default HM_Daily_Checkin01;
+export default DailyCheckin1;
 
 const styles = StyleSheet.create({
   container: {

@@ -1,8 +1,8 @@
 import React from 'react';
 import { StyleSheet, View, Text, ScrollView, TouchableOpacity, Image, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { colors } from '../styles/colors';
-import backIcon from '../../assets/img/HM/back_icon.png'
+import { colors } from '../../styles/colors';
+import Backicon from '../../../assets/img/homeScreens/back_icon.svg'
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 const HOUR_WIDTH = 80; 
@@ -11,7 +11,7 @@ const END_HOUR = 24;
 const TOTAL_HOURS = END_HOUR - START_HOUR + 1;
 const CONTENT_WIDTH = TOTAL_HOURS * HOUR_WIDTH;
 
-const HM_PeakTimeline = ({ onBack }) => {
+const PeakTimelineScreen = ({ onBack }) => {
 
   const schedules = [
     { start: 10, end: 12, label: '피크 타임' },
@@ -22,7 +22,7 @@ const HM_PeakTimeline = ({ onBack }) => {
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
         <TouchableOpacity onPress={onBack} style={styles.backButton}>
-          <Image source={backIcon} style={styles.backIcon} resizeMode="contain" />
+          <Backicon style={styles.backIcon} resizeMode="contain" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>피크타임</Text>
         <View style={{ width: 24 }} />
@@ -69,7 +69,7 @@ const HM_PeakTimeline = ({ onBack }) => {
   );
 };
 
-export default HM_PeakTimeline;
+export default PeakTimelineScreen;
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.grayscale[100] },

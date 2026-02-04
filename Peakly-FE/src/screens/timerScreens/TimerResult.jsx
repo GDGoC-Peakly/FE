@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, SafeAreaView, StatusBar } from 'react-native';
-import Category from '../component/Category'; 
-import Button from '../component/Button'; 
-import TimerBox from '../component/TimerBox'; 
+import Category from '../../components/Category'; 
+import Button from '../../components/Button'; 
+import TimerBox from '../../components/TimerBox'; 
 import { LinearGradient } from 'expo-linear-gradient';
-import { colors } from '../styles/colors';
+import { colors } from '../../styles/colors';
 
-const TM_05 = () => {
+const TimerResult = () => {
   const [selectedCategory, setSelectedCategory] = useState("논리·사고");
 
   const categoryData = {
@@ -82,7 +82,7 @@ const TM_05 = () => {
   );
 };
 
-export default TM_05;
+export default TimerResult;
 
 const styles = StyleSheet.create({
   container: {
