@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, ScrollView } from 'react-native';
 import { colors } from '../styles/colors';
 
 const HOUR_WIDTH = 80; 
@@ -8,37 +8,28 @@ const END_HOUR = 24;
 const TOTAL_HOURS = END_HOUR - START_HOUR + 1;
 const CONTENT_WIDTH = TOTAL_HOURS * HOUR_WIDTH;
 
-/**
- * @param {Function} onPress - App.js에서 전달받은 화면 전환 함수
- */
-const PeakTimeline = ({ onPress }) => {
+const PeakTimeline = () => {
   const schedules = [
     { start: 11, end: 12.5, label: '피크 타임' },
     { start: 14, end: 18, label: '피크 타임' },
   ];
 
   return (
-    // 1. 전체 영역을 TouchableOpacity로 감싸 클릭 이벤트를 받습니다.
-    <TouchableOpacity 
-      style={styles.container} 
-      onPress={onPress} 
-      activeOpacity={1} // 클릭 시 깜빡임 제거
-    >
+    <View style={styles.container}>
       <ScrollView 
         horizontal={true} 
         showsHorizontalScrollIndicator={false}
         nestedScrollEnabled={true}
         contentContainerStyle={{ width: CONTENT_WIDTH + 20 }}
       >
-        {/* 2. pointerEvents="none"을 주어 내부 요소들이 터치를 방해하지 않고 
-            부모인 TouchableOpacity가 클릭을 인식하게 합니다. (가로 스크롤은 유지됨) */}
-        <View style={{ width: CONTENT_WIDTH }} pointerEvents="none">
+        <View style={{ width: CONTENT_WIDTH }}>
           
           {/* 1. 상단 시간 레이어 (00 01 02 포맷) */}
           <View style={styles.timeHeaderContainer}>
             <View style={styles.timeHeaderRow}>
               {Array.from({ length: TOTAL_HOURS }).map((_, i) => {
                 const hour = START_HOUR + i;
+                // 숫자를 2자리 문자열로 변환 (예: 1 -> "01")
                 const formattedHour = String(hour).padStart(2, '0');
                 
                 return (
@@ -77,7 +68,7 @@ const PeakTimeline = ({ onPress }) => {
 
         </View>
       </ScrollView>
-    </TouchableOpacity>
+    </View>
   );
 };
 

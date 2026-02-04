@@ -31,8 +31,8 @@ function App() {
       <StatusBar style="light" />
       {/* <DayReport /> */}
 
-      {/* <HM/> */}
-      <HM_PeakTimeline/>
+      <HM/>
+      {/* <HM_PeakTimeline/> */}
       {/* <HM_Modal/> */}
       
       {/* <HM_Daily_Checkin01/> */}

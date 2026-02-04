@@ -6,6 +6,7 @@ import talkbox from '../../assets/img/HM/talkbox.jpg'
 import { colors } from '../styles/colors'
 import HM_Footer from './HM_Footer'
 import PeakTimeline from './PeakTimeline'
+import PeakTimechart from './PeakTimechart'
 
 const HM = () => {
   return (
@@ -39,7 +40,7 @@ const HM = () => {
           </View>
           {/* 누적 집중 그래프 섹션 */}
           <View style={styles.barChartPlaceholder}>
-             
+             <PeakTimechart />
           </View>
         </View>
 
@@ -81,7 +82,7 @@ export default HM
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8F8F8',
+    backgroundColor: '#F0F0F0',
   },
   scrollContent: {
     padding: 20,
@@ -94,12 +95,7 @@ const styles = StyleSheet.create({
   peakCard: {
     backgroundColor: colors.grayscale[100],
     borderRadius: 12,
-    marginBottom: 20,
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    marginBottom: 12,
   },
   yellowBanner: {
     backgroundColor: colors.sub[200],
@@ -114,37 +110,31 @@ const styles = StyleSheet.create({
     color: '#000',
   },
   cardPadding: {
-    padding: 20,
+    padding: 12,
   },
   cardTitle: {
-    fontSize: 22,
-    fontWeight: '800',
-    marginBottom: 5,
+    fontSize: 24,
+    fontFamily: 'Pretendard-Bold',
+    marginBottom: 4,
   },
   cardSubTitle: {
-    fontSize: 14,
-    color: '#666',
+    fontSize: 12,
     marginBottom: 15,
   },
   card: {
     backgroundColor: colors.grayscale[100],
     borderRadius: 12,
-    padding: 20,
-    marginBottom: 20,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    padding: 12,
+    marginBottom: 12,
   },
   cardDateTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    marginBottom: 15,
+    fontSize: 20,
+    fontFamily: 'Pretendard-Bold',
+    marginBottom: 12,
   },
   timerWrapper: {
     alignItems: 'center',
-    marginBottom: 15,
+    marginBottom: 25,
   },
   customTimerBox: {
     backgroundColor: colors.primary[500],
