@@ -23,7 +23,7 @@ const DisturbCheck = () => {
         <View style={styles.svg}>
           <Disturb />
         </View>
-        <View>
+        <View style={styles.categories}>
           <DisturbCategories />
         </View>
       </View>
@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   svg: {
-    marginTop: -350,
+    marginTop: 0,
   },
   textWrapper: {
     gap: 8,
@@ -62,5 +62,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.primary[500],
     textAlign: 'center',
+  },
+  categories: {
+    backgroundColor: colors.grayscale[100],
+    padding: 20,
+    width: '85%',
+    borderRadius: 12,
   },
 });

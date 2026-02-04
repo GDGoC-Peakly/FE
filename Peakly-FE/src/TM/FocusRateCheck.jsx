@@ -29,7 +29,7 @@ const TM04 = () => {
       end={{ x: 0, y: 1 }}
       style={styles.gradient}
     >
-      <ScrollView overScrollMode="never" bounces={false} contentContainerStyle={styles.container}>
+      <View overScrollMode="never" bounces={false} contentContainerStyle={styles.container}>
         <View style={styles.textWrapper}>
           <Text style={styles.title}>오늘의 PeakTime</Text>
           <Text style={styles.description}>PeakTime 동안 집중했어요.</Text>
@@ -40,7 +40,7 @@ const TM04 = () => {
         <View>
           <TimeComparisonChart actualSession={mySessionData} apiResult={mockApiResult} />
         </View>
-      </ScrollView>
+      </View>
     </LinearGradient>
   );
 };
