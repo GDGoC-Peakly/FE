@@ -1,7 +1,8 @@
 import { StatusBar } from 'expo-status-bar';
 import { useFonts } from 'expo-font';
 import { View } from 'react-native';
-import DisturbCheck from './screens/timerScreens/DisturbCheck';
+import ReportTab from './navigations/ReportTab';
+import { NavigationContainer } from '@react-navigation/native';
 
 function App() {
   const [fontsLoaded] = useFonts({
@@ -12,10 +13,9 @@ function App() {
   if (!fontsLoaded) return null;
 
   return (
-    <View style={{ flex: 1 }}>
-      <StatusBar style="auto" />
-      <DisturbCheck />
-    </View>
+    <NavigationContainer>
+      <ReportTab />
+    </NavigationContainer>
   );
 }
 

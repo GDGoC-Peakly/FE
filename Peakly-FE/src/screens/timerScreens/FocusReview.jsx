@@ -1,10 +1,11 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { colors } from '../styles/colors';
+import { StyleSheet, Text, View } from 'react-native';
+import { colors } from '../../styles/colors';
 import { LinearGradient } from 'expo-linear-gradient';
-import Review from '../components/Review';
+import Review from '../../components/Review';
 import { useState } from 'react';
+import CustomButton from '../../components/CustomButton';
 
-const TM03 = () => {
+const FocusReview = () => {
   const RATING_TEXTS = {
     0: '별을 눌러 점수를 선택해주세요',
     1: '집중이 안됐어요.',
@@ -33,13 +34,15 @@ const TM03 = () => {
           </View>
           <Review score={score} onRate={setScore} />
         </View>
-        <View></View>
+        <View style={styles.button}>
+          <CustomButton text={'다음'} />
+        </View>
       </View>
     </LinearGradient>
   );
 };
 
-export default TM03;
+export default FocusReview;
 
 const styles = StyleSheet.create({
   container: {
@@ -83,5 +86,10 @@ const styles = StyleSheet.create({
     fontFamily: 'Pretendard-Bold',
     fontSize: 12,
     color: colors.primary[500],
+  },
+  button: {
+    position: 'absolute',
+    bottom: 50,
+    width: '90%',
   },
 });

@@ -1,10 +1,11 @@
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import TimeComparisonChart from '../components/TimeComparisonChart';
+import TimeComparisonChart from '../../components/TimeComparisonChart';
 import { LinearGradient } from 'expo-linear-gradient';
-import { colors } from '../styles/colors';
-import Focus from '../../assets/img/TM/focus.svg';
+import { colors } from '../../styles/colors';
+import Focus from '../../../assets/img/TM/focus.svg';
+import CustomButton from '../../components/CustomButton';
 
-const TM04 = () => {
+const FocusRateCheck = () => {
   const mockApiResult = {
     baseDate: '2026-01-26',
     windows: [
@@ -29,7 +30,7 @@ const TM04 = () => {
       end={{ x: 0, y: 1 }}
       style={styles.gradient}
     >
-      <View overScrollMode="never" bounces={false} contentContainerStyle={styles.container}>
+      <View style={styles.container}>
         <View style={styles.textWrapper}>
           <Text style={styles.title}>오늘의 PeakTime</Text>
           <Text style={styles.description}>PeakTime 동안 집중했어요.</Text>
@@ -40,12 +41,15 @@ const TM04 = () => {
         <View>
           <TimeComparisonChart actualSession={mySessionData} apiResult={mockApiResult} />
         </View>
+        <View style={styles.button}>
+          <CustomButton text="다음" />
+        </View>
       </View>
     </LinearGradient>
   );
 };
 
-export default TM04;
+export default FocusRateCheck;
 
 const styles = StyleSheet.create({
   gradient: {
@@ -75,5 +79,10 @@ const styles = StyleSheet.create({
     fontFamily: 'Pretendard-Bold',
     fontSize: 16,
     color: colors.primary[500],
+  },
+  button: {
+    position: 'absolute',
+    bottom: 50,
+    width: '90%',
   },
 });

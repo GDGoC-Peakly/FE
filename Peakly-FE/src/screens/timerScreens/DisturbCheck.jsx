@@ -3,6 +3,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { colors } from '../../styles/colors';
 import Disturb from '../../../assets/img/TM/disturb.svg';
 import DisturbCategories from '../../components/DisturbCategories';
+import CustomButton from '../../components/CustomButton';
 
 const DisturbCheck = () => {
   return (
@@ -27,6 +28,9 @@ const DisturbCheck = () => {
           <DisturbCategories />
         </View>
       </View>
+      <View style={styles.button}>
+        <CustomButton text="완료" />
+      </View>
     </LinearGradient>
   );
 };
@@ -44,7 +48,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   svg: {
-    marginTop: 0,
+    marginTop: 40,
   },
   textWrapper: {
     gap: 8,
@@ -68,5 +72,9 @@ const styles = StyleSheet.create({
     padding: 20,
     width: '85%',
     borderRadius: 12,
+  },
+  button: {
+    marginBottom: 50,
+    paddingHorizontal: 20,
   },
 });
