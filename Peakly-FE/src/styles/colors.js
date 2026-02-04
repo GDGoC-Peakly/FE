@@ -12,7 +12,7 @@ export const colors = {
     1000: '#131313',
   },
   primary: {
-    50 : '#D7DAFF',
+    50: '#D7DAFF',
     100: '#B4BBFF',
     200: '#97A1FF',
     300: '#8B96FF',
@@ -23,6 +23,6 @@ export const colors = {
   },
   sub: {
     100: '#FFF9C3',
-    200: '#FFF279'
-  }
+    200: '#FFF279',
+  },
 };
