@@ -9,22 +9,19 @@ const PeakTimechart = () => {
   const data = [10, 25, 15, 30, 60, 40, 20, 0, 0, 0, 10, 5];
   const MAX_VALUE = 60; 
   const CHART_HEIGHT = 100;
-  const VERTICAL_LINES = 12; // 24시간 / 2시간 단위 = 12칸
+  const VERTICAL_LINES = 12; 
 
   return (
     <View style={styles.container}>
       <View style={styles.chartWrapper}>
         
-        {/* 1. 배경 격자 레이어 (가로선 3개 + 세로선) */}
         <View style={styles.gridLayer}>
-          {/* 가로선 - 60분, 30분, 바닥선 총 3개 */}
           <View style={styles.horizontalGrid}>
-            <View style={[styles.hLine, styles.dashedLine]} /> {/* 상단 (60분) */}
-            <View style={[styles.hLine, styles.solidLine]} />  {/* 중단 (30분) */}
-            <View style={[styles.hLine, styles.baseLine]} />   {/* 하단 (바닥) */}
+            <View style={[styles.hLine, styles.dashedLine]} /> 
+            <View style={[styles.hLine, styles.solidLine]} />  
+            <View style={[styles.hLine, styles.baseLine]} />  
           </View>
 
-          {/* 세로선 */}
           <View style={styles.verticalGrid}>
             {Array.from({ length: VERTICAL_LINES + 1 }).map((_, i) => (
               <View key={i} style={styles.vLine} />
@@ -32,7 +29,6 @@ const PeakTimechart = () => {
           </View>
         </View>
 
-        {/* 2. 막대 그래프 영역 */}
         <View style={styles.barsContainer}>
           {data.map((value, index) => (
             <View key={index} style={styles.barWrapper}>
@@ -48,16 +44,13 @@ const PeakTimechart = () => {
           ))}
         </View>
 
-        {/* 3. 우측 Y축 라벨 (00분 제거) */}
         <View style={styles.yAxis}>
           <Text style={styles.axisText}>60분</Text>
           <Text style={styles.axisText}>30분</Text>
-          {/* 00분 텍스트 제거를 위해 빈 View로 높이만 유지하거나 텍스트 삭제 */}
           <View style={{ height: 12 }} /> 
         </View>
       </View>
 
-      {/* 4. 하단 X축 라벨 */}
       <View style={styles.xAxis}>
         <Text style={styles.xAxisText}>오전 5시 (23일)</Text>
         <Text style={styles.xAxisText}>오후 5시</Text>
