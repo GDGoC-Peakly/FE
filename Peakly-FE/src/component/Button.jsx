@@ -2,7 +2,12 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { colors } from '../styles/colors';
 
-const Button = ({ onPress, text = "완료", bgColor = colors.primary[500] }) => {
+const Button = ({ 
+  onPress, 
+  text = "완료", 
+  bgColor = colors.primary[500],
+  textColor = colors.grayscale[1000]
+}) => {
   return (
     <View style={styles.buttonWrapper}>
       <TouchableOpacity 
@@ -10,7 +15,9 @@ const Button = ({ onPress, text = "완료", bgColor = colors.primary[500] }) => 
         activeOpacity={0.7}
         onPress={onPress}
       >
-        <Text style={styles.completeButtonText}>{text}</Text>
+        <Text style={[styles.completeButtonText, { color: textColor }]}>
+          {text}
+        </Text>
       </TouchableOpacity>
     </View>
   );
@@ -24,6 +31,7 @@ const styles = StyleSheet.create({
     bottom: 50,
     width: '100%',
     paddingHorizontal: 18, 
+    alignSelf: 'center', 
   },
   completeButton: {
     width: '100%',
@@ -33,7 +41,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   completeButtonText: {
-    color: colors.grayscale[1000],
     fontSize: 20,
     fontWeight: 'bold',
   },
