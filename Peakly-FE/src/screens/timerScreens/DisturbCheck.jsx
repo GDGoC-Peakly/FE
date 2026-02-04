@@ -1,8 +1,8 @@
 import { StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { colors } from '../styles/colors';
-import Disturb from '../../assets/img/TM/disturb.svg';
-import DisturbCategories from '../components/DisturbCategories';
+import { colors } from '../../styles/colors';
+import Disturb from '../../../assets/img/TM/disturb.svg';
+import DisturbCategories from '../../components/DisturbCategories';
 
 const DisturbCheck = () => {
   return (

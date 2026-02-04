@@ -1,8 +1,8 @@
 import React from 'react';
-import { StyleSheet, Text, Image, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { colors } from '../styles/colors.js';
 
-const Category = ({ name, icon, activeIcon, isSelected, onPress }) => {
+const Category = ({ name, isSelected, onPress }) => {
   return (
     <TouchableOpacity
       onPress={onPress}
@@ -12,10 +12,6 @@ const Category = ({ name, icon, activeIcon, isSelected, onPress }) => {
         isSelected ? styles.activeChip : styles.inactiveChip
       ]}
     >
-      <Image 
-        source={isSelected ? activeIcon : icon} 
-        style={styles.icon} 
-      />
       <Text style={[
         styles.chipText, 
         isSelected ? styles.activeText : styles.inactiveText
@@ -30,36 +26,25 @@ const styles = StyleSheet.create({
   chip: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 25,
-    borderWidth: 1,
-    marginRight: 8,
-    marginBottom: 8,
+    paddingHorizontal: 20,
+    paddingVertical: 6.5,
+    borderRadius: 20,
   },
   inactiveChip: {
     backgroundColor: colors.grayscale[200],
-    borderColor: colors.grayscale[500],
   },
   activeChip: {
-    backgroundColor: colors.primary[100],
-    borderColor: colors.primary[600],
-  },
-  icon: {
-    width: 20,
-    height: 20,
-    marginRight: 6,
-    resizeMode: 'contain',
+    backgroundColor: colors.primary[500],
   },
   chipText: {
-    fontSize: 16,
-    fontWeight: '700',
+    fontSize: 12,
+    fontFamily: 'Pretendard-Bold',
   },
   inactiveText: {
     color: colors.grayscale[600],
   },
   activeText: {
-    color: colors.primary[600],
+    color: colors.grayscale[100],
   },
 });
 

@@ -1,9 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { useFonts } from 'expo-font';
 import { View } from 'react-native';
-import TM04 from './TM/TM04';
-import TM03 from './TM/FocusReview';
-import DisturbCheck from './TM/DisturbCheck';
+import DisturbCheck from './screens/timerScreens/DisturbCheck';
 
 function App() {
   const [fontsLoaded] = useFonts({
