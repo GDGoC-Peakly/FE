@@ -1,27 +1,26 @@
 import { StyleSheet, Text, View, TouchableOpacity, Image } from 'react-native'
 import React from 'react'
-import { colors } from '../styles/colors'
-import { Ionicons } from '@expo/vector-icons' // 집중모드 재생 아이콘용
-import setting_icon from '../../assets/img/HM/setting_icon.png'
-import report_icon from '../../assets/img/HM/report_icon.png'
+import { colors } from '../../../styles/colors'
+import { Ionicons } from '@expo/vector-icons' 
+import Settingicon from '../../../../assets/img/homeScreens/setting_icon.svg'
+import Reporticon from '../../../../assets/img/homeScreens/report_icon.svg'
 
-const HM_Footer = () => {
+const HomeFooter = () => {
   return (
     <View style={styles.footerContainer}>
-      {/* 왼쪽 아이콘 영역 */}
+
       <View style={styles.iconSection}>
-        {/* 설정 아이콘 */}
+
         <TouchableOpacity activeOpacity={0.7} style={styles.iconButton}>
-          <Image source={setting_icon} style={styles.imageIcon} resizeMode="contain" />
+          <Settingicon style={styles.imageIcon} resizeMode="contain"/>
         </TouchableOpacity>
         
-        {/* 리포트(통계) 아이콘 */}
         <TouchableOpacity activeOpacity={0.7} style={styles.iconButton}>
-          <Image source={report_icon} style={styles.imageIcon} resizeMode="contain" />
+          <Reporticon style={styles.imageIcon} resizeMode="contain"/>
         </TouchableOpacity>
       </View>
 
-      {/* 오른쪽 집중모드 버튼 */}
+
       <TouchableOpacity activeOpacity={0.8} style={styles.focusButton}>
         <Ionicons name="play" size={18} color={colors.grayscale[1000]} style={styles.playIcon} />
         <Text style={styles.focusButtonText}>집중모드</Text>
@@ -30,7 +29,7 @@ const HM_Footer = () => {
   )
 }
 
-export default HM_Footer
+export default HomeFooter
 
 const styles = StyleSheet.create({
   footerContainer: {

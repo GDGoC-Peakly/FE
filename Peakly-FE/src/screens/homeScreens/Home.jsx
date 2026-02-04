@@ -1,18 +1,18 @@
 import { StyleSheet, Text, View, Image, ScrollView, SafeAreaView, ImageBackground } from 'react-native'
 import React from 'react'
-import Peakly from '../../assets/img/HM/Peakly.png'
-import character2 from '../../assets/img/HM/character2.png' 
-import talkbox from '../../assets/img/HM/talkbox.jpg'
-import { colors } from '../styles/colors'
-import HM_Footer from './HM_Footer'
-import PeakTimeline from './PeakTimeline'
-import PeakTimechart from './PeakTimechart'
+import Peakly from '../../../assets/img/homeScreens/Peakly.svg'
+import character2 from '../../../assets/img/homeScreens/character2.png'
+import talkbox from '../../../assets/img/homeScreens/talkbox.jpg'
+import { colors } from '../../styles/colors'
+import HomeFooter from './homeComponents/HomeFooter'
+import PeakTimeline from './homeComponents/PeakTimeline'
+import PeakTimechart from './homeComponents/PeakTimechart'
 
-const HM = () => {
+const Home = () => {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        <Image source={Peakly} style={styles.logo} resizeMode="contain" />
+        <Peakly style={styles.logo} resizeMode="contain"/>
 
         {/* 피크타임 카드 */}
         <View style={styles.peakCard}>
@@ -72,12 +72,12 @@ const HM = () => {
           </View>
         </View>
       </ScrollView>
-      <HM_Footer/>
+      <HomeFooter/>
     </SafeAreaView>
   )
 }
 
-export default HM
+export default Home
 
 const styles = StyleSheet.create({
   container: {

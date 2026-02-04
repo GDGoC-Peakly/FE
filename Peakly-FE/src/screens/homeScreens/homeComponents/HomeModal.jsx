@@ -1,10 +1,10 @@
 import { StyleSheet, Text, View, Image, Modal, Pressable } from 'react-native'
 import React from 'react'
-import modalicon from '../../assets/img/HM/modalicon.png'
-import { colors } from '../styles/colors'
-import ModalFooter from '../component/ModalFooter'
+import modalicon from '../../../../assets/img/homeScreens/modalicon.png'
+import { colors } from '../../../styles/colors'
+import ModalFooter from '../../../components/ModalFooter'
 
-const HM_Modal = ({ visible, onCancel, onConfirm }) => {
+const HomeModal = ({ visible, onCancel, onConfirm }) => {
   return (
     <Modal
       animationType="slide" 
@@ -46,7 +46,7 @@ const HM_Modal = ({ visible, onCancel, onConfirm }) => {
   )
 }
 
-export default HM_Modal
+export default HomeModal
 
 const styles = StyleSheet.create({
   modalOverlay: {

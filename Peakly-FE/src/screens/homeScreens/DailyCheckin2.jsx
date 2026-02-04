@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Image, Dimensions, SafeAreaView, ScrollView } from 'react-native'; 
 import Slider from '@react-native-community/slider';
-import { colors } from '../styles/colors';
-import Button from '../component/Button';
-import back_icon from '../../assets/img/HM/back_icon.png';
-import character from '../../assets/img/HM/character.png';
+import { colors } from '../../styles/colors';
+import Button from '../../components/Button';
+import Backicon from '../../../assets/img/homeScreens/back_icon.svg'
+import character from '../../../assets/img/homeScreens/character.png'
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const PADDING_HORIZONTAL = 24;
 const SLIDER_CONTAINER_PADDING = 20; 
 
-const HM_Daily_Checkin02 = ({ navigation, route }) => {
+const DailyCheckin2 = ({ navigation, route }) => {
   const mode = route?.params?.mode || 'onboarding';
 // const mode = 'edit'
   const isEditMode = mode === 'edit';
@@ -29,7 +29,7 @@ const HM_Daily_Checkin02 = ({ navigation, route }) => {
       {isEditMode ? (
         <View style={styles.navBar}>
           <TouchableOpacity onPress={() => navigation?.goBack()} style={styles.backButton}>
-            <Image source={back_icon} style={styles.backIconStyle} resizeMode="contain" />
+            <Backicon style={styles.backIconStyle} resizeMode="contain" />
           </TouchableOpacity>
           <Text style={styles.navTitle}>컨디션</Text>
           <View style={{ width: 34 }} /> 
@@ -92,7 +92,7 @@ const HM_Daily_Checkin02 = ({ navigation, route }) => {
   );
 };
 
-export default HM_Daily_Checkin02;
+export default DailyCheckin2;
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.grayscale[100] },
