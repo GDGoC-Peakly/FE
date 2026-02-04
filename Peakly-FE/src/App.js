@@ -2,6 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useFonts } from 'expo-font';
 import { View } from 'react-native';
 import TM04 from './TM/TM04';
+import TM03 from './TM/TM03';
 
 function App() {
   const [fontsLoaded] = useFonts({
