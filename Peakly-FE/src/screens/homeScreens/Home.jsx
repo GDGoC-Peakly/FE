@@ -2,7 +2,7 @@ import { StyleSheet, Text, View, Image, ScrollView, SafeAreaView, ImageBackgroun
 import React from 'react'
 import { useNavigation } from '@react-navigation/native';
 import Peakly from '../../../assets/img/homeScreens/Peakly.svg'
-import character2 from '../../../assets/img/homeScreens/character2.png'
+import character0 from '../../../assets/img/homeScreens/character0.png'
 import talkbox from '../../../assets/img/homeScreens/talkbox.jpg'
 import { colors } from '../../styles/colors'
 import HomeFooter from './homeComponents/HomeFooter'
@@ -72,7 +72,7 @@ const Home = () => {
           >
             <Text style={styles.smallCardTitle}>컨디션</Text>
             <View style={styles.characterContainer}>
-                <Image source={character2} style={styles.characterImg} resizeMode="contain" />
+                <Image source={character0} style={styles.characterImg} resizeMode="contain" />
                 
                 <ImageBackground 
                   source={talkbox} 

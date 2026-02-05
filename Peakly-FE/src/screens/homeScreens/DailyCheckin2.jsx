@@ -5,6 +5,10 @@ import { colors } from '../../styles/colors';
 import Button from '../../components/Button';
 import Backicon from '../../../assets/img/homeScreens/back_icon.svg'
 import character from '../../../assets/img/homeScreens/character.png'
+import character1 from '../../../assets/img/homeScreens/character1.png'
+import character2 from '../../../assets/img/homeScreens/character2.png'
+import character3 from '../../../assets/img/homeScreens/character3.png'
+import character4 from '../../../assets/img/homeScreens/character4.png'
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const PADDING_HORIZONTAL = 24;
@@ -12,11 +16,17 @@ const SLIDER_CONTAINER_PADDING = 20;
 
 const DailyCheckin2 = ({ navigation, route }) => {
   const mode = route?.params?.mode || 'onboarding';
-// const mode = 'edit'
   const isEditMode = mode === 'edit';
 
   const [value, setValue] = useState(100); 
-  const conditions = ['나빠요', '별로예요', '보통이에요', '좋아요!', '최고예요!'];
+  
+  const conditions = ['최악이에요', '별로예요', '보통이에요', '좋아요', '최고예요!'];
+  
+
+  const characterImages = [character4, character3, character2, character1, character];
+
+  const currentIndex = Math.round(value / 25);
+
   const getConditionText = (val) => conditions[Math.round(val / 25)];
 
   const availableWidth = SCREEN_WIDTH - (PADDING_HORIZONTAL * 2) - (SLIDER_CONTAINER_PADDING * 2);
@@ -45,7 +55,12 @@ const DailyCheckin2 = ({ navigation, route }) => {
         </View>
 
         <View style={styles.characterSection}>
-          <Image source={character} style={styles.characterStyle} resizeMode="contain" />
+          {/* 4. 계산된 currentIndex를 사용하여 이미지 소스를 동적으로 변경 */}
+          <Image 
+            source={characterImages[currentIndex]} 
+            style={styles.characterStyle} 
+            resizeMode="contain" 
+          />
         </View>
 
         <View style={styles.whiteCard}>
@@ -97,7 +112,7 @@ export default DailyCheckin2;
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.grayscale[100] },
   scrollContent: { paddingHorizontal: PADDING_HORIZONTAL, paddingBottom: 40 },
-  navBar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', height: 56, paddingHorizontal: 21,marginBottom: 58 },
+  navBar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', height: 56, paddingHorizontal: 21, marginBottom: 58 },
   backIconStyle: { width: 34, height: 14 },
   navTitle: { fontSize: 24, fontFamily: 'Pretendard-Bold', color: colors.grayscale[1000] },
   spacer: { height: 60 },
@@ -106,7 +121,7 @@ const styles = StyleSheet.create({
   titleText: { fontSize: 28, fontFamily: 'Pretendard-Bold', color: colors.grayscale[1000], marginBottom: 8 },
   subTitleText: { fontSize: 16, fontFamily: 'Pretendard-Bold', color: colors.primary[500] },
   
-  characterSection: { alignItems: 'center'},
+  characterSection: { alignItems: 'center', height: 280, justifyContent: 'center' }, // 높이 고정으로 레이아웃 흔들림 방지
   characterStyle: { width: 220, height: 280 },
   
   whiteCard: { 
@@ -129,5 +144,4 @@ const styles = StyleSheet.create({
   customThumbInner: { width: 14, height: 14, borderRadius: 7, backgroundColor: colors.primary[50] }, 
   
   conditionText: { textAlign: 'center', fontSize: 14, color: colors.primary[600], fontFamily: 'Pretendard-Bold', marginTop: 10 },
-
 });
