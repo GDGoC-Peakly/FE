@@ -3,10 +3,12 @@ import { colors } from '../../styles/colors';
 import KakaoLogo from '../../../assets/img/Onboarding/kakaoLogo.svg';
 import GoogleLogo from '../../../assets/img/Onboarding/googleLogo.svg';
 import OnboardingButton from '../../components/OnboardingButton';
+import Logo from '../../../assets/img/Onboarding/logo.svg';
 
 const SelectLogin = () => {
   return (
     <View style={styles.container}>
+      <Logo width={176} height={64} style={styles.logo} />
       <Pressable style={styles.kakaoContainer}>
         <KakaoLogo width={18.5} height={18.5} style={styles.svg} />
         <Text style={styles.kakaoText}>카카오 로그인</Text>
@@ -34,6 +36,10 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     paddingHorizontal: 20,
     gap: 10,
+  },
+  logo: {
+    position: 'absolute',
+    top: 140,
   },
   kakaoContainer: {
     flexDirection: 'row',

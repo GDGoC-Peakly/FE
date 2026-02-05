@@ -2,9 +2,9 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 import { colors } from '../styles/colors';
 
-const OnboardingButton = ({ text }) => {
+const OnboardingButton = ({ text, style }) => {
   return (
-    <Pressable>
+    <Pressable style={[style]}>
       <Text style={styles.buttonText}>{text}</Text>
     </Pressable>
   );
