@@ -1,12 +1,14 @@
 import React from 'react';
 import { View, Text, StyleSheet, Pressable, Alert } from 'react-native';
-import { colors } from '../styles/colors';
+import { colors } from '../../../styles/colors';
 
 const PeakTimeTable = ({ data = [], actualData = [] }) => {
+  const START_HOUR = 5;
   const rows = Array.from({ length: 24 }, () => ({ predicted: [], actual: [] }));
-
   const handlePress = (rowIndex) => {
     const row = rows[rowIndex];
+    const displayHour = (rowIndex + START_HOUR) % 24;
+
     const predictedTimes = [
       ...new Set(row.predicted.map((p) => `${p.original.startTime}~${p.original.endTime}`)),
     ];
@@ -21,22 +23,29 @@ const PeakTimeTable = ({ data = [], actualData = [] }) => {
       message += `학습 시간: ${actualTimes.join(', ')}`;
     }
     if (message) {
-      Alert.alert(`${rowIndex}시 시간 정보`, message.trim());
+      Alert.alert(`${displayHour}시 시간 정보`, message.trim());
     }
+  };
+
+  const getRelativeMinutes = (timeStr) => {
+    const [h, m] = timeStr.split(':').map(Number);
+    let totalMinutes = h * 60 + m;
+    if (h < START_HOUR) {
+      totalMinutes += 24 * 60;
+    }
+    return totalMinutes - START_HOUR * 60;
   };
 
   const processEntries = (sourceData, type) => {
     sourceData.forEach((entry) => {
-      const [sH, sM] = entry.startTime.split(':').map(Number);
-      const [eH, eM] = entry.endTime.split(':').map(Number);
-      let startTotal = sH * 60 + sM;
-      let endTotal = eH * 60 + eM;
-      if (endTotal < startTotal) endTotal += 1440;
+      let startRel = getRelativeMinutes(entry.startTime);
+      let endRel = getRelativeMinutes(entry.endTime);
+      if (endRel < startRel) endRel += 24 * 60;
       for (let i = 0; i < 24; i++) {
         const rowStart = i * 60;
         const rowEnd = rowStart + 60;
-        const overlapStart = Math.max(startTotal, rowStart);
-        const overlapEnd = Math.min(endTotal, rowEnd);
+        const overlapStart = Math.max(startRel, rowStart);
+        const overlapEnd = Math.min(endRel, rowEnd);
         if (overlapStart < overlapEnd) {
           rows[i][type].push({
             duration: overlapEnd - overlapStart,
@@ -66,11 +75,9 @@ const PeakTimeTable = ({ data = [], actualData = [] }) => {
                   {
                     left: (bar.offset / 60) * 212,
                     width: (bar.duration / 60) * 212,
-                    backgroundColor: colors.primary[100],
+                    backgroundColor: colors.primary[50],
                     opacity: pressed ? 0.6 : 1,
                     zIndex: 2,
-                    borderWidth: 1,
-                    borderColor: colors.primary[600],
                   },
                 ]}
               />
@@ -84,7 +91,7 @@ const PeakTimeTable = ({ data = [], actualData = [] }) => {
                   {
                     left: (bar.offset / 60) * 212,
                     width: (bar.duration / 60) * 212,
-                    backgroundColor: colors.primary[600],
+                    backgroundColor: colors.primary[500],
                     opacity: pressed ? 0.8 : 1,
                     zIndex: 3,
                   },
@@ -93,10 +100,10 @@ const PeakTimeTable = ({ data = [], actualData = [] }) => {
             ))}
             <View style={[styles.cell, styles.leftBorder, styles.rightBorder]} />
             <View style={[styles.cell, styles.rightBorder]}>
-              {index === 0 && <Text style={styles.topTimeLabel}>00시</Text>}
+              {index === 0 && <Text style={styles.topTimeLabel}>오전 05시 (23일)</Text>}
               {index === 23 && (
                 <>
-                  <Text style={styles.bottomTimeLabel}>24시</Text>
+                  <Text style={styles.bottomTimeLabel}>오전 05시</Text>
                   <Text style={styles.minuteLabel30}>30분</Text>
                   <Text style={styles.minuteLabel60}>60분</Text>
                 </>
@@ -134,8 +141,7 @@ const styles = StyleSheet.create({
   },
   bar: {
     position: 'absolute',
-    height: 18,
-    borderRadius: 2,
+    height: 19,
   },
   cell: {
     width: 106,
@@ -181,4 +187,5 @@ const styles = StyleSheet.create({
     color: colors.grayscale[600],
   },
 });
+
 export default PeakTimeTable;
