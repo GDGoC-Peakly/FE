@@ -51,15 +51,15 @@ function App() {
         <Stack.Screen name="DailyCheckin1" component={DailyCheckin1} />
         <Stack.Screen name="DailyCheckin2" component={DailyCheckin2} />
 
-        {/* --- ST 관련 스택 --- */}
-        <Stack.Screen name="Setting" component={Setting} />
-        <Stack.Screen name="SettingInfo" component={SettingInfo} />
-        <Stack.Screen name="SettingTag" component={SettingTag} />
-
         {/* --- TM 관련 스택 --- */}
         <Stack.Screen name="TimerSetup" component={TimerSetup} />
         <Stack.Screen name="TimerRunning" component={TimerRunning} />
         <Stack.Screen name="TimerResult" component={TimerResult} />
+        
+        {/* --- ST 관련 스택 --- */}
+        <Stack.Screen name="Setting" component={Setting} />
+        <Stack.Screen name="SettingInfo" component={SettingInfo} />
+        <Stack.Screen name="SettingTag" component={SettingTag} />
         
       </Stack.Navigator>
     </NavigationContainer>

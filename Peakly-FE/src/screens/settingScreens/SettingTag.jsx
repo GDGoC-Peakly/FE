@@ -13,7 +13,7 @@ const SettingTag = ({ navigation }) => {
 
   return (
     <TouchableWithoutFeedback onPress={() => setIsOpen(false)}>
-      <SafeAreaView style={styles.container} edges={['top']}>
+      <View style={styles.container} edges={['top']}>
         <SettingHeader title="커스텀 태그" onBack={() => navigation?.goBack()} />
 
         <View style={styles.content}>
@@ -73,7 +73,7 @@ const SettingTag = ({ navigation }) => {
           textColor="#FFF" 
           onPress={() => navigation?.goBack()}
         />
-      </SafeAreaView>
+      </View>
     </TouchableWithoutFeedback>
   );
 };
