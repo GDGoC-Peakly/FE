@@ -16,7 +16,6 @@ const TimerStopModal = ({ visible, onClose, time, onConfirm }) => {
     >
       <BlurView intensity={20} tint="dark" style={StyleSheet.absoluteFill}>
         <Pressable style={styles.overlay} onPress={onClose}>
-          {/* 2. 기존 View인 bottomSheet를 LinearGradient로 교체 */}
           <LinearGradient
             colors={[colors.grayscale[900], colors.grayscale[1000]]} // 위 900, 아래 1000
             style={styles.bottomSheet}
@@ -27,7 +26,6 @@ const TimerStopModal = ({ visible, onClose, time, onConfirm }) => {
               <View style={styles.contentContainer}>
                 <Text style={styles.titleText}>집중을 시작한 지</Text>
                 
-                {/* TimerBox 글자색을 sub[200]이나 primary[600] 중 원하는 것으로 넘겨주세요 */}
                 <TimerBox 
                   time={time || "00 : 38 : 41"} 
                   textColor={colors.sub[200]} 

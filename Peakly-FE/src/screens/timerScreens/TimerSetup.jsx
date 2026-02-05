@@ -5,6 +5,7 @@ import Category from '../../components/Category.jsx';
 import Tag from '../../components/Tag.jsx'; 
 import Button from '../../components/Button.jsx'; 
 import { colors } from '../../styles/colors.js';
+import { useNavigation } from '@react-navigation/native'; // 네비게이션 훅 추가
 
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
 const ITEM_HEIGHT = 44; 
@@ -12,6 +13,8 @@ const PADDING_HORIZONTAL = 20;
 const SLIDER_CONTAINER_PADDING = 20;
 
 const TimerSetup = ({ isVisible, onClose }) => {
+  const navigation = useNavigation(); // navigation 객체 생성
+
   const [selectedCategory, setSelectedCategory] = useState('논리·사고');
   const [selectedTag, setSelectedTag] = useState(''); 
   const [fatigue, setFatigue] = useState(50);
@@ -21,6 +24,12 @@ const TimerSetup = ({ isVisible, onClose }) => {
   const [hour, setHour] = useState(2);
   const [min, setMin] = useState(0);
   const [sec, setSec] = useState(0);
+
+  // 집중모드 시작 버튼 클릭 시 실행될 함수
+  const handleStart = () => {
+    onClose(); // 먼저 모달을 닫고
+    navigation.navigate('TimerRunning'); // 타이머 실행 화면으로 이동
+  };
 
   const categories = [
     { id: 'logic', name: '논리·사고' },
@@ -67,10 +76,8 @@ const TimerSetup = ({ isVisible, onClose }) => {
           <View style={styles.handle} />
           
           <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-            
             <Text style={styles.sectionTitle}>카테고리 선택</Text>
             <View style={styles.whiteCard}>
-              {/* 카테고리 첫 번째 줄 (3개) */}
               <View style={styles.row}>
                 {firstRowCats.map((item) => (
                   <Category
@@ -81,8 +88,6 @@ const TimerSetup = ({ isVisible, onClose }) => {
                   />
                 ))}
               </View>
-
-              {/* 카테고리 두 번째 줄 (2개) */}
               <View style={[styles.row, { marginTop: 12 }]}>
                 {secondRowCats.map((item) => (
                   <Category
@@ -93,8 +98,6 @@ const TimerSetup = ({ isVisible, onClose }) => {
                   />
                 ))}
               </View>
-
-              {/* 태그 줄 (이미지처럼 아래에 배치) */}
               <View style={[styles.row, { marginTop: 20 }]}>
                 {tags.map((item, index) => (
                   <Tag
@@ -128,7 +131,8 @@ const TimerSetup = ({ isVisible, onClose }) => {
           </ScrollView>
 
           <View style={styles.bottomWrapper}>
-            <Button text="▶  집중모드 시작" onPress={onClose} bgColor={colors.sub[200]} />
+            {/* handleStart 함수 연결 */}
+            <Button text="▶  집중모드 시작" onPress={handleStart} bgColor={colors.sub[200]} />
           </View>
         </View>
       </View>
@@ -197,21 +201,18 @@ const ConditionSlider = ({ label, subLabel, value, onValueChange, valueText, isL
 };
 
 const styles = StyleSheet.create({
-  modalOverlay: { flex: 1, justifyContent: 'flex-end' },
+  modalOverlay: { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0, 0, 0, 0.4)' },
   topDismiss: { flex: 1 },
   sheetContainer: { backgroundColor: colors.grayscale[200], borderTopLeftRadius: 22, borderTopRightRadius: 22, height: SCREEN_HEIGHT * 0.88 },
   handle: { width: 95, height: 6, backgroundColor: colors.grayscale[300], borderRadius: 20, alignSelf: 'center', marginVertical: 10 },
   scrollContent: { paddingHorizontal: PADDING_HORIZONTAL, paddingBottom: 20 },
   sectionTitle: { fontSize: 24, fontFamily: 'Pretendard-Bold', color: colors.grayscale[1000], marginBottom: 12, marginTop: 10 },
   whiteCard: { backgroundColor: colors.grayscale[100], borderRadius: 20, padding: SLIDER_CONTAINER_PADDING, marginBottom: 35 },
-  
   row: { flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', gap: 10 },
-
   conditionItem: { marginBottom: 14 },
   labelRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4 },
   label: { fontSize: 16, fontFamily: 'Pretendard-Bold', color: colors.grayscale[900] },
   subLabel: { fontFamily: 'Pretendard-regular', color: colors.grayscale[500] }, 
-
   sliderWrapper: { height: 40, justifyContent: 'center', marginVertical: 9 },
   sliderBackgroundLine: { position: 'absolute', width: '100%', height: 3, backgroundColor: colors.grayscale[200], flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 2 },
   sliderDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: colors.grayscale[200] }, 
@@ -220,7 +221,6 @@ const styles = StyleSheet.create({
   customThumbOuter: { width: 20, height: 20, borderRadius: 10, backgroundColor: colors.primary[500], justifyContent: 'center', alignItems: 'center' },
   customThumbInner: { width: 14, height: 14, borderRadius: 6, backgroundColor: colors.primary[50] }, 
   valueText: { textAlign: 'center', fontSize: 13, color: colors.primary[600], fontFamily: 'Pretendard-Bold', marginTop: -4 },
-  
   pickerContainer: { flexDirection: 'row', alignItems: 'center', height: ITEM_HEIGHT * 3 },
   wheelWrapper: { flex: 1, height: ITEM_HEIGHT * 3 },
   itemWrapper: { height: ITEM_HEIGHT, justifyContent: 'center', alignItems: 'center' },
@@ -228,7 +228,6 @@ const styles = StyleSheet.create({
   selectedItemText: { color: colors.primary[500], fontFamily: 'Pretendard-Bold', fontSize: 22 },
   unitText: { fontSize: 15, fontFamily: 'Pretendard-regular', color: colors.primary[600] },
   selectionIndicator: { position: 'absolute', left: 0, right: 0, height: ITEM_HEIGHT, borderWidth: 1.5, borderColor: colors.primary[500], borderRadius: 18, top: ITEM_HEIGHT, backgroundColor: colors.primary[50] },
-  bottomWrapper: { position: 'absolute', bottom: 0, width: '100%', height: 100 },
 });
 
 export default TimerSetup;
