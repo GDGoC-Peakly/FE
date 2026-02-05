@@ -1,3 +1,5 @@
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 import { StatusBar } from 'expo-status-bar';
 import { View } from 'react-native';
 import { useFonts } from 'expo-font';
@@ -24,6 +26,8 @@ import SettingInfo from './screens/settingScreens/SettingInfo';
 import SettingTag from './screens/settingScreens/SettingTag';
 import SettingModal from './screens/settingScreens/settingComponents/SettingModal';
 
+const Stack = createStackNavigator();
+
 function App() {
   const [fontsLoaded] = useFonts({
     'Pretendard-Bold': require('../assets/fonts/Pretendard-Bold.otf'),
@@ -33,31 +37,32 @@ function App() {
   if (!fontsLoaded) return null;
 
   return (
-    <View style={{ flex: 1 }}>
+    <NavigationContainer>
       <StatusBar style="light" />
-      {/* <DayReport /> */}
+      <Stack.Navigator 
+        initialRouteName="Home"
+        screenOptions={{
+          headerShown: false, 
+        }}
+      >
+        {/* --- HM 관련 스택 --- */}
+        <Stack.Screen name="Home" component={Home} />
+        <Stack.Screen name="PeakTimeline" component={PeakTimelineScreen} />
+        <Stack.Screen name="DailyCheckin1" component={DailyCheckin1} />
+        <Stack.Screen name="DailyCheckin2" component={DailyCheckin2} />
 
-      {/* HT 스크린 */}
-      {/* <Home/> */}
-      {/* <HomeModal/> */}
-      {/* <PeakTimelineScreen/> */}
-      {/* <DailyCheckin1/> */}
-      {/* <DailyCheckin2/> */}
+        {/* --- ST 관련 스택 --- */}
+        <Stack.Screen name="Setting" component={Setting} />
+        <Stack.Screen name="SettingInfo" component={SettingInfo} />
+        <Stack.Screen name="SettingTag" component={SettingTag} />
 
-      {/* TM 스크린 */}
-      {/* <TimerSetup/> */}
-      {/* <TimerRunning/> */}
-      {/* <TimerModal/> */}
-      {/* <TimerStopModal/> */}
-      {/* <TimerResult/> */}
-
-      {/* ST 스크린 */}
-      <Setting/>
-      {/* <SettingInfo/> */}
-      {/* <SettingTag/> */}
-      {/* <SettingModal/> */}
-
-    </View>
+        {/* --- TM 관련 스택 --- */}
+        <Stack.Screen name="TimerSetup" component={TimerSetup} />
+        <Stack.Screen name="TimerRunning" component={TimerRunning} />
+        <Stack.Screen name="TimerResult" component={TimerResult} />
+        
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 

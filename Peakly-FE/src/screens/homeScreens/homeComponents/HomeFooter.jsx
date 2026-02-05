@@ -4,15 +4,21 @@ import { colors } from '../../../styles/colors'
 import { Ionicons } from '@expo/vector-icons' 
 import Settingicon from '../../../../assets/img/homeScreens/setting_icon.svg'
 import Reporticon from '../../../../assets/img/homeScreens/report_icon.svg'
+import { useNavigation } from '@react-navigation/native'
+
 
 const HomeFooter = () => {
+  const navigation = useNavigation();
+  
   return (
     <View style={styles.footerContainer}>
 
       <View style={styles.iconSection}>
 
         <TouchableOpacity activeOpacity={0.7} style={styles.iconButton}>
-          <Settingicon style={styles.imageIcon} resizeMode="contain"/>
+          <Settingicon style={styles.imageIcon} resizeMode="contain"
+          onPress={() => navigation.navigate('Setting')}
+          />
         </TouchableOpacity>
         
         <TouchableOpacity activeOpacity={0.7} style={styles.iconButton}>

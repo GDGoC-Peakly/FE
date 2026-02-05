@@ -8,6 +8,7 @@ import Moreicon from '../../../assets/img/settingScreens/more_icon.svg'
 import SettingHeader from '../settingScreens/settingComponents/SettingHeader'
 
 const Setting = ({ onBack }) => {
+
   const [isNotificationsEnabled, setIsNotificationsEnabled] = useState(true);
 
   return (
