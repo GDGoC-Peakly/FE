@@ -1,4 +1,5 @@
 import React from 'react';
+import { useRef, useEffect } from 'react';
 import { StyleSheet, View, Text, ScrollView } from 'react-native';
 import { colors } from '../../../styles/colors';
 
@@ -9,14 +10,29 @@ const TOTAL_HOURS = END_HOUR - START_HOUR + 1;
 const CONTENT_WIDTH = TOTAL_HOURS * HOUR_WIDTH;
 
 const PeakTimeline = () => {
+  const scrollRef = useRef(null); 
+
   const schedules = [
     { start: 11, end: 12.5, label: '피크 타임' },
     { start: 14, end: 18, label: '피크 타임' },
   ];
 
+  useEffect(() => {
+    const currentHour = new Date().getHours();
+    const scrollToX = currentHour * HOUR_WIDTH;
+
+    setTimeout(() => {
+      scrollRef.current?.scrollTo({
+        x: scrollToX - 20, 
+        animated: true,
+      });
+    }, 100);
+  }, []);
+
   return (
     <View style={styles.container}>
       <ScrollView 
+        ref={scrollRef} 
         horizontal={true} 
         showsHorizontalScrollIndicator={false}
         nestedScrollEnabled={true}
@@ -39,7 +55,6 @@ const PeakTimeline = () => {
             </View>
           </View>
 
-          {/* 2. 타임라인 메인 영역 */}
           <View style={styles.timelineBody}>
             <View style={styles.gridOverlay}>
               {Array.from({ length: TOTAL_HOURS }).map((_, i) => (
@@ -61,9 +76,7 @@ const PeakTimeline = () => {
             })}
           </View>
 
-          {/* 3. 하단 마감 실선 */}
           <View style={styles.bottomBorderLine} />
-
         </View>
       </ScrollView>
     </View>

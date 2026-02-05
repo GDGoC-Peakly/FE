@@ -1,5 +1,6 @@
-import { StyleSheet, Text, View, Image, ScrollView, SafeAreaView, ImageBackground } from 'react-native'
+import { StyleSheet, Text, View, Image, ScrollView, SafeAreaView, ImageBackground, TouchableOpacity } from 'react-native'
 import React from 'react'
+import { useNavigation } from '@react-navigation/native';
 import Peakly from '../../../assets/img/homeScreens/Peakly.svg'
 import character2 from '../../../assets/img/homeScreens/character2.png'
 import talkbox from '../../../assets/img/homeScreens/talkbox.jpg'
@@ -9,6 +10,8 @@ import PeakTimeline from './homeComponents/PeakTimeline'
 import PeakTimechart from './homeComponents/PeakTimechart'
 
 const Home = () => {
+  const navigation = useNavigation(); 
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
@@ -24,9 +27,13 @@ const Home = () => {
             <Text style={styles.cardSubTitle}>오늘의 집중 피크타임을 확인해보세요.</Text>
             
             {/* 시간 차트 섹션 */}
-            <View style={styles.timeChartPlaceholder}>
+            <TouchableOpacity 
+              activeOpacity={0.7} 
+              style={styles.timeChartPlaceholder} 
+              onPress={() => navigation.navigate('PeakTimeline')}
+            >
                 <PeakTimeline style={{flex : 1}}/>
-            </View>
+            </TouchableOpacity>
           </View>
         </View>
 
@@ -45,18 +52,24 @@ const Home = () => {
         </View>
 
         <View style={styles.row}>
-          {/* 숙면시간 카드 */}
-          <View style={[styles.card, styles.halfCard]}>
+          <TouchableOpacity 
+            activeOpacity={0.7} 
+            style={[styles.card, styles.halfCard]} 
+            onPress={() => navigation.navigate('DailyCheckin1', { mode: 'edit' })} 
+          >
             <Text style={styles.smallCardTitle}>숙면시간</Text>
             <View style={styles.circleGraphContainer}>
                <View style={styles.circlePlaceholder}>
                   <Text style={styles.sleepText}>8h 0m</Text>
                </View>
             </View>
-          </View>
+          </TouchableOpacity>
 
-          {/* 컨디션 카드 */}
-          <View style={[styles.card, styles.halfCard]}>
+          <TouchableOpacity 
+            activeOpacity={0.7} 
+            style={[styles.card, styles.halfCard]} 
+            onPress={() => navigation.navigate('DailyCheckin2', { mode: 'edit' })}
+          >
             <Text style={styles.smallCardTitle}>컨디션</Text>
             <View style={styles.characterContainer}>
                 <Image source={character2} style={styles.characterImg} resizeMode="contain" />
@@ -69,7 +82,7 @@ const Home = () => {
                     <Text style={styles.conditionTagText}>최고예요!</Text>
                 </ImageBackground>
             </View>
-          </View>
+          </TouchableOpacity>
         </View>
       </ScrollView>
       <HomeFooter/>
