@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigation } from '@react-navigation/native'; // 추가
 import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView, Switch } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors } from '../../styles/colors';
@@ -8,10 +9,11 @@ import Moreicon from '../../../assets/img/settingScreens/more_icon.svg'
 import SettingHeader from '../settingScreens/settingComponents/SettingHeader'
 
 const Setting = ({ onBack }) => {
+  const navigation = useNavigation(); 
   const [isNotificationsEnabled, setIsNotificationsEnabled] = useState(true);
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <View style={styles.container} edges={['top']}>
       
       <SettingHeader title="설정" onBack={onBack} />
 
@@ -34,7 +36,10 @@ const Setting = ({ onBack }) => {
           <View style={styles.infoRow}><Text style={styles.infoLabel}>카페인 반응도</Text><Text style={styles.infoValue}>보통</Text></View>
           <View style={styles.infoRow}><Text style={styles.infoLabel}>소음 반응도</Text><Text style={styles.infoValue}>아주 민감</Text></View>
           <View style={styles.infoRow}><Text style={styles.infoLabel}>직업</Text><Text style={styles.infoValue}>대학생</Text></View>
-          <TouchableOpacity style={styles.editButton}><Text style={styles.editButtonText}>수정하기</Text></TouchableOpacity>
+          <TouchableOpacity style={styles.editButton}
+          onPress={() => {navigation.navigate('SettingInfo');}}>
+            <Text style={styles.editButtonText}>수정하기</Text>
+          </TouchableOpacity>
         </View>
 
         <View style={styles.sectionCard}>
@@ -46,7 +51,11 @@ const Setting = ({ onBack }) => {
               ))}
             </View>
           </View>
-          <TouchableOpacity style={styles.editButton}><Text style={styles.editButtonText}>수정하기</Text></TouchableOpacity>
+          <TouchableOpacity style={styles.editButton}
+           onPress={() => {navigation.navigate('SettingTag');}}>
+            <Text style={styles.editButtonText}>
+            수정하기</Text>
+          </TouchableOpacity>
         </View>
 
         <View style={styles.sectionCard}>
@@ -73,7 +82,7 @@ const Setting = ({ onBack }) => {
         </TouchableOpacity>
 
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 
