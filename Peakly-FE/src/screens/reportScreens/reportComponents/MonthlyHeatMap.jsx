@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, Text } from 'react-native';
-import { colors } from '../styles/colors';
+import { colors } from '../../../styles/colors';
 
 const MonthlyHeatMap = ({ apiData = [] }) => {
   const getCellColor = (score) => {

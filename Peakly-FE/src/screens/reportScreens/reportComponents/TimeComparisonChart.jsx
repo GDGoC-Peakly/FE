@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { colors } from '../styles/colors';
-import { formatTimeLabel } from '../utils/dateUtils';
-import { useTimeChartLogic } from '../hooks/useTimeChartLogic';
+import { colors } from '../../../styles/colors';
+import { formatTimeLabel } from '../../../utils/dateUtils';
+import { useTimeChartLogic } from '../../../hooks/useTimeChartLogic';
 
 const TimeComparisonChart = ({ apiResult, actualSession }) => {
   const { isValid, data, state, layout, constants } = useTimeChartLogic(apiResult, actualSession);

@@ -1,7 +1,7 @@
 import { ScrollView, StyleSheet, Text, View, Platform } from 'react-native';
 import { colors } from '../../styles/colors';
-import PeakTimeTable from '../../components/PeakTimeTable';
-import ReportPieChart from '../../components/ReportPieChart';
+import PeakTimeTable from './reportComponents/PeakTimeTable';
+import ReportPieChart from './reportComponents/ReportPieChart';
 
 function DayReport() {
   const initialData = [
