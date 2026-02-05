@@ -1,8 +1,6 @@
 import React from 'react';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import { colors } from '../styles/colors'; // 경로 확인 필요
-
-// 화면들
+import { colors } from '../styles/colors';
 import DayReport from '../screens/reportScreens/DayReport';
 import WeekReport from '../screens/reportScreens/WeekReport';
 import MonthReport from '../screens/reportScreens/MonthReport';
@@ -36,21 +34,12 @@ const ReportTab = () => {
         },
         tabBarActiveTintColor: colors.grayscale[1000],
         tabBarInactiveTintColor: colors.grayscale[500],
-
         tabBarPressColor: 'transparent',
       }}
     >
       <Tab.Screen name="일간" component={DayReport} options={{ tabBarLabel: '일간' }} />
-      <Tab.Screen
-        name="주간"
-        component={WeekReport} // 나중에 WeeklyReport로 교체
-        options={{ tabBarLabel: '주간' }}
-      />
-      <Tab.Screen
-        name="월간"
-        component={MonthReport} // 나중에 MonthlyReport로 교체
-        options={{ tabBarLabel: '월간' }}
-      />
+      <Tab.Screen name="주간" component={WeekReport} options={{ tabBarLabel: '주간' }} />
+      <Tab.Screen name="월간" component={MonthReport} options={{ tabBarLabel: '월간' }} />
     </Tab.Navigator>
   );
 };

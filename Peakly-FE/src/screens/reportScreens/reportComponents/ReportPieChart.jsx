@@ -1,8 +1,8 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { PieChart } from 'react-native-gifted-charts';
-import { colors } from '../styles/colors';
-import { getProgressData } from '../utils/getProgressData';
+import { colors } from '../../../styles/colors';
+import { getProgressData } from '../../../utils/getProgressData';
 
 const ReportPieChart = ({ title, percent, status }) => {
   return (

@@ -1,7 +1,8 @@
 import { StatusBar } from 'expo-status-bar';
 import { useFonts } from 'expo-font';
-import { NavigationContainer } from '@react-navigation/native';
+import { View } from 'react-native';
 import ReportTab from './navigations/ReportTab';
+import { NavigationContainer } from '@react-navigation/native';
 
 function App() {
   const [fontsLoaded] = useFonts({
@@ -13,7 +14,6 @@ function App() {
 
   return (
     <NavigationContainer>
-      <StatusBar style="light" />
       <ReportTab />
     </NavigationContainer>
   );

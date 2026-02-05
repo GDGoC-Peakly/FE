@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
-import { colors } from '../styles/colors';
-import { REASON_CONFIG } from '../constants/reasonData';
-import Wrong from '../../assets/img/RP/wrong.svg';
+import { colors } from '../../../styles/colors';
+import { REASON_CONFIG } from '../../../constants/reasonData';
+import Wrong from '../../../../assets/img/RP/wrong.svg';
 
 const ReasonCard = ({ reasons = [] }) => {
   if (!reasons || reasons.length === 0)
