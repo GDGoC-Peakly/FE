@@ -1,3 +1,5 @@
+import { StyleSheet, Text, View, Image, ScrollView, SafeAreaView, ImageBackground, TouchableOpacity } from 'react-native'
+import React, { useState } from 'react' 
 import { StyleSheet, Text, View, ScrollView, SafeAreaView, TouchableOpacity } from 'react-native'
 import React, { useState } from 'react'
 import { useNavigation } from '@react-navigation/native';
@@ -8,6 +10,11 @@ import { colors } from '../../styles/colors'
 import HomeFooter from './homeComponents/HomeFooter'
 import PeakTimeline from './homeComponents/PeakTimeline'
 import PeakTimechart from './homeComponents/PeakTimechart'
+import TimerSetup from '../timerScreens/TimerSetup';
+
+const Home = () => {
+  const navigation = useNavigation(); 
+  const [isTimerVisible, setIsTimerVisible] = useState(false); 
 import TimerSetup from '../../screens/timerScreens/TimerSetup'
 import { useCondition } from '../../contexts/ConditionContext'
 import { useSleep } from '../../contexts/SleepContext'
@@ -106,6 +113,10 @@ const Home = () => {
           >
             <Text style={styles.smallCardTitle}>컨디션</Text>
             <View style={styles.characterContainer}>
+                <Image source={character0} style={styles.characterImg} resizeMode="contain" />
+                <ImageBackground source={talkbox} style={styles.conditionTalkbox} resizeMode="contain">
+                    <Text style={styles.conditionTagText}>최고예요!</Text>
+                </ImageBackground>
                 {/* Image 대신 SVG 컴포넌트 사용 */}
                 <ConditionCharacter 
                   width={70} 
@@ -124,6 +135,7 @@ const Home = () => {
       </ScrollView>
 
       <HomeFooter onFocusPress={() => setIsTimerVisible(true)} />
+
       <TimerSetup 
         isVisible={isTimerVisible} 
         onClose={() => setIsTimerVisible(false)} 
@@ -135,6 +147,33 @@ const Home = () => {
 export default Home
 
 const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#F0F0F0' },
+  scrollContent: { padding: 20, paddingBottom: 120 }, 
+  logo: { width: 100, height: 40, marginBottom: 20 },
+  peakCard: { backgroundColor: colors.grayscale[100], borderRadius: 12, marginBottom: 12 },
+  yellowBanner: { backgroundColor: colors.sub[200], paddingVertical: 9, borderTopLeftRadius: 12, borderTopRightRadius: 12, alignItems: 'center' },
+  bannerText: { fontSize: 14, fontWeight: '700', color: '#000' },
+  cardPadding: { padding: 12 },
+  cardTitle: { fontSize: 24, fontFamily: 'Pretendard-Bold', marginBottom: 4 },
+  cardSubTitle: { fontSize: 12, marginBottom: 15 },
+  card: { backgroundColor: colors.grayscale[100], borderRadius: 12, padding: 12, marginBottom: 12 },
+  cardDateTitle: { fontSize: 20, fontFamily: 'Pretendard-Bold', marginBottom: 12 },
+  timerWrapper: { alignItems: 'center', marginBottom: 25 },
+  customTimerBox: { backgroundColor: colors.primary[500], width: '100%', height: 58, borderRadius: 16, justifyContent: 'center', alignItems: 'center' },
+  customTimerText: { color: colors.grayscale[100], fontSize: 32, fontFamily: 'Pretendard-Bold' },
+  row: { flexDirection: 'row', justifyContent: 'space-between' },
+  halfCard: { width: '48%', height: 227 },
+  smallCardTitle: { fontSize: 20, fontFamily: 'Pretendard-Bold' },
+  characterContainer: { alignItems: 'center', justifyContent: 'center', flex: 1 },
+  characterImg: { width: 70, height: 90 },
+  conditionTalkbox: { width: 90, height: 40, justifyContent: 'center', alignItems: 'center' },
+  conditionTagText: { fontSize: 14, fontFamily: 'Pretendard-Bold', color: colors.grayscale[1000], paddingTop: 12 },
+  circleGraphContainer: { alignItems: 'center', justifyContent: 'center', flex: 1 },
+  circlePlaceholder: { width: 100, height: 100, borderRadius: 50, borderWidth: 12, borderColor: colors.primary[500], borderBottomColor: colors.grayscale[800], justifyContent: 'center', alignItems: 'center' },
+  sleepText: { fontSize: 14, fontFamily: 'Pretendard-Bold', color: colors.primary[500] },
+  timeChartPlaceholder: { width: '100%', height: 150, marginTop: 10, overflow: 'hidden' },
+  barChartPlaceholder: { height: 100, justifyContent: 'center', alignItems: 'center', borderRadius: 10 }
+});
   container: {
     flex: 1,
     backgroundColor: '#F0F0F0',
