@@ -5,6 +5,7 @@ import SelectLogin from './screens/onBoardingScreens/SelectLogin';
 import EmailLogin from './screens/onBoardingScreens/EmailLogin';
 import EmptyScreen from './screens/onBoardingScreens/EmptyScreen';
 import SignUp from './screens/onBoardingScreens/SignUp';
+import OnboardingProfile from './screens/onBoardingScreens/OnboardingProfile';
 
 function App() {
   const [fontsLoaded] = useFonts({
@@ -18,7 +19,7 @@ function App() {
   return (
     <View style={{ flex: 1 }}>
       <StatusBar style="light" />
-      <SignUp />
+      <OnboardingProfile />
     </View>
   );
 }
