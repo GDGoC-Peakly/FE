@@ -1,20 +1,40 @@
-import { StyleSheet, Text, View, Image, ScrollView, SafeAreaView, ImageBackground } from 'react-native'
-import React from 'react'
+import { StyleSheet, Text, View, ScrollView, SafeAreaView, TouchableOpacity } from 'react-native'
+import React, { useState } from 'react'
+import { useNavigation } from '@react-navigation/native';
+import Svg, { Circle } from 'react-native-svg'; 
 import Peakly from '../../../assets/img/homeScreens/Peakly.svg'
-import character2 from '../../../assets/img/homeScreens/character2.png'
-import talkbox from '../../../assets/img/homeScreens/talkbox.jpg'
+import Talkbox from '../../../assets/img/homeScreens/talkbox.svg'
 import { colors } from '../../styles/colors'
 import HomeFooter from './homeComponents/HomeFooter'
 import PeakTimeline from './homeComponents/PeakTimeline'
 import PeakTimechart from './homeComponents/PeakTimechart'
+import TimerSetup from '../../screens/timerScreens/TimerSetup'
+import { useCondition } from '../../contexts/ConditionContext'
+import { useSleep } from '../../contexts/SleepContext'
 
 const Home = () => {
+  const navigation = useNavigation(); 
+  const { conditionData } = useCondition(); 
+  const { sleepData } = useSleep(); 
+  const [isTimerVisible, setIsTimerVisible] = useState(false); 
+
+  const size = 100; 
+  const strokeWidth = 12;
+  const center = size / 2;
+  const radius = (size - strokeWidth) / 2;
+  const circumference = 2 * Math.PI * radius;
+
+  const progress = sleepData.totalHours / 24;
+  const strokeDashoffset = circumference * (1 - progress);
+
+  // 컨디션 SVG 컴포넌트 추출
+  const ConditionCharacter = conditionData.image;
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <Peakly style={styles.logo} resizeMode="contain"/>
 
-        {/* 피크타임 카드 */}
         <View style={styles.peakCard}>
           <View style={styles.yellowBanner}>
             <Text style={styles.bannerText}>오후 2시에 집중력이 폭발할 예정이에요!</Text>
@@ -23,14 +43,16 @@ const Home = () => {
             <Text style={styles.cardTitle}>지금은 피크타임이에요!</Text>
             <Text style={styles.cardSubTitle}>오늘의 집중 피크타임을 확인해보세요.</Text>
             
-            {/* 시간 차트 섹션 */}
-            <View style={styles.timeChartPlaceholder}>
+            <TouchableOpacity 
+              activeOpacity={0.7} 
+              style={styles.timeChartPlaceholder} 
+              onPress={() => navigation.navigate('PeakTimeline')}
+            >
                 <PeakTimeline style={{flex : 1}}/>
-            </View>
+            </TouchableOpacity>
           </View>
         </View>
 
-        {/* 누적 집중 시간 카드 */}
         <View style={styles.card}>
           <Text style={styles.cardDateTitle}>2월 23일 누적 집중 시간</Text>
           <View style={styles.timerWrapper}>
@@ -38,41 +60,74 @@ const Home = () => {
               <Text style={styles.customTimerText}>01 : 38 : 41</Text>
             </View>
           </View>
-          {/* 누적 집중 그래프 섹션 */}
           <View style={styles.barChartPlaceholder}>
              <PeakTimechart />
           </View>
         </View>
 
         <View style={styles.row}>
-          {/* 숙면시간 카드 */}
-          <View style={[styles.card, styles.halfCard]}>
+          <TouchableOpacity 
+            activeOpacity={0.7} 
+            style={[styles.card, styles.halfCard]} 
+            onPress={() => navigation.navigate('DailyCheckin1', { mode: 'edit' })} 
+          >
             <Text style={styles.smallCardTitle}>숙면시간</Text>
             <View style={styles.circleGraphContainer}>
-               <View style={styles.circlePlaceholder}>
-                  <Text style={styles.sleepText}>8h 0m</Text>
+               <View style={styles.graphWrapper}>
+                  <Svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+                    <Circle
+                      cx={center} cy={center} r={radius}
+                      stroke={colors.grayscale[200]}
+                      strokeWidth={strokeWidth}
+                      fill="none"
+                    />
+                    <Circle
+                      cx={center} cy={center} r={radius}
+                      stroke={colors.primary[500]}
+                      strokeWidth={strokeWidth}
+                      strokeDasharray={circumference}
+                      strokeDashoffset={strokeDashoffset}
+                      fill="none"
+                      transform={`rotate(-90 ${center} ${center})`}
+                    />
+                  </Svg>
+                  <View style={styles.centerTextContainer}>
+                    <Text style={styles.sleepText}>{sleepData.hours}h {sleepData.minutes}m</Text>
+                  </View>
                </View>
             </View>
-          </View>
+          </TouchableOpacity>
 
           {/* 컨디션 카드 */}
-          <View style={[styles.card, styles.halfCard]}>
+          <TouchableOpacity 
+            activeOpacity={0.7} 
+            style={[styles.card, styles.halfCard]} 
+            onPress={() => navigation.navigate('DailyCheckin2', { mode: 'edit' })}
+          >
             <Text style={styles.smallCardTitle}>컨디션</Text>
             <View style={styles.characterContainer}>
-                <Image source={character2} style={styles.characterImg} resizeMode="contain" />
+                {/* Image 대신 SVG 컴포넌트 사용 */}
+                <ConditionCharacter 
+                  width={70} 
+                  height={90} 
+                />
                 
-                <ImageBackground 
-                  source={talkbox} 
-                  style={styles.conditionTalkbox} 
-                  resizeMode="contain"
-                >
-                    <Text style={styles.conditionTagText}>최고예요!</Text>
-                </ImageBackground>
+                <View style={styles.talkboxWrapper}>
+                  <Talkbox style={styles.conditionTalkbox} />
+                  <View style={styles.talkboxTextContainer}>
+                    <Text style={styles.conditionTagText}>{conditionData.text}</Text>
+                  </View>
+                </View>
             </View>
-          </View>
+          </TouchableOpacity>
         </View>
       </ScrollView>
-      <HomeFooter/>
+
+      <HomeFooter onFocusPress={() => setIsTimerVisible(true)} />
+      <TimerSetup 
+        isVisible={isTimerVisible} 
+        onClose={() => setIsTimerVisible(false)} 
+      />
     </SafeAreaView>
   )
 }
@@ -86,10 +141,12 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: 20,
+    paddingBottom: 110,
   },
   logo: {
     width: 100,
     height: 40,
+    marginLeft: 118,
     marginBottom: 20,
   },
   peakCard: {
@@ -166,13 +223,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flex: 1,
   },
-  characterImg: {
-    width: 70,
-    height: 90,
-  },
-  conditionTalkbox: {
+  talkboxWrapper: {
     width: 90,
     height: 40,
+    marginTop: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  conditionTalkbox: {
+    position: 'absolute',
+  },
+  talkboxTextContainer: {
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -180,39 +241,36 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: 'Pretendard-Bold',
     color: colors.grayscale[1000],
-    paddingTop: 12,
+    paddingTop: 10,
   },
   circleGraphContainer: {
     alignItems: 'center',
     justifyContent: 'center',
     flex: 1,
   },
-  circlePlaceholder: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    borderWidth: 12,
-    borderColor: colors.primary[500],
-    borderBottomColor: colors.grayscale[800],
+  graphWrapper: {
+    position: 'relative',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  centerTextContainer: {
+    position: 'absolute',
   },
   sleepText: {
     fontSize: 14,
     fontFamily: 'Pretendard-Bold',
     color: colors.primary[500],
   },
-  timeChartPlaceholder: { 
-    width: '100%', 
-    height: 150, 
+  timeChartPlaceholder: {
+    width: '100%',
+    height: 150,
     marginTop: 10,
-
-    overflow: 'hidden', 
-},
-  barChartPlaceholder: { 
-    height: 100, 
-    justifyContent: 'center', 
-    alignItems: 'center', 
-    borderRadius: 10 
+    overflow: 'hidden',
+  },
+  barChartPlaceholder: {
+    height: 100,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 10,
   },
 })

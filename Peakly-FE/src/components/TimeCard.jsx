@@ -1,13 +1,17 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { colors } from '../styles/colors';
 
-const TimeCard = ({ label, time }) => {
+const TimeCard = ({ label, time, onPress }) => {
   return (
-    <View style={styles.cardContainer}>
+    <TouchableOpacity 
+      style={styles.cardContainer} 
+      onPress={onPress}
+      activeOpacity={0.7}
+    >
       <Text style={styles.label}>{label}</Text>
       <Text style={styles.timeText}>{time}</Text>
-    </View>
+    </TouchableOpacity>
   );
 };
 
@@ -28,6 +32,7 @@ const styles = StyleSheet.create({
     fontSize: 10,               
     fontFamily: 'Pretendard-Bold',
     color: colors.grayscale[1000], 
+    marginBottom: 2, 
   },
   timeText: {
     fontSize: 20,                
