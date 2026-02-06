@@ -1,9 +1,9 @@
-import { StyleSheet, Text, View, Image, ScrollView, SafeAreaView, ImageBackground, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, ScrollView, SafeAreaView, TouchableOpacity } from 'react-native'
 import React, { useState } from 'react'
 import { useNavigation } from '@react-navigation/native';
 import Svg, { Circle } from 'react-native-svg'; 
 import Peakly from '../../../assets/img/homeScreens/Peakly.svg'
-import talkbox from '../../../assets/img/homeScreens/talkbox.jpg'
+import Talkbox from '../../../assets/img/homeScreens/talkbox.svg'
 import { colors } from '../../styles/colors'
 import HomeFooter from './homeComponents/HomeFooter'
 import PeakTimeline from './homeComponents/PeakTimeline'
@@ -26,6 +26,9 @@ const Home = () => {
 
   const progress = sleepData.totalHours / 24;
   const strokeDashoffset = circumference * (1 - progress);
+
+  // 컨디션 SVG 컴포넌트 추출
+  const ConditionCharacter = conditionData.image;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -103,19 +106,18 @@ const Home = () => {
           >
             <Text style={styles.smallCardTitle}>컨디션</Text>
             <View style={styles.characterContainer}>
-                <Image 
-                  source={conditionData.image} 
-                  style={styles.characterImg} 
-                  resizeMode="contain" 
+                {/* Image 대신 SVG 컴포넌트 사용 */}
+                <ConditionCharacter 
+                  width={70} 
+                  height={90} 
                 />
                 
-                <ImageBackground 
-                  source={talkbox} 
-                  style={styles.conditionTalkbox} 
-                  resizeMode="contain"
-                >
+                <View style={styles.talkboxWrapper}>
+                  <Talkbox style={styles.conditionTalkbox} />
+                  <View style={styles.talkboxTextContainer}>
                     <Text style={styles.conditionTagText}>{conditionData.text}</Text>
-                </ImageBackground>
+                  </View>
+                </View>
             </View>
           </TouchableOpacity>
         </View>
@@ -133,33 +135,141 @@ const Home = () => {
 export default Home
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F0F0F0' },
-  scrollContent: { padding: 20, paddingBottom: 110 },
-  logo: { width: 100, height: 40, marginBottom: 20 },
-  peakCard: { backgroundColor: colors.grayscale[100], borderRadius: 12, marginBottom: 12 },
-  yellowBanner: { backgroundColor: colors.sub[200], paddingVertical: 9, borderTopLeftRadius: 12, borderTopRightRadius: 12, alignItems: 'center' },
-  bannerText: { fontSize: 14, fontWeight: '700', color: '#000' },
-  cardPadding: { padding: 12 },
-  cardTitle: { fontSize: 24, fontFamily: 'Pretendard-Bold', marginBottom: 4 },
-  cardSubTitle: { fontSize: 12, marginBottom: 15 },
-  card: { backgroundColor: colors.grayscale[100], borderRadius: 12, padding: 12, marginBottom: 12 },
-  cardDateTitle: { fontSize: 20, fontFamily: 'Pretendard-Bold', marginBottom: 12 },
-  timerWrapper: { alignItems: 'center', marginBottom: 25 },
-  customTimerBox: { backgroundColor: colors.primary[500], width: '100%', height: 58, borderRadius: 16, justifyContent: 'center', alignItems: 'center' },
-  customTimerText: { color: colors.grayscale[100], fontSize: 32, fontFamily: 'Pretendard-Bold' },
-  row: { flexDirection: 'row', justifyContent: 'space-between' },
-  halfCard: { width: '48%', height: 227 },
-  smallCardTitle: { fontSize: 20, fontFamily: 'Pretendard-Bold' },
-  characterContainer: { alignItems: 'center', justifyContent: 'center', flex: 1 },
-  characterImg: { width: 70, height: 90 },
-  conditionTalkbox: { width: 90, height: 40, justifyContent: 'center', alignItems: 'center', marginTop: 5 },
-  conditionTagText: { fontSize: 14, fontFamily: 'Pretendard-Bold', color: colors.grayscale[1000], paddingTop: 10 },
-  
-  circleGraphContainer: { alignItems: 'center', justifyContent: 'center', flex: 1 },
-  graphWrapper: { position: 'relative', justifyContent: 'center', alignItems: 'center' },
-  centerTextContainer: { position: 'absolute' },
-  sleepText: { fontSize: 14, fontFamily: 'Pretendard-Bold', color: colors.primary[500] },
-
-  timeChartPlaceholder: { width: '100%', height: 150, marginTop: 10, overflow: 'hidden' },
-  barChartPlaceholder: { height: 100, justifyContent: 'center', alignItems: 'center', borderRadius: 10 },
+  container: {
+    flex: 1,
+    backgroundColor: '#F0F0F0',
+  },
+  scrollContent: {
+    padding: 20,
+    paddingBottom: 110,
+  },
+  logo: {
+    width: 100,
+    height: 40,
+    marginBottom: 20,
+  },
+  peakCard: {
+    backgroundColor: colors.grayscale[100],
+    borderRadius: 12,
+    marginBottom: 12,
+  },
+  yellowBanner: {
+    backgroundColor: colors.sub[200],
+    paddingVertical: 9,
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
+    alignItems: 'center',
+  },
+  bannerText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#000',
+  },
+  cardPadding: {
+    padding: 12,
+  },
+  cardTitle: {
+    fontSize: 24,
+    fontFamily: 'Pretendard-Bold',
+    marginBottom: 4,
+  },
+  cardSubTitle: {
+    fontSize: 12,
+    marginBottom: 15,
+  },
+  card: {
+    backgroundColor: colors.grayscale[100],
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 12,
+  },
+  cardDateTitle: {
+    fontSize: 20,
+    fontFamily: 'Pretendard-Bold',
+    marginBottom: 12,
+  },
+  timerWrapper: {
+    alignItems: 'center',
+    marginBottom: 25,
+  },
+  customTimerBox: {
+    backgroundColor: colors.primary[500],
+    width: '100%',
+    height: 58,
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  customTimerText: {
+    color: colors.grayscale[100],
+    fontSize: 32,
+    fontFamily: 'Pretendard-Bold',
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  halfCard: {
+    width: '48%',
+    height: 227,
+  },
+  smallCardTitle: {
+    fontSize: 20,
+    fontFamily: 'Pretendard-Bold',
+  },
+  characterContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1,
+  },
+  talkboxWrapper: {
+    width: 90,
+    height: 40,
+    marginTop: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  conditionTalkbox: {
+    position: 'absolute',
+  },
+  talkboxTextContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  conditionTagText: {
+    fontSize: 14,
+    fontFamily: 'Pretendard-Bold',
+    color: colors.grayscale[1000],
+    paddingTop: 10,
+  },
+  circleGraphContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1,
+  },
+  graphWrapper: {
+    position: 'relative',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  centerTextContainer: {
+    position: 'absolute',
+  },
+  sleepText: {
+    fontSize: 14,
+    fontFamily: 'Pretendard-Bold',
+    color: colors.primary[500],
+  },
+  timeChartPlaceholder: {
+    width: '100%',
+    height: 150,
+    marginTop: 10,
+    overflow: 'hidden',
+  },
+  barChartPlaceholder: {
+    height: 100,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 10,
+  },
 })

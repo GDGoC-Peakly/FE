@@ -1,12 +1,12 @@
 import React, { createContext, useState, useContext } from 'react';
-import character from '../../assets/img/homeScreens/character.png'
+import Character from '../../assets/img/homeScreens/character.svg'; // 컴포넌트 이름은 대문자로 시작하는 것이 관례입니다.
 
 const ConditionContext = createContext();
 
 export const ConditionProvider = ({ children }) => {
   const [conditionData, setConditionData] = useState({
     text: '최고예요!',
-    image: character,
+    image: Character, 
     value: 100,
   });
 
