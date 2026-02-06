@@ -1,16 +1,19 @@
 import { StyleSheet, Text, View, Image, ScrollView, SafeAreaView, ImageBackground, TouchableOpacity } from 'react-native'
-import React from 'react'
+import React, { useState } from 'react'
 import { useNavigation } from '@react-navigation/native';
 import Peakly from '../../../assets/img/homeScreens/Peakly.svg'
-import character0 from '../../../assets/img/homeScreens/character0.png'
 import talkbox from '../../../assets/img/homeScreens/talkbox.jpg'
 import { colors } from '../../styles/colors'
 import HomeFooter from './homeComponents/HomeFooter'
 import PeakTimeline from './homeComponents/PeakTimeline'
 import PeakTimechart from './homeComponents/PeakTimechart'
+import TimerSetup from '../../screens/timerScreens/TimerSetup'
+import { useCondition } from '../../contexts/ConditionContext'
 
 const Home = () => {
   const navigation = useNavigation(); 
+  const { conditionData } = useCondition(); 
+  const [isTimerVisible, setIsTimerVisible] = useState(false); 
 
   return (
     <SafeAreaView style={styles.container}>
@@ -26,7 +29,6 @@ const Home = () => {
             <Text style={styles.cardTitle}>지금은 피크타임이에요!</Text>
             <Text style={styles.cardSubTitle}>오늘의 집중 피크타임을 확인해보세요.</Text>
             
-            {/* 시간 차트 섹션 */}
             <TouchableOpacity 
               activeOpacity={0.7} 
               style={styles.timeChartPlaceholder} 
@@ -45,7 +47,6 @@ const Home = () => {
               <Text style={styles.customTimerText}>01 : 38 : 41</Text>
             </View>
           </View>
-          {/* 누적 집중 그래프 섹션 */}
           <View style={styles.barChartPlaceholder}>
              <PeakTimechart />
           </View>
@@ -72,20 +73,29 @@ const Home = () => {
           >
             <Text style={styles.smallCardTitle}>컨디션</Text>
             <View style={styles.characterContainer}>
-                <Image source={character0} style={styles.characterImg} resizeMode="contain" />
+                <Image 
+                  source={conditionData.image} 
+                  style={styles.characterImg} 
+                  resizeMode="contain" 
+                />
                 
                 <ImageBackground 
                   source={talkbox} 
                   style={styles.conditionTalkbox} 
                   resizeMode="contain"
                 >
-                    <Text style={styles.conditionTagText}>최고예요!</Text>
+                    <Text style={styles.conditionTagText}>{conditionData.text}</Text>
                 </ImageBackground>
             </View>
           </TouchableOpacity>
         </View>
       </ScrollView>
-      <HomeFooter/>
+
+      <HomeFooter onFocusPress={() => setIsTimerVisible(true)} />
+      <TimerSetup 
+        isVisible={isTimerVisible} 
+        onClose={() => setIsTimerVisible(false)} 
+      />
     </SafeAreaView>
   )
 }
@@ -99,6 +109,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: 20,
+    paddingBottom: 110, 
   },
   logo: {
     width: 100,
@@ -188,12 +199,13 @@ const styles = StyleSheet.create({
     height: 40,
     justifyContent: 'center',
     alignItems: 'center',
+    marginTop: 5,
   },
   conditionTagText: {
     fontSize: 14,
     fontFamily: 'Pretendard-Bold',
     color: colors.grayscale[1000],
-    paddingTop: 12,
+    paddingTop: 10, 
   },
   circleGraphContainer: {
     alignItems: 'center',
@@ -219,7 +231,6 @@ const styles = StyleSheet.create({
     width: '100%', 
     height: 150, 
     marginTop: 10,
-
     overflow: 'hidden', 
 },
   barChartPlaceholder: { 
