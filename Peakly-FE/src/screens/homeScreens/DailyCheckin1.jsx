@@ -6,17 +6,19 @@ import { colors } from '../../styles/colors';
 import Button from '../../components/Button';
 import TimeCard from '../../components/TimeCard';
 import Backicon from '../../../assets/img/homeScreens/back_icon.svg';
+import { useSleep } from '../../contexts/SleepContext'; 
 
 const DailyCheckin1 = ({ navigation, route }) => {
+  const { sleepData, setSleepData } = useSleep();
+  // const mode = 'edit';
   const mode = route?.params?.mode || 'onboarding';
-  // const mode = 'edit'
   const isEditMode = mode === 'edit';
 
-  const [startTime, setStartTime] = useState(new Date(new Date().setHours(22, 0, 0, 0)));
-  const [endTime, setEndTime] = useState(new Date(new Date().setHours(6, 0, 0, 0)));
+  const [startTime, setStartTime] = useState(new Date(sleepData.startTime));
+  const [endTime, setEndTime] = useState(new Date(sleepData.endTime));
+  
   const [showPicker, setShowPicker] = useState(false);
   const [pickerType, setPickerType] = useState('start'); 
-  
   const [tempDate, setTempDate] = useState(new Date());
 
   const calculateDuration = () => {
@@ -52,6 +54,24 @@ const DailyCheckin1 = ({ navigation, route }) => {
     if (pickerType === 'start') setStartTime(tempDate);
     else setEndTime(tempDate);
     setShowPicker(false);
+  };
+
+  const handleComplete = () => {
+    const duration = calculateDuration();
+    
+    setSleepData({
+      startTime: startTime,
+      endTime: endTime,
+      hours: duration.hours,
+      minutes: duration.minutes,
+      totalHours: duration.totalHours,
+    });
+
+    if (isEditMode) {
+      navigation.goBack();
+    } else {
+      navigation.navigate('DailyCheckin2'); 
+    }
   };
 
   const formatTime = (date) => {
@@ -95,7 +115,7 @@ const DailyCheckin1 = ({ navigation, route }) => {
           <Svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
             <Circle
               cx={center} cy={center} r={radius}
-              stroke={colors.grayscale[800] || '#333333'}
+              stroke={colors.grayscale[200] || '#F0F0F0'} 
               strokeWidth={strokeWidth}
               fill="none"
             />
@@ -152,7 +172,7 @@ const DailyCheckin1 = ({ navigation, route }) => {
           text={isEditMode ? "완료" : "다음"} 
           bgColor={colors.grayscale[1000]} 
           textColor={colors.grayscale[100]}
-          onPress={() => isEditMode ? navigation.goBack() : navigation.navigate('HM_02')}
+          onPress={handleComplete} 
         />
       </View>
     </SafeAreaView>

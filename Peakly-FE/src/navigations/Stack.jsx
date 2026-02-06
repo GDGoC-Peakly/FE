@@ -1,6 +1,7 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { ConditionProvider } from '../contexts/ConditionContext'; 
+import { SleepProvider } from '../contexts/SleepContext'; 
 
 {/* --- HM 스크린--- */}
 import Home from '../screens/homeScreens/Home';
@@ -23,28 +24,30 @@ const Stack = createStackNavigator();
 const StackNavigator = () => {
   return (
     <ConditionProvider>
-      <Stack.Navigator
-        initialRouteName="Home"
-        screenOptions={{
-          headerShown: false,
-        }}
-      >
-        {/* --- HM 관련 스택 --- */}
-        <Stack.Screen name="Home" component={Home} />
-        <Stack.Screen name="PeakTimeline" component={PeakTimelineScreen} />
-        <Stack.Screen name="DailyCheckin1" component={DailyCheckin1} />
-        <Stack.Screen name="DailyCheckin2" component={DailyCheckin2} />
+      <SleepProvider>
+        <Stack.Navigator
+          initialRouteName="Home"
+          screenOptions={{
+            headerShown: false,
+          }}
+        >
+          {/* --- HM 관련 스택 --- */}
+          <Stack.Screen name="Home" component={Home} />
+          <Stack.Screen name="PeakTimeline" component={PeakTimelineScreen} />
+          <Stack.Screen name="DailyCheckin1" component={DailyCheckin1} />
+          <Stack.Screen name="DailyCheckin2" component={DailyCheckin2} />
 
-        {/* --- TM 관련 스택 --- */}
-        <Stack.Screen name="TimerSetup" component={TimerSetup} />
-        <Stack.Screen name="TimerRunning" component={TimerRunning} />
-        <Stack.Screen name="TimerResult" component={TimerResult} />
+          {/* --- TM 관련 스택 --- */}
+          <Stack.Screen name="TimerSetup" component={TimerSetup} />
+          <Stack.Screen name="TimerRunning" component={TimerRunning} />
+          <Stack.Screen name="TimerResult" component={TimerResult} />
 
-        {/* --- ST 관련 스택 --- */}
-        <Stack.Screen name="Setting" component={Setting} />
-        <Stack.Screen name="SettingInfo" component={SettingInfo} />
-        <Stack.Screen name="SettingTag" component={SettingTag} />
-      </Stack.Navigator>
+          {/* --- ST 관련 스택 --- */}
+          <Stack.Screen name="Setting" component={Setting} />
+          <Stack.Screen name="SettingInfo" component={SettingInfo} />
+          <Stack.Screen name="SettingTag" component={SettingTag} />
+        </Stack.Navigator>
+      </SleepProvider>
     </ConditionProvider>
   );
 };
