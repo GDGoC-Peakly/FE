@@ -4,6 +4,7 @@ import { View } from 'react-native';
 import SelectLogin from './screens/onBoardingScreens/SelectLogin';
 import EmailLogin from './screens/onBoardingScreens/EmailLogin';
 import EmptyScreen from './screens/onBoardingScreens/EmptyScreen';
+import SignUp from './screens/onBoardingScreens/SignUp';
 
 function App() {
   const [fontsLoaded] = useFonts({
@@ -17,7 +18,7 @@ function App() {
   return (
     <View style={{ flex: 1 }}>
       <StatusBar style="light" />
-      <SelectLogin />
+      <SignUp />
     </View>
   );
 }

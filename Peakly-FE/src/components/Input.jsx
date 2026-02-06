@@ -1,11 +1,11 @@
 import { StyleSheet, Text, View } from 'react-native';
 import { TextInput } from 'react-native-paper';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { colors } from '../styles/colors';
 import OffEye from '../../assets/img/Onboarding/offEye.svg';
 import OnEye from '../../assets/img/Onboarding/onEye.svg';
 
-const Input = ({ placeholder, inputType = 'text' }) => {
+const Input = ({ placeholder, inputType = 'text', style, props, right, value, onChangeText }) => {
   const [showPassword, setShowPassword] = useState(false);
 
   const INPUT_CONFIGS = {
@@ -30,18 +30,23 @@ const Input = ({ placeholder, inputType = 'text' }) => {
   return (
     <TextInput
       mode="outlined"
-      style={styles.inputContainer}
+      style={[styles.inputContainer, style]}
       placeholder={placeholder}
       placeholderTextColor={colors.grayscale[400]}
-      textColor={colors.grayscale[100]}
+      textColor={colors.grayscale[1000]}
       contentStyle={styles.placeholder}
       outlineColor="transparent"
       activeOutlineColor="transparent"
       cursorColor={colors.grayscale[100]}
-      {...config}
       secureTextEntry={!showPassword}
+      value={value}
+      onChangeText={onChangeText}
+      {...config}
+      {...props}
       right={
-        inputType === 'password' ? (
+        right ? (
+          right
+        ) : inputType === 'password' ? (
           <TextInput.Icon
             icon={({ size }) =>
               showPassword ? (
