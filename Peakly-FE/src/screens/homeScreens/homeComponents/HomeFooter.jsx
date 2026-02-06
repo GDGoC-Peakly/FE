@@ -6,7 +6,7 @@ import Settingicon from '../../../../assets/img/homeScreens/setting_icon.svg'
 import Reporticon from '../../../../assets/img/homeScreens/report_icon.svg'
 import { useNavigation } from '@react-navigation/native'
 
-const HomeFooter = ({ onFocusPress }) => { // onFocusPress 프롭 추가
+const HomeFooter = ({ onFocusPress }) => { 
   const navigation = useNavigation();
   
   return (
@@ -24,7 +24,7 @@ const HomeFooter = ({ onFocusPress }) => { // onFocusPress 프롭 추가
       <TouchableOpacity 
         activeOpacity={0.8} 
         style={styles.focusButton}
-        onPress={onFocusPress} // 부모로부터 받은 함수 실행
+        onPress={onFocusPress} 
       >
         <Ionicons name="play" size={18} color={colors.grayscale[1000]} style={styles.playIcon} />
         <Text style={styles.focusButtonText}>집중모드</Text>

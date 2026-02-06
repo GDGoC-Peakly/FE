@@ -229,8 +229,4 @@ const styles = StyleSheet.create({
     fontFamily: 'Pretendard-Bold',
     marginTop: 10,
   },
-  buttonContainer: {
-    paddingHorizontal: PADDING_HORIZONTAL,
-    paddingBottom: 20,
-  },
 });
