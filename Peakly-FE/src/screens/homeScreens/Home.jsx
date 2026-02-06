@@ -146,6 +146,7 @@ const styles = StyleSheet.create({
   logo: {
     width: 100,
     height: 40,
+    marginLeft: 118,
     marginBottom: 20,
   },
   peakCard: {
