@@ -74,18 +74,74 @@ const PeakTimelineScreen = ({ onBack }) => {
 export default PeakTimelineScreen;
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.grayscale[100] },
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 21, height: 60, marginTop: 59},
-  backIcon: { width: 24, height: 24 },
-  headerTitle: { fontSize: 24, fontFamily: 'Pretendard-Bold'},
-  timeHeaderContainer: { borderBottomWidth: 1, borderBottomColor: colors.grayscale[300], marginTop: 43, paddingBottom: 6},
-  timeHeaderRow: { flexDirection: 'row' },
-  timeText: { fontSize: 12, fontFamily: 'Pretendard-Regular'},
-  timelineBody: { height: SCREEN_HEIGHT * 0.7, position: 'relative' },
-  gridOverlay: { ...StyleSheet.absoluteFillObject, flexDirection: 'row' },
-  gridLine: { width: HOUR_WIDTH, height: '100%', borderLeftWidth: 1, borderColor: colors.grayscale[300], borderStyle: 'dashed' },
-  peakBlock: { position: 'absolute', top: 13, height: 225, backgroundColor: colors.primary[50], padding: 12, zIndex: 1 },
-  peakLabel: { fontSize: 14, color: colors.primary[500], fontFamily: 'Pretendard-Bold' },
-  peakTimeText: { position: 'absolute', bottom: 12, left: 12, fontSize: 12, fontFamily: 'Pretendard-Regualar', color: colors.primary[500] },
-  bottomBorderLine: { borderTopWidth: 1, borderTopColor: colors.grayscale[300], width: '100%' },
+  container: { 
+    flex: 1, 
+    backgroundColor: colors.grayscale[100] },
+  header: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    justifyContent: 'space-between', 
+    paddingHorizontal: 21, 
+    height: 60, 
+    marginTop: 59
+  },
+  backIcon: { 
+    width: 24, 
+    height: 24 
+  },
+  headerTitle: { 
+    fontSize: 24, 
+    fontFamily: 'Pretendard-Bold'
+  },
+  timeHeaderContainer: { 
+    borderBottomWidth: 1, 
+    borderBottomColor: colors.grayscale[300], 
+    marginTop: 43, 
+    paddingBottom: 6
+  },
+  timeHeaderRow: { 
+    flexDirection: 'row' 
+  },
+  timeText: { 
+    fontSize: 12, 
+    fontFamily: 'Pretendard-Regular'
+  },
+  timelineBody: { 
+    height: SCREEN_HEIGHT * 0.7, 
+    position: 'relative' 
+  },
+  gridOverlay: { 
+    ...StyleSheet.absoluteFillObject, 
+    flexDirection: 'row' },
+  gridLine: { 
+    width: HOUR_WIDTH, 
+    height: '100%', 
+    borderLeftWidth: 1, 
+    borderColor: colors.grayscale[300], 
+    borderStyle: 'dashed' },
+  peakBlock: { 
+    position: 'absolute', 
+    top: 13, 
+    height: 225, 
+    backgroundColor: colors.primary[50], 
+    padding: 12, 
+    zIndex: 1 },
+  peakLabel: { 
+    fontSize: 14, 
+    color: colors.primary[500], 
+    fontFamily: 'Pretendard-Bold' 
+  },
+  peakTimeText: { 
+    position: 'absolute', 
+    bottom: 12, 
+    left: 12, 
+    fontSize: 12, 
+    fontFamily: 'Pretendard-Regualar', 
+    color: colors.primary[500] 
+  },
+  bottomBorderLine: { 
+    borderTopWidth: 1, 
+    borderTopColor: colors.grayscale[300], 
+    width: '100%' 
+  },
 });
