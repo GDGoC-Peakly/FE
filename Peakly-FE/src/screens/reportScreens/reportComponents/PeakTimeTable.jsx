@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, Pressable, Alert } from 'react-native';
-import { colors } from '../styles/colors';
+import { colors } from '../../../styles/colors';
 
 const PeakTimeTable = ({ data = [], actualData = [] }) => {
   const START_HOUR = 5;

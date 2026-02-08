@@ -1,10 +1,10 @@
 import { StyleSheet, Text, View, Platform, ScrollView } from 'react-native';
 import { colors } from '../../styles/colors';
-import ReportPieChart from '../../components/ReportPieChart';
-import WeeklyHeatMap from '../../components/WeeklyHeatMap';
-import ReasonCard from '../../components/ReasonCard';
-import ManyReasonCard from '../../components/ManyReasonCard';
-import WeeklyPatternChart from '../../components/WeeklyPatternChart';
+import ReportPieChart from './reportComponents/ReportPieChart';
+import WeeklyHeatMap from './reportComponents/WeeklyHeatMap';
+import ReasonCard from './reportComponents/ReasonCard';
+import ManyReasonCard from './reportComponents/ManyReasonCard';
+import WeeklyPatternChart from './reportComponents/WeeklyPatternChart';
 
 const WeekReport = () => {
   const dummyData = [

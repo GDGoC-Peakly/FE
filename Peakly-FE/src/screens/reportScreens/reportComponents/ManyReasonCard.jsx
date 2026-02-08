@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
-import { colors } from '../styles/colors';
-import { REASON_CONFIG } from '../constants/reasonData';
+import { colors } from '../../../styles/colors';
+import { REASON_CONFIG } from '../../../constants/reasonData';
 
 const ManyReasonCard = ({ reasons = [] }) => {
   if (!reasons || reasons.length === 0) return null;

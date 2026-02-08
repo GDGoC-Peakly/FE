@@ -1,53 +1,46 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { LineChart } from 'react-native-gifted-charts';
-import { colors } from '../styles/colors';
+import { colors } from '../../../styles/colors';
 
-const WeeklyPatternChart = ({ weeklyPattern }) => {
+const MonthlyPatternChart = ({ weeklyPattern = [] }) => {
   const defaultData = [
-    { weekday: 'MON', avgFocusScore: 0 },
-    { weekday: 'TUE', avgFocusScore: 0 },
-    { weekday: 'WED', avgFocusScore: 0 },
-    { weekday: 'THU', avgFocusScore: 0 },
-    { weekday: 'FRI', avgFocusScore: 0 },
-    { weekday: 'SAT', avgFocusScore: 0 },
-    { weekday: 'SUN', avgFocusScore: 0 },
+    { weekOfMonth: 1, avgFocusScore: 0.0 },
+    { weekOfMonth: 2, avgFocusScore: 0.0 },
+    { weekOfMonth: 3, avgFocusScore: 0.0 },
+    { weekOfMonth: 4, avgFocusScore: 0.0 },
+    { weekOfMonth: 5, avgFocusScore: 0.0 },
   ];
 
   const sourceData = weeklyPattern && weeklyPattern.length > 0 ? weeklyPattern : defaultData;
-  const weekdayLabels = {
-    MON: '월',
-    TUE: '화',
-    WED: '수',
-    THU: '목',
-    FRI: '금',
-    SAT: '토',
-    SUN: '일',
-  };
 
   const chartData = sourceData.map((item) => ({
     value: item.avgFocusScore,
-    label: weekdayLabels[item.weekday],
+    label: `${item.weekOfMonth}주차`,
     showVerticalLine: true,
     verticalLineColor: colors.grayscale[300],
     verticalLineThickness: 1,
     verticalLineStrokeDashArray: [4, 4],
   }));
 
+  if (chartData.length === 0) {
+    return null;
+  }
+
   const maxValue = Math.max(...chartData.map((item) => item.value));
   const peakIndex = chartData.findIndex((item) => item.value === maxValue);
 
   const CHART_HEIGHT = 100;
   const CHART_WIDTH = 275;
-  const SPACING = 42;
-  const INITIAL_SPACING = 15;
+  const SPACING = 60;
+  const INITIAL_SPACING = 20;
 
   const tooltipLeft = INITIAL_SPACING + peakIndex * SPACING - 46;
   const tooltipBottom = (maxValue / 5) * CHART_HEIGHT + 35;
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>요일별 패턴</Text>
+      <Text style={styles.title}>주차별 패턴</Text>
 
       <View style={styles.contentContainer}>
         <View style={styles.chartWrapper}>
@@ -81,7 +74,7 @@ const WeeklyPatternChart = ({ weeklyPattern }) => {
 
           <View style={[styles.tooltip, { left: tooltipLeft, bottom: tooltipBottom }]}>
             <View style={styles.bubble}>
-              <Text style={styles.bubbleText}>이번주의 Peak요일</Text>
+              <Text style={styles.bubbleText}>이번달의 Peak주간</Text>
             </View>
             <View style={styles.arrow} />
           </View>
@@ -175,4 +168,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default WeeklyPatternChart;
+export default MonthlyPatternChart;

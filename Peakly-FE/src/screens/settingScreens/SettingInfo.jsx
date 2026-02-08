@@ -24,7 +24,6 @@ const SettingInfo = ({ navigation }) => {
     job: ['대학생', '취준생', '직장인', '기타'],
   };
 
-  // 2. 값을 변경하는 함수
   const handleSelect = (key, value) => {
     setSelectedValues((prev) => ({
       ...prev,
@@ -80,7 +79,7 @@ const SettingInfo = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <View style={styles.container} edges={['top']}>
       <SettingHeader title="기본정보" onBack={() => navigation?.goBack()} />
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
@@ -94,7 +93,7 @@ const SettingInfo = ({ navigation }) => {
       <View style={styles.bottomWrapper}>
         <Button text="완료" bgColor="#111" textColor="#FFF" onPress={() => { navigation?.goBack();}}/>
     </View>
-    </SafeAreaView>
+    </View>
   );
 };
 

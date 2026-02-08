@@ -3,6 +3,7 @@ import { StyleSheet, View, Text, ScrollView, TouchableOpacity, Image, Dimensions
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors } from '../../styles/colors';
 import Backicon from '../../../assets/img/homeScreens/back_icon.svg'
+import { useNavigation } from '@react-navigation/native';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 const HOUR_WIDTH = 80; 
@@ -12,6 +13,7 @@ const TOTAL_HOURS = END_HOUR - START_HOUR + 1;
 const CONTENT_WIDTH = TOTAL_HOURS * HOUR_WIDTH;
 
 const PeakTimelineScreen = ({ onBack }) => {
+  const navigation = useNavigation();
 
   const schedules = [
     { start: 10, end: 12, label: '피크 타임' },
@@ -19,9 +21,9 @@ const PeakTimelineScreen = ({ onBack }) => {
   ];
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <View style={styles.container} edges={['top']}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={onBack} style={styles.backButton}>
+        <TouchableOpacity onPress={() => navigation.goBack()}style={styles.backButton}>
           <Backicon style={styles.backIcon} resizeMode="contain" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>피크타임</Text>
@@ -65,25 +67,81 @@ const PeakTimelineScreen = ({ onBack }) => {
           <View style={styles.bottomBorderLine} />
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 
 export default PeakTimelineScreen;
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.grayscale[100] },
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 21, height: 60, marginTop: 59},
-  backIcon: { width: 24, height: 24 },
-  headerTitle: { fontSize: 24, fontFamily: 'Pretendard-Bold'},
-  timeHeaderContainer: { borderBottomWidth: 1, borderBottomColor: colors.grayscale[300], marginTop: 43, paddingBottom: 6},
-  timeHeaderRow: { flexDirection: 'row' },
-  timeText: { fontSize: 12, fontFamily: 'Pretendard-Regular'},
-  timelineBody: { height: SCREEN_HEIGHT * 0.7, position: 'relative' },
-  gridOverlay: { ...StyleSheet.absoluteFillObject, flexDirection: 'row' },
-  gridLine: { width: HOUR_WIDTH, height: '100%', borderLeftWidth: 1, borderColor: colors.grayscale[300], borderStyle: 'dashed' },
-  peakBlock: { position: 'absolute', top: 13, height: 225, backgroundColor: colors.primary[50], padding: 12, zIndex: 1 },
-  peakLabel: { fontSize: 14, color: colors.primary[500], fontFamily: 'Pretendard-Bold' },
-  peakTimeText: { position: 'absolute', bottom: 12, left: 12, fontSize: 12, fontFamily: 'Pretendard-Regualar', color: colors.primary[500] },
-  bottomBorderLine: { borderTopWidth: 1, borderTopColor: colors.grayscale[300], width: '100%' },
+  container: { 
+    flex: 1, 
+    backgroundColor: colors.grayscale[100] },
+  header: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    justifyContent: 'space-between', 
+    paddingHorizontal: 21, 
+    height: 60, 
+    marginTop: 59
+  },
+  backIcon: { 
+    width: 24, 
+    height: 24 
+  },
+  headerTitle: { 
+    fontSize: 24, 
+    fontFamily: 'Pretendard-Bold'
+  },
+  timeHeaderContainer: { 
+    borderBottomWidth: 1, 
+    borderBottomColor: colors.grayscale[300], 
+    marginTop: 43, 
+    paddingBottom: 6
+  },
+  timeHeaderRow: { 
+    flexDirection: 'row' 
+  },
+  timeText: { 
+    fontSize: 12, 
+    fontFamily: 'Pretendard-Regular'
+  },
+  timelineBody: { 
+    height: SCREEN_HEIGHT * 0.7, 
+    position: 'relative' 
+  },
+  gridOverlay: { 
+    ...StyleSheet.absoluteFillObject, 
+    flexDirection: 'row' },
+  gridLine: { 
+    width: HOUR_WIDTH, 
+    height: '100%', 
+    borderLeftWidth: 1, 
+    borderColor: colors.grayscale[300], 
+    borderStyle: 'dashed' },
+  peakBlock: { 
+    position: 'absolute', 
+    top: 13, 
+    height: 225, 
+    backgroundColor: colors.primary[50], 
+    padding: 12, 
+    zIndex: 1 },
+  peakLabel: { 
+    fontSize: 14, 
+    color: colors.primary[500], 
+    fontFamily: 'Pretendard-Bold' 
+  },
+  peakTimeText: { 
+    position: 'absolute', 
+    bottom: 12, 
+    left: 12, 
+    fontSize: 12, 
+    fontFamily: 'Pretendard-Regualar', 
+    color: colors.primary[500] 
+  },
+  bottomBorderLine: { 
+    borderTopWidth: 1, 
+    borderTopColor: colors.grayscale[300], 
+    width: '100%' 
+  },
 });
