@@ -1,10 +1,10 @@
 import { StyleSheet, Text, Pressable } from 'react-native';
 import { colors } from '../styles/colors';
 
-const CustomButton = ({ style, text, onPress }) => {
+const CustomButton = ({ style, text, onPress, textStyle, disabled }) => {
   return (
-    <Pressable style={[styles.buttonContainer, style]} onPress={onPress}>
-      <Text style={styles.text}>{text}</Text>
+    <Pressable style={[styles.buttonContainer, style]} onPress={onPress} disabled={disabled}>
+      <Text style={[styles.text, textStyle]}>{text}</Text>
     </Pressable>
   );
 };
