@@ -13,8 +13,11 @@ import AIDataConsent from './screens/onBoardingScreens/AIDataConsent';
 import MarketingConsent from './screens/onBoardingScreens/MarketingContsent';
 import ChronoType from './screens/onBoardingScreens/ChronoType';
 import PeakTime from './screens/onBoardingScreens/PeakTime';
-import Caffaine from './screens/onBoardingScreens/Caffaine';
+import Caffeine from './screens/onBoardingScreens/Caffeine';
 import Noise from './screens/onBoardingScreens/Noise';
+import Status from './screens/onBoardingScreens/Status';
+import CustomTag from './screens/onBoardingScreens/CustomTag';
+import CompleteScreen from './screens/onBoardingScreens/CompleteScreen';
 
 function App() {
   const [fontsLoaded] = useFonts({
@@ -28,7 +31,7 @@ function App() {
   return (
     <View style={{ flex: 1 }}>
       <StatusBar style="light" />
-      <Noise />
+      <CustomTag />
     </View>
   );
 }

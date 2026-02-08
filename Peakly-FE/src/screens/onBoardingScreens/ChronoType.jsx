@@ -4,6 +4,7 @@ import Header from './components/Header';
 import { colors } from '../../styles/colors';
 import OnBording from '../../../assets/img/Onboarding/onboarding1.svg';
 import Button from './components/Button';
+import CustomButton from '../../components/CustomButton';
 
 const ChronoType = () => {
   const [selected, setSelected] = useState('');
@@ -14,6 +15,7 @@ const ChronoType = () => {
 
   return (
     <View style={styles.container}>
+      <Header totalStep={7} currentStep={1} />
       <View style={styles.titleContainer}>
         <Text style={styles.title}>크로노타입</Text>
         <Text style={[styles.title, styles.subtitle]}>
@@ -38,6 +40,7 @@ const ChronoType = () => {
           onPress={() => handlePress('저녁형')}
         />
       </View>
+      <CustomButton style={styles.button} text={'다음'} />
     </View>
   );
 };
@@ -47,9 +50,9 @@ export default ChronoType;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: colors.grayscale[100],
+    paddingHorizontal: 20,
     gap: 60,
   },
   title: {
@@ -68,5 +71,10 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     gap: 16,
+  },
+  button: {
+    width: '100%',
+    position: 'absolute',
+    bottom: 50,
   },
 });

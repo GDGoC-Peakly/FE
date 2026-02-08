@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import { colors } from '../../styles/colors';
 import Onboarding from '../../../assets/img/Onboarding/noiseOnboarding.svg';
 import ConditionSlider from '../../components/ConditionSlider';
+import Header from './components/Header';
+import CustomButton from '../../components/CustomButton';
 
 const Noise = () => {
   const [noise, setNoise] = useState(50);
@@ -15,6 +17,7 @@ const Noise = () => {
 
   return (
     <View style={styles.container}>
+      <Header totalStep={7} currentStep={4} />
       <View style={styles.titleContainer}>
         <Text style={styles.title}>소음 반응도는{'\n'}어떤편인가요?</Text>
       </View>
@@ -28,6 +31,7 @@ const Noise = () => {
           dotCount={3}
         />
       </View>
+      <CustomButton text={'다음'} style={styles.button} />
     </View>
   );
 };
@@ -37,10 +41,10 @@ export default Noise;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: colors.grayscale[100],
     gap: 60,
+    paddingHorizontal: 20,
   },
   titleContainer: {
     justifyContent: 'center',
@@ -60,7 +64,12 @@ const styles = StyleSheet.create({
   },
   sliderContainer: {
     width: '100%',
-    paddingHorizontal: 40,
+    paddingHorizontal: 20,
     marginTop: -80,
+  },
+  button: {
+    position: 'absolute',
+    bottom: 50,
+    width: '100%',
   },
 });

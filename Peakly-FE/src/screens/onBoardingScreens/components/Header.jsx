@@ -4,51 +4,42 @@ import DesignedArrow from '../../../../assets/img/Onboarding/designedArrow';
 
 const Header = ({ totalStep, currentStep }) => {
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.headerContainer}>
-        <Pressable onPress={() => {}} style={styles.backButton}>
-          <DesignedArrow />
-        </Pressable>
-
-        <View style={styles.progressContainer}>
-          {Array.from({ length: totalStep }).map((_, index) => {
-            const isActive = index < currentStep;
-            return (
-              <View
-                key={index}
-                style={[
-                  styles.stepSegment,
-                  isActive ? styles.activeStep : styles.inactiveStep,
-                  index === 0 && { borderTopLeftRadius: 4, borderBottomLeftRadius: 4 },
-                  index === totalStep - 1 && {
-                    borderTopRightRadius: 4,
-                    borderBottomRightRadius: 4,
-                  },
-                ]}
-              />
-            );
-          })}
-        </View>
-
-        <View style={styles.rightSpacer} />
+    <View style={styles.headerContainer}>
+      <Pressable onPress={() => {}} style={styles.backButton}>
+        <DesignedArrow />
+      </Pressable>
+      <View style={styles.progressContainer}>
+        {Array.from({ length: totalStep }).map((_, index) => {
+          const isActive = index < currentStep;
+          return (
+            <View
+              key={index}
+              style={[
+                styles.stepSegment,
+                isActive ? styles.activeStep : styles.inactiveStep,
+                index === 0 && { borderTopLeftRadius: 4, borderBottomLeftRadius: 4 },
+                index === totalStep - 1 && {
+                  borderTopRightRadius: 4,
+                  borderBottomRightRadius: 4,
+                },
+              ]}
+            />
+          );
+        })}
       </View>
-    </SafeAreaView>
+      <View style={styles.rightSpacer} />
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  safeArea: {
-    backgroundColor: '#fff',
-    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
-  },
   headerContainer: {
+    paddingTop: Platform.OS === 'android' ? 35 : 70,
     height: 54,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,
     backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#f2f2f2',
   },
   backButton: {
     padding: 8,
@@ -60,6 +51,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
+    marginLeft: 40,
   },
   stepSegment: {
     width: 28,
