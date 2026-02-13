@@ -7,7 +7,8 @@ import OnboardingButton from '../../components/OnboardingButton';
 import DefaultHeader from './components/DefaultHeader';
 
 // api
-import { login } from '../../api/auth';
+import { login as loginApi } from '../../api/auth';
+import { useAuth } from '../../contexts/AuthContext';
 
 const emailConfig = {
   keyboardType: 'email-address',
@@ -38,19 +39,18 @@ const EmailLogin = ({ navigation }) => {
 
   const isAllValid = email.includes('@') && password.length > 0;
 
+  const { login: authLogin } = useAuth();
+
   const handleLogin = async () => {
     if (!isAllValid || isLoading) return;
 
     setIsLoading(true);
     try {
-      const response = await login(email, password);
-
-      if (response?.isSuccess) {
-        navigation.replace('Stack');
-      } else {
-        Alert.alert('로그인 실패', response?.message || '아이디 또는 비밀번호를 확인해주세요.');
-      }
+      const data = await loginApi(email, password);
+      await authLogin(data.accessToken, data.refreshToken);
+      navigation.replace('Stack');
     } catch (error) {
+      console.error('Login Error', error);
       if (error.response) {
         const { status, data } = error.response;
         if (status === 401) {

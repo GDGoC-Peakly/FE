@@ -1,14 +1,11 @@
 import client from './client';
-import { setToken, removeToken } from '../utils/stoage';
 
 // 로그인 (Login)
-export const login = async (data) => {
-  const response = await client.post('auth/login', data);
+export const login = async (email, password) => {
+  const response = await client.post('auth/login', { email, password });
   const { isSuccess, result, message } = response.data;
+
   if (isSuccess && result) {
-    if (result.accessToken) {
-      await setToken(result.accessToken);
-    }
     return result;
   }
   throw new Error(message || '로그인에 실패하였습니다.');
@@ -23,9 +20,6 @@ export const signup = async (email, password) => {
   const { isSuccess, result, message } = response.data;
 
   if (isSuccess && result) {
-    if (result.accessToken) {
-      await setToken(result.accessToken);
-    }
     return result;
   }
   throw new Error(message || '회원가입에 실패하였습니다.');

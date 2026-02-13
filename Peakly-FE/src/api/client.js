@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { getToken, removeToken } from '../utils/stoage';
+import { getToken, removeToken } from '../utils/storage';
 
 // 인스턴스 (Instance)
 

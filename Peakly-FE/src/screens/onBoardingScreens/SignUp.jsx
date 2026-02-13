@@ -7,7 +7,14 @@ import DefaultHeader from './components/DefaultHeader';
 import EmailDropdown from './components/EmailDropdown';
 
 // api
-import { checkEmail, sendVerifyEmail, verifyEmail, signup, login } from '../../api/auth';
+import {
+  checkEmail,
+  sendVerifyEmail,
+  verifyEmail,
+  signup as signupApi,
+  login as loginApi,
+} from '../../api/auth';
+import { useAuth } from '../../contexts/AuthContext';
 
 const PASSWORD_REGEX = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,20}$/;
 
@@ -64,6 +71,8 @@ const SignUp = ({ navigation }) => {
   const [isSame, setIsSame] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  const { login: authLogin } = useAuth();
+
   const isAllValid = emailStatus === 'possible' && pwStatus === 'ready' && isSame === 'same';
 
   // 이메일 중복 확인
@@ -116,21 +125,39 @@ const SignUp = ({ navigation }) => {
       if (!isAllValid) Alert.alert('확인 필요', '모든 입력란을 올바르게 채워주세요.');
       return;
     }
+
     const fullEmail = emailId + emailDomain;
     setIsLoading(true);
 
     try {
-      const signupResponse = await signup(fullEmail, password);
+      const signupResponse = await signupApi(fullEmail, password);
+      console.log('Signup Response:', signupResponse);
+      if (signupResponse && (signupResponse.isSuccess || signupResponse.id)) {
+        const loginResponse = await loginApi(fullEmail, password);
+        console.log('Login Response:', loginResponse);
 
-      if (signupResponse?.isSuccess) {
-        const loginResponse = await login(fullEmail, password);
-
-        if (loginResponse?.isSuccess) {
-          Alert.alert('환영합니다!', '회원가입이 완료되었습니다.');
-          navigation.navigate('OnboardingProfile');
+        if (loginResponse && loginResponse.accessToken) {
+          Alert.alert('환영합니다!', '회원가입이 완료되었습니다.', [
+            {
+              text: '확인',
+              onPress: async () => {
+                try {
+                  await authLogin(loginResponse.accessToken, loginResponse.refreshToken);
+                  navigation.navigate('OnboardingProfile');
+                } catch (authError) {
+                  console.error('인증 저장 에러:', authError);
+                }
+              },
+            },
+          ]);
+        } else {
+          Alert.alert(
+            '알림',
+            '가입은 완료되었으나 자동 로그인에 실패했습니다. 다시 로그인해주세요.',
+          );
         }
       } else {
-        Alert.alert('가입 실패', signupResponse.message || '다시 시도해주세요.');
+        Alert.alert('가입 실패', signupResponse?.message || '입력 정보를 다시 확인해주세요.');
       }
     } catch (error) {
       if (error.response) {
@@ -138,10 +165,13 @@ const SignUp = ({ navigation }) => {
 
         if (status === 403) {
           Alert.alert('인증 필요', '이메일 인증이 필요합니다.');
+        } else if (status === 409) {
+          Alert.alert('가입 실패', '이미 가입된 이메일입니다.');
         } else {
           Alert.alert('가입 실패', data?.message || '가입 처리 중 오류가 발생했습니다.');
         }
       } else {
+        console.error('Signup Error:', error);
         Alert.alert('네트워크 오류', '서버와의 통신이 원활하지 않습니다.');
       }
     } finally {
