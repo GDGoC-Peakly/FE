@@ -1,6 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native';
 import { colors } from '../../styles/colors';
-import DefaultProfile from '../../../assets/img/Onboarding/defaultProfile.svg';
 import ProfileImagePicker from '../../components/ProfileImagePicker';
 import { useState } from 'react';
 import Input from '../../components/Input';

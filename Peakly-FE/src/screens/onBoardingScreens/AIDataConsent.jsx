@@ -2,12 +2,17 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import ArrowLeft from '../../../assets/img/Onboarding/arrowLeft.svg';
 import { colors } from '../../styles/colors';
 
-const AIDataConsent = () => {
+const AIDataConsent = ({ navigation }) => {
   return (
     <View style={styles.baseContainer}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.headerContainer}>
-          <Pressable style={styles.leftButton} onPress={() => {}}>
+          <Pressable
+            style={styles.leftButton}
+            onPress={() => {
+              navigation.goBack();
+            }}
+          >
             <ArrowLeft />
           </Pressable>
           <Text style={styles.title}>데이터 분석 및 AI 학습 동의서</Text>

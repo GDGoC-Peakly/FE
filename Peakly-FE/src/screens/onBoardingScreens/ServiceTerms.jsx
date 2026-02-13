@@ -2,16 +2,15 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import ArrowLeft from '../../../assets/img/Onboarding/arrowLeft.svg';
 import { colors } from '../../styles/colors';
 
-const ServiceTerms = () => {
+const ServiceTerms = ({ navigation }) => {
   return (
     <View style={styles.baseContainer}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        {/* 헤더 */}
         <View style={styles.headerContainer}>
           <Pressable
             style={styles.leftButton}
             onPress={() => {
-              /* 뒤로가기 */
+              navigation.goBack();
             }}
           >
             <ArrowLeft />

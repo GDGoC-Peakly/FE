@@ -3,13 +3,12 @@ import React from 'react';
 import { colors } from '../styles/colors';
 import { useState } from 'react';
 
-const CheckBox = () => {
-  const [isDisabled, setIsDisabled] = useState(false);
-
+const CheckBox = ({ checked, onPress }) => {
   return (
     <Pressable
-      style={[isDisabled ? styles.on : styles.off]}
-      onPress={() => setIsDisabled((prev) => !prev)}
+      style={[checked ? styles.on : styles.off]}
+      onPress={onPress}
+      hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
     />
   );
 };
