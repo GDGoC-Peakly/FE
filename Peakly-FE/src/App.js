@@ -11,7 +11,7 @@ import Terms from './screens/onBoardingScreens/Terms';
 import ServiceTerms from './screens/onBoardingScreens/ServiceTerms';
 import PrivacyPolicy from './screens/onBoardingScreens/PrivacyPolicy';
 import AIDataConsent from './screens/onBoardingScreens/AIDataConsent';
-import MarketingConsent from './screens/onBoardingScreens/MarketingContsent';
+import MarketingConsent from './screens/onBoardingScreens/MarketingConsent';
 import ChronoType from './screens/onBoardingScreens/ChronoType';
 import PeakTime from './screens/onBoardingScreens/PeakTime';
 import Caffeine from './screens/onBoardingScreens/Caffeine';
@@ -19,6 +19,7 @@ import Noise from './screens/onBoardingScreens/Noise';
 import Status from './screens/onBoardingScreens/Status';
 import CustomTag from './screens/onBoardingScreens/CustomTag';
 import CompleteScreen from './screens/onBoardingScreens/CompleteScreen';
+import OnboardingStack from './navigations/OnboardingStack';
 
 function App() {
   const [fontsLoaded] = useFonts({
@@ -30,10 +31,9 @@ function App() {
   if (!fontsLoaded) return null;
 
   return (
-    <View style={{ flex: 1 }}>
-      <StatusBar style="light" />
-      <CustomTag />
-    </View>
+    <NavigationContainer>
+      <OnboardingStack />
+    </NavigationContainer>
   );
 }
 

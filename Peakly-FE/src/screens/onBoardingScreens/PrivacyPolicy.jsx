@@ -2,12 +2,17 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import ArrowLeft from '../../../assets/img/Onboarding/arrowLeft.svg';
 import { colors } from '../../styles/colors';
 
-const PrivacyPolicy = () => {
+const PrivacyPolicy = ({ navigation }) => {
   return (
     <View style={styles.baseContainer}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.headerContainer}>
-          <Pressable style={styles.leftButton} onPress={() => {}}>
+          <Pressable
+            style={styles.leftButton}
+            onPress={() => {
+              navigation.goBack();
+            }}
+          >
             <ArrowLeft />
           </Pressable>
           <Text style={styles.title}>개인정보 처리방침</Text>

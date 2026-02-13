@@ -1,31 +1,21 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { TextInput } from 'react-native-paper';
 import { useState } from 'react';
 import { colors } from '../styles/colors';
 import OffEye from '../../assets/img/Onboarding/offEye.svg';
 import OnEye from '../../assets/img/Onboarding/onEye.svg';
 
-const Input = ({ placeholder, inputType = 'text', style, props, right, value, onChangeText }) => {
+const Input = ({
+  placeholder,
+  inputType = 'text',
+  style,
+  props,
+  right,
+  value,
+  onChangeText,
+  ...rest
+}) => {
   const [showPassword, setShowPassword] = useState(false);
-
-  const INPUT_CONFIGS = {
-    email: {
-      keyboardType: 'email-address',
-      autoCapitalize: 'none',
-      autoCorrect: false,
-      autoComplete: 'email',
-      textContentType: 'emailAddress',
-    },
-    password: {
-      autoCapitalize: 'none',
-      textContentType: 'none',
-      autoComplete: 'off',
-      importantForAutofill: 'no',
-      autoCorrect: false,
-    },
-  };
-
-  const config = INPUT_CONFIGS[inputType] || INPUT_CONFIGS.text;
 
   return (
     <TextInput
@@ -37,12 +27,11 @@ const Input = ({ placeholder, inputType = 'text', style, props, right, value, on
       contentStyle={styles.placeholder}
       outlineColor="transparent"
       activeOutlineColor="transparent"
-      cursorColor={colors.grayscale[100]}
-      secureTextEntry={!showPassword}
+      secureTextEntry={inputType === 'password' && !showPassword}
       value={value}
       onChangeText={onChangeText}
-      {...config}
       {...props}
+      {...rest}
       right={
         right ? (
           right
@@ -71,11 +60,9 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 60,
     backgroundColor: colors.grayscale[800],
-    borderRadius: 12,
   },
   placeholder: {
     fontSize: 12,
-    fontFamily: 'Pretendard-Bold',
-    fontWeight: 400,
+    fontFamily: 'Pretendard-Medium',
   },
 });

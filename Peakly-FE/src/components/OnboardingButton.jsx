@@ -14,10 +14,9 @@ export default OnboardingButton;
 
 const styles = StyleSheet.create({
   buttonText: {
-    fontFamily: 'Pretendard-Bold',
-    fontSize: 14,
+    fontFamily: 'Pretendard-Medium',
+    fontSize: 12,
     color: colors.grayscale[100],
-    fontWeight: 400,
     textDecorationLine: 'underline',
   },
 });
