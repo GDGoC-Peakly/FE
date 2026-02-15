@@ -58,29 +58,11 @@ const CustomTag = () => {
     }
   };
 
-  // 태그 추가 함수
-  const addTag = () => {
-    if (text.trim() === '') return;
-
-    const newTag = {
-      id: Date.now(),
-      category: selectedCategory,
-      content: text.trim(),
-    };
-
-    setTags([...tags, newTag]);
-    setText('');
-  };
-
-  // 태그 삭제 함수
-  const removeTag = (id) => {
-    setTags(tags.filter((tag) => tag.id !== id));
-  };
-
   return (
-    <TouchableWithoutFeedback onPress={() => setIsOpen(false)}>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
         <Header totalStep={7} currentStep={6} />
+
         <View style={styles.titleWrapper}>
           <Text style={styles.title}>커스텀 태그</Text>
           <Text style={styles.subTitle}>자유롭게 커스텀 태그를 만들어보세요.</Text>
