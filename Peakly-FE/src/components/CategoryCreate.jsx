@@ -35,7 +35,7 @@ const CategoryCreate = ({ categories, onAdd, onDelete, onCategoryChange }) => {
           onSelect={(cat) => {
             setSelectedCategory(cat);
             setIsOpen(false);
-            onCategoryChange(cat); // 카테고리가 바뀌면 부모에게 알림
+            onCategoryChange(cat); 
           }}
         />
         <CategoryInput

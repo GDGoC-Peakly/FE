@@ -3,8 +3,10 @@ import { getToken, removeToken } from '../utils/storage';
 
 // 인스턴스 (Instance)
 
+const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
+
 const client = axios.create({
-  baseURL: 'https://peakly.co.kr',
+  baseURL: BASE_URL,
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
