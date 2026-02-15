@@ -15,8 +15,7 @@ const client = axios.create({
 
 client.interceptors.request.use(
   async (config) => {
-    // const token = await getToken();
-    const token = "eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJwZWFrbHkiLCJzdWIiOiI3IiwiaWF0IjoxNzcxMTU1MjM1LCJleHAiOjE3NzExNTg4MzUsInR5cCI6IkFDQ0VTUyJ9.R945_Utk8li40gOryWeYdz84AIderY65401yB8PeM0s"
+    const token = await getToken();
     console.log("현재 요청 토큰:", token);
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
