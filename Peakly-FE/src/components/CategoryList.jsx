@@ -22,7 +22,7 @@ const CategoryList = ({ categories, selectedCategory, onRemoveCategory }) => {
               style={styles.categoryItem}
               onPress={() => onRemoveCategory(item.id)}
             >
-              <Text style={styles.categoryContent}>{item.content}</Text>
+              <Text style={styles.categoryContent}>{item.name}</Text>
               <Ionicons
                 name="close"
                 size={12}
