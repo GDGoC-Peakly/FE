@@ -15,14 +15,14 @@ function App() {
   if (!fontsLoaded) return null;
 
   return (
-    /* 
     <AuthProvider>
       <StatusBar style="auto" />
       <AppNavigator />
-    </AuthProvider> */
-    <View style={{ flex: 1 }}>
-      <CustomTag />
-    </View>
+    </AuthProvider> 
+    // <View style={{ flex: 1 }}>
+    //   <CustomTag />
+    // </View>
+
   );
 }
 
