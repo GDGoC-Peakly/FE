@@ -6,18 +6,33 @@ import ConditionSlider from '../../components/ConditionSlider';
 import Header from './components/Header';
 import CustomButton from '../../components/CustomButton';
 
-const Noise = () => {
+const Noise = ({ navigation, route }) => {
   const [noise, setNoise] = useState(50);
+  const { accumulatedData } = route.params || {};
 
   const getNoiseText = (val) => {
-    if (val <= 0) return '반응이 없는 편이에요.';
+    if (val <= 0) return '상관 없어요.';
     if (val <= 50) return '보통이에요.';
     return '매우 민감해요.';
   };
 
+  const handleNext = () => {
+    let apiValue = 1;
+
+    if (noise <= 0) apiValue = 0;
+    else if (noise <= 50) apiValue = 1;
+    else apiValue = 2;
+    navigation.navigate('Status', {
+      accumulatedData: {
+        ...accumulatedData,
+        noiseSensitivity: apiValue,
+      },
+    });
+  };
+
   return (
     <View style={styles.container}>
-      <Header totalStep={7} currentStep={4} />
+      <Header totalStep={7} currentStep={4} onPress={() => navigation.goBack()} />
       <View style={styles.titleContainer}>
         <Text style={styles.title}>소음 반응도는{'\n'}어떤편인가요?</Text>
       </View>
@@ -31,7 +46,7 @@ const Noise = () => {
           dotCount={3}
         />
       </View>
-      <CustomButton text={'다음'} style={styles.button} />
+      <CustomButton text={'다음'} style={styles.button} onPress={handleNext} />
     </View>
   );
 };

@@ -2,10 +2,10 @@ import React from 'react';
 import { View, Pressable, StyleSheet, SafeAreaView, Platform, StatusBar } from 'react-native';
 import DesignedArrow from '../../../../assets/img/Onboarding/designedArrow';
 
-const Header = ({ totalStep, currentStep }) => {
+const Header = ({ totalStep, currentStep, onPress }) => {
   return (
     <View style={styles.headerContainer}>
-      <Pressable onPress={() => {}} style={styles.backButton}>
+      <Pressable onPress={onPress} style={styles.backButton}>
         <DesignedArrow />
       </Pressable>
       <View style={styles.progressContainer}>

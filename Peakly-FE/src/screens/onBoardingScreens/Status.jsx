@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { StyleSheet, Text, View, Pressable, useWindowDimensions } from 'react-native';
+import { StyleSheet, Text, View, Pressable, useWindowDimensions, Alert } from 'react-native';
 import { colors } from '../../styles/colors';
 import Student from '../../../assets/img/Onboarding/student.svg';
 import NoJob from '../../../assets/img/Onboarding/noJob.svg';
@@ -8,10 +8,13 @@ import Others from '../../../assets/img/Onboarding/others.svg';
 import CustomButton from '../../components/CustomButton';
 import Header from './components/Header';
 
-const Status = () => {
+const Status = ({ navigation, route }) => {
   const { width } = useWindowDimensions();
   const calWidth = width - 40;
   const [selectedStatus, setSelectedStatus] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const { accumulatedData } = route.params || {};
 
   const statusOptions = [
     { id: 'student', Icon: Student, label: '학생' },
@@ -19,6 +22,30 @@ const Status = () => {
     { id: 'whiteMan', Icon: WhiteMan, label: '직장인' },
     { id: 'others', Icon: Others, label: '기타' },
   ];
+
+  const handleNext = async () => {
+    if (!selectedStatus) {
+      Alert.alert('알림', '현재 상태를 선택해주세요.');
+      return;
+    }
+
+    if (isLoading) return;
+    setIsLoading(true);
+
+    const jobMapping = {
+      student: 'STUDENT',
+      noJob: 'JOB_SEEKER',
+      whiteMan: 'OFFICE_WORKER',
+      others: 'ETC',
+    };
+    const nextAccumulatedData = {
+      ...accumulatedData,
+      job: jobMapping[selectedStatus],
+    };
+    navigation.navigate('CustomTag', {
+      accumulatedData: nextAccumulatedData,
+    });
+  };
 
   const renderButton = (item) => {
     const isSelected = selectedStatus === item.id;
@@ -38,13 +65,13 @@ const Status = () => {
 
   return (
     <View style={styles.container}>
-      <Header totalStep={7} currentStep={5} />
+      <Header totalStep={7} currentStep={5} onPress={() => navigation.goBack()} />
       <Text style={styles.title}>현재는{'\n'}어떤 상태이신가요?</Text>
       <View style={[styles.buttonContainer, { height: calWidth }]}>
         <View style={styles.row}>{statusOptions.slice(0, 2).map(renderButton)}</View>
         <View style={styles.row}>{statusOptions.slice(2, 4).map(renderButton)}</View>
       </View>
-      <CustomButton text={'다음'} style={styles.nextButton} />
+      <CustomButton text={'다음'} style={styles.nextButton} onPress={handleNext} />
     </View>
   );
 };

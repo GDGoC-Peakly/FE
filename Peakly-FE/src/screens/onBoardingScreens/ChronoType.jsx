@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, Alert } from 'react-native';
 import React, { useState } from 'react';
 import Header from './components/Header';
 import { colors } from '../../styles/colors';
@@ -6,16 +6,33 @@ import OnBording from '../../../assets/img/Onboarding/onboarding1.svg';
 import Button from './components/Button';
 import CustomButton from '../../components/CustomButton';
 
-const ChronoType = () => {
+const ChronoType = ({ navigation }) => {
   const [selected, setSelected] = useState('');
 
   const handlePress = (type) => {
     setSelected(type);
   };
 
+  const handleNext = () => {
+    if (!selected) {
+      Alert.alert('알림', '유형을 선택해주세요.');
+      return;
+    }
+    let apiValue = '';
+    if (selected === '아침형') apiValue = 'MORNING';
+    else if (selected === '중간형') apiValue = 'AFTERNOON';
+    else if (selected === '저녁형') apiValue = 'NIGHT';
+
+    navigation.navigate('PeakTime', {
+      accumulatedData: {
+        chronotype: apiValue,
+      },
+    });
+  };
+
   return (
     <View style={styles.container}>
-      <Header totalStep={7} currentStep={1} />
+      <Header totalStep={7} currentStep={1} onPress={() => navigation.goBack()} />
       <View style={styles.titleContainer}>
         <Text style={styles.title}>크로노타입</Text>
         <Text style={[styles.title, styles.subtitle]}>
@@ -40,7 +57,7 @@ const ChronoType = () => {
           onPress={() => handlePress('저녁형')}
         />
       </View>
-      <CustomButton style={styles.button} text={'다음'} />
+      <CustomButton style={styles.button} text={'다음'} onPress={handleNext} />
     </View>
   );
 };

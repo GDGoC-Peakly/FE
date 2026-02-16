@@ -4,6 +4,8 @@ import { AuthProvider } from './contexts/AuthContext';
 import { StatusBar } from 'expo-status-bar';
 import { View } from 'react-native';
 import CustomTag from './screens/onBoardingScreens/CustomTag';
+import { NavigationContainer } from '@react-navigation/native';
+import OnboardingStack from './navigations/OnboardingStack';
 
 function App() {
   const [fontsLoaded] = useFonts({
@@ -15,14 +17,10 @@ function App() {
   if (!fontsLoaded) return null;
 
   return (
-    /* 
     <AuthProvider>
       <StatusBar style="auto" />
       <AppNavigator />
-    </AuthProvider> */
-    <View style={{ flex: 1 }}>
-      <CustomTag />
-    </View>
+    </AuthProvider>
   );
 }
 

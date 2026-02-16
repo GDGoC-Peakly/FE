@@ -6,18 +6,33 @@ import ConditionSlider from '../../components/ConditionSlider';
 import CustomButton from '../../components/CustomButton';
 import Header from './components/Header';
 
-const Caffeine = () => {
+const Caffeine = ({ navigation, route }) => {
   const [caffeine, setCaffeine] = useState(50);
+  const { accumulatedData } = route.params || {};
 
   const getCaffeineText = (val) => {
-    if (val <= 0) return '반응이 없는 편이에요.';
+    if (val <= 0) return '상관없어요.';
     if (val <= 50) return '보통이에요.';
     return '매우 민감해요.';
   };
 
+  const handleNext = () => {
+    let apiValue = 1;
+
+    if (caffeine === 0) apiValue = 0;
+    else if (caffeine === 50) apiValue = 1;
+    else if (caffeine >= 100) apiValue = 2;
+    navigation.navigate('Noise', {
+      accumulatedData: {
+        ...accumulatedData,
+        caffeineResponsiveness: apiValue,
+      },
+    });
+  };
+
   return (
     <View style={styles.container}>
-      <Header totalStep={7} currentStep={3} />
+      <Header totalStep={7} currentStep={3} onPress={() => navigation.goBack()} />
       <View style={styles.titleContainer}>
         <Text style={styles.title}>카페인 반응도는{'\n'}어떤편인가요?</Text>
         <Text style={[styles.title, styles.subtitle]}>언제 가장 집중이 잘 되나요?</Text>
@@ -32,7 +47,7 @@ const Caffeine = () => {
           dotCount={3}
         />
       </View>
-      <CustomButton style={styles.button} text={'다음'} />
+      <CustomButton style={styles.button} text={'다음'} onPress={handleNext} />
     </View>
   );
 };

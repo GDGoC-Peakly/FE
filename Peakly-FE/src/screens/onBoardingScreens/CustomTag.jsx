@@ -7,16 +7,17 @@ import CategoryCreate from '../../components/CategoryCreate';
 import { categoryApi } from '../../api/category';
 
 const CATEGORY_MAP = {
-  '암기': 1,
-  '이해': 2,
+  암기: 1,
+  이해: 2,
   '논리·사고': 3,
-  '반복': 4,
+  반복: 4,
   '창의·구상': 5,
 };
 
-const CustomTag = () => {
-  const [tags, setTags] = useState([]); 
+const CustomTag = ({ navigation, route }) => {
+  const [tags, setTags] = useState([]);
   const [selectedCategoryName, setSelectedCategoryName] = useState('암기');
+  const { accumulatedData } = route.params || {};
 
   const fetchTags = useCallback(async (majorId) => {
     try {
@@ -34,7 +35,7 @@ const CustomTag = () => {
   const handleCategoryChange = (categoryName) => {
     setSelectedCategoryName(categoryName);
     const majorId = CATEGORY_MAP[categoryName];
-    fetchTags(majorId); 
+    fetchTags(majorId);
   };
 
   const handleAddTag = async (tagName, selectedCategory) => {
@@ -43,7 +44,7 @@ const CustomTag = () => {
 
     try {
       await categoryApi.createCustomTag(tagName, majorId);
-      await fetchTags(majorId); 
+      await fetchTags(majorId);
     } catch (error) {
       Alert.alert('알림', '태그 생성 실패');
     }
@@ -58,24 +59,36 @@ const CustomTag = () => {
     }
   };
 
+  const handleNext = async () => {
+    navigation.navigate('CompleteScreen', {
+      accumulatedData: accumulatedData,
+    });
+  };
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
-        <Header totalStep={7} currentStep={6} />
+        <Header
+          totalStep={7}
+          currentStep={6}
+          onPress={() => {
+            navigation.goBack();
+          }}
+        />
 
         <View style={styles.titleWrapper}>
           <Text style={styles.title}>커스텀 태그</Text>
           <Text style={styles.subTitle}>자유롭게 커스텀 태그를 만들어보세요.</Text>
         </View>
 
-        <CategoryCreate 
-          categories={tags} 
+        <CategoryCreate
+          categories={tags}
           onAdd={handleAddTag}
           onDelete={handleDeleteTag}
-          onCategoryChange={handleCategoryChange} 
+          onCategoryChange={handleCategoryChange}
         />
 
-        <CustomButton text={'다음'} style={styles.button} onPress={() => {}} />
+        <CustomButton text={'다음'} style={styles.button} onPress={handleNext} />
       </View>
     </TouchableWithoutFeedback>
   );
@@ -84,29 +97,29 @@ const CustomTag = () => {
 export default CustomTag;
 
 const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
-    backgroundColor: colors.grayscale[100], 
-    alignItems: 'center', 
-    paddingHorizontal: 20 
+  container: {
+    flex: 1,
+    backgroundColor: colors.grayscale[100],
+    alignItems: 'center',
+    paddingHorizontal: 20,
   },
-  titleWrapper: { 
-    alignItems: 'center', 
-    gap: 8, 
-    marginBottom: 135, 
-    marginTop: 50 
+  titleWrapper: {
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 135,
+    marginTop: 50,
   },
-  title: { 
-    fontFamily: 'Pretendard-Bold', 
-    fontSize: 28 
+  title: {
+    fontFamily: 'Pretendard-Bold',
+    fontSize: 28,
   },
-  subTitle: { 
-    fontFamily: 'Pretendard-Bold', 
-    fontSize: 16, 
-    color: colors.primary[500] 
+  subTitle: {
+    fontFamily: 'Pretendard-Bold',
+    fontSize: 16,
+    color: colors.primary[500],
   },
-  button: { 
-    position: 'absolute', 
-    bottom: 50 
+  button: {
+    position: 'absolute',
+    bottom: 50,
   },
 });
