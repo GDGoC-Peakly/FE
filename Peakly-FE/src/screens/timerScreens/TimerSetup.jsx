@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -7,6 +7,7 @@ import {
   ScrollView,
   Dimensions,
   Modal,
+  ActivityIndicator,
 } from 'react-native';
 import Slider from '@react-native-community/slider';
 import Category from '../../components/Category.jsx';
@@ -14,6 +15,7 @@ import Tag from '../../components/Tag.jsx';
 import Button from '../../components/Button.jsx';
 import { colors } from '../../styles/colors.js';
 import { useNavigation } from '@react-navigation/native';
+import client from '../../api/client';
 
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
 const ITEM_HEIGHT = 44;
@@ -23,8 +25,12 @@ const SLIDER_CONTAINER_PADDING = 20;
 const TimerSetup = ({ isVisible, onClose }) => {
   const navigation = useNavigation();
 
-  const [selectedCategory, setSelectedCategory] = useState('논리·사고');
-  const [selectedTag, setSelectedTag] = useState('');
+  const [rawContent, setRawContent] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const [selectedCategoryId, setSelectedCategoryId] = useState(null);
+  const [selectedTagId, setSelectedTagId] = useState(null);
+  
   const [fatigue, setFatigue] = useState(50);
   const [caffeine, setCaffeine] = useState(50);
   const [noise, setNoise] = useState(0);
@@ -33,27 +39,48 @@ const TimerSetup = ({ isVisible, onClose }) => {
   const [min, setMin] = useState(0);
   const [sec, setSec] = useState(0);
 
-  const handleStart = () => {
-    onClose();
-    navigation.navigate('TimerRunning');
+  useEffect(() => {
+    if (isVisible) {
+      fetchData();
+    }
+  }, [isVisible]);
+
+  const fetchData = async () => {
+    try {
+      setIsLoading(true);
+      const response = await client.get('/categories/all');
+      
+      if (response.data.isSuccess) {
+        const result = response.data.result;
+        setRawContent(result);
+        if (result.length > 0) {
+          setSelectedCategoryId(result[0].majorCategory.id);
+        }
+      }
+    } catch (error) {
+      console.error("카테고리 로딩 실패:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const categories = [
-    { id: 'logic', name: '논리·사고' },
-    { id: 'memo', name: '암기' },
-    { id: 'understand', name: '이해' },
-    { id: 'repeat', name: '반복' },
-    { id: 'creativity', name: '창의·구상' },
-  ];
+  const handleStart = () => {
+    onClose();
+    navigation.navigate('TimerRunning', {
+      categoryId: selectedCategoryId,
+      tagId: selectedTagId,
+      fatigue,
+      caffeine,
+      noise,
+      time: { hour, min, sec }
+    });
+  };
 
-  const tags = [
-    { id: 'tag1', name: 'TAG 1' },
-    { id: 'tag2', name: 'TAG 1' },
-    { id: 'tag3', name: 'TAG 1' },
-  ];
-
-  const firstRowCats = categories.slice(0, 3);
-  const secondRowCats = categories.slice(3, 5);
+  const currentCategoryData = rawContent.find(
+    (item) => item.majorCategory.id === selectedCategoryId
+  );
+  
+  const availableTags = currentCategoryData ? currentCategoryData.customTags : [];
 
   const getFatigueText = (val) => {
     if (val <= 0) return '전혀 안 피곤해요';
@@ -91,103 +118,103 @@ const TimerSetup = ({ isVisible, onClose }) => {
         <View style={styles.sheetContainer}>
           <View style={styles.handle} />
 
-          <ScrollView
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.scrollContent}
-          >
-            <Text style={styles.sectionTitle}>카테고리 선택</Text>
-            <View style={styles.whiteCard}>
-              <View style={styles.row}>
-                {firstRowCats.map((item) => (
-                  <Category
-                    key={item.id}
-                    name={item.name}
-                    isSelected={selectedCategory === item.name}
-                    onPress={() => setSelectedCategory(item.name)}
-                  />
-                ))}
-              </View>
-
-              <View style={[styles.row, { marginTop: 12 }]}>
-                {secondRowCats.map((item) => (
-                  <Category
-                    key={item.id}
-                    name={item.name}
-                    isSelected={selectedCategory === item.name}
-                    onPress={() => setSelectedCategory(item.name)}
-                  />
-                ))}
-              </View>
-
-              <View style={[styles.row, { marginTop: 20 }]}>
-                {tags.map((item, index) => (
-                  <Tag
-                    key={`${item.id}-${index}`}
-                    name={item.name}
-                    isSelected={selectedTag === `${item.id}-${index}`}
-                    onPress={() => setSelectedTag(`${item.id}-${index}`)}
-                  />
-                ))}
-              </View>
+          {isLoading ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color={colors.primary[500]} />
             </View>
+          ) : (
+            <ScrollView
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={styles.scrollContent}
+            >
+              <Text style={styles.sectionTitle}>카테고리 선택</Text>
+              <View style={styles.whiteCard}>
+                <View style={styles.categoryGrid}>
+                  {rawContent.map((item) => (
+                    <Category
+                      key={item.majorCategory.id}
+                      name={item.majorCategory.name}
+                      isSelected={selectedCategoryId === item.majorCategory.id}
+                      onPress={() => {
+                        setSelectedCategoryId(item.majorCategory.id);
+                        setSelectedTagId(null);
+                      }}
+                    />
+                  ))}
+                </View>
 
-            <Text style={styles.sectionTitle}>컨디션</Text>
-            <View style={styles.whiteCard}>
-              <ConditionSlider
-                label="피로도"
-                value={fatigue}
-                step={25}
-                onValueChange={setFatigue}
-                valueText={getFatigueText(fatigue)}
-                dotCount={5}
-              />
-              <ConditionSlider
-                label="카페인 섭취"
-                subLabel="최근 6시간 이내"
-                value={caffeine}
-                step={50}
-                onValueChange={setCaffeine}
-                valueText={getCaffeineText(caffeine)}
-                dotCount={3}
-              />
-              <ConditionSlider
-                label="현재 주변 소음"
-                value={noise}
-                step={50}
-                onValueChange={setNoise}
-                valueText={getNoiseText(noise)}
-                isLast
-                dotCount={3}
-              />
-            </View>
+                {availableTags.length > 0 && (
+                  <View style={styles.tagWrapper}>
+                    {availableTags.map((tag) => (
+                      <Tag
+                        key={tag.id}
+                        name={tag.name}
+                        isSelected={selectedTagId === tag.id}
+                        onPress={() => setSelectedTagId(tag.id)}
+                      />
+                    ))}
+                  </View>
+                )}
+              </View>
 
-            <Text style={styles.sectionTitle}>목표 시간</Text>
-            <View style={styles.whiteCard}>
-              <View style={styles.pickerContainer}>
-                <View style={styles.selectionIndicator} />
-                <WheelPicker
-                  data={[...Array(24).keys()]}
-                  selected={hour}
-                  onSelect={setHour}
-                  label="시간"
+              <Text style={styles.sectionTitle}>컨디션</Text>
+              <View style={styles.whiteCard}>
+                <ConditionSlider
+                  label="피로도"
+                  value={fatigue}
+                  step={25}
+                  onValueChange={setFatigue}
+                  valueText={getFatigueText(fatigue)}
+                  dotCount={5}
                 />
-                <WheelPicker
-                  data={[...Array(60).keys()]}
-                  selected={min}
-                  onSelect={setMin}
-                  label="분"
+                <ConditionSlider
+                  label="카페인 섭취"
+                  subLabel="최근 6시간 이내"
+                  value={caffeine}
+                  step={50}
+                  onValueChange={setCaffeine}
+                  valueText={getCaffeineText(caffeine)}
+                  dotCount={3}
                 />
-                <WheelPicker
-                  data={[...Array(60).keys()]}
-                  selected={sec}
-                  onSelect={setSec}
-                  label="초"
+                <ConditionSlider
+                  label="현재 주변 소음"
+                  value={noise}
+                  step={50}
+                  onValueChange={setNoise}
+                  valueText={getNoiseText(noise)}
+                  isLast
+                  dotCount={3}
                 />
               </View>
-            </View>
 
-            <View style={{ height: 120 }} />
-          </ScrollView>
+              <Text style={styles.sectionTitle}>목표 시간</Text>
+              <View style={styles.whiteCard}>
+                <View style={styles.pickerContainer}>
+                  <View style={styles.selectionIndicator} />
+                  <WheelPicker
+                    data={[...Array(24).keys()]}
+                    selected={hour}
+                    onSelect={setHour}
+                    label="시간"
+                  />
+                  <WheelPicker
+                    data={[...Array(60).keys()]}
+                    selected={min}
+                    onSelect={setMin}
+                    label="분"
+                  />
+                  <WheelPicker
+                    data={[...Array(60).keys()]}
+                    selected={sec}
+                    onSelect={setSec}
+                    label="초"
+                  />
+                </View>
+              </View>
+
+              <View style={{ height: 120 }} />
+            </ScrollView>
+          )}
 
           <View style={styles.bottomWrapper}>
             <Button
@@ -217,10 +244,7 @@ const WheelPicker = ({ data, selected, onSelect, label }) => {
         contentContainerStyle={{ paddingVertical: ITEM_HEIGHT }}
       >
         {data.map((item) => (
-          <View
-            key={item}
-            style={styles.itemWrapper}
-          >
+          <View key={item} style={styles.itemWrapper}>
             <Text
               style={[
                 styles.itemText,
@@ -265,17 +289,11 @@ const ConditionSlider = ({
       <View style={styles.sliderWrapper}>
         <View style={styles.sliderBackgroundLine}>
           {dots.map((_, idx) => (
-            <View
-              key={idx}
-              style={styles.sliderDot}
-            />
+            <View key={idx} style={styles.sliderDot} />
           ))}
         </View>
         <View
-          style={[
-            styles.customThumbContainer,
-            { left: left - thumbSize / 2 },
-          ]}
+          style={[styles.customThumbContainer, { left: left - thumbSize / 2 }]}
           pointerEvents="none"
         >
           <View style={styles.customThumbOuter}>
@@ -322,6 +340,11 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginVertical: 10,
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   scrollContent: {
     paddingHorizontal: PADDING_HORIZONTAL,
     paddingBottom: 20,
@@ -339,11 +362,17 @@ const styles = StyleSheet.create({
     padding: SLIDER_CONTAINER_PADDING,
     marginBottom: 35,
   },
-  row: {
+  categoryGrid: {
     flexDirection: 'row',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
+    flexWrap: 'wrap',
     gap: 10,
+  },
+  tagWrapper: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+    marginTop: 20,
+    // 구분선(borderTop)과 불필요한 패딩(paddingTop)을 제거했습니다.
   },
   conditionItem: {
     marginBottom: 14,
@@ -456,6 +485,12 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     top: ITEM_HEIGHT,
     backgroundColor: colors.primary[50],
+  },
+  bottomWrapper: {
+    paddingHorizontal: PADDING_HORIZONTAL,
+    paddingBottom: 40,
+    paddingTop: 10,
+    backgroundColor: colors.grayscale[200],
   },
 });
 

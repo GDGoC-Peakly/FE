@@ -1,26 +1,35 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, View, TouchableOpacity, Alert } from 'react-native';
 import CategoryDropdown from './CategoryDropdown';
 import CategoryInput from './CategoryInput';
 import CategoryList from './CategoryList';
 
-const CATEGORIES = ['암기', '이해', '논리·사고', '반복', '창의·구상'];
 const MAX_CATEGORIES = 5;
 
-const CategoryCreate = ({ categories, onAdd, onDelete, onCategoryChange }) => {
+const CategoryCreate = ({ 
+  majorCategoryNames, 
+  currentTags,        
+  onAdd, 
+  onDelete, 
+  onCategoryChange,
+  initialCategory     
+}) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState(CATEGORIES[0]);
+  const [selectedCategory, setSelectedCategory] = useState(initialCategory || majorCategoryNames[0]);
   const [text, setText] = useState('');
 
-  const filteredCategories = Array.isArray(categories) ? categories : [];
+  const filteredTags = Array.isArray(currentTags) ? currentTags : [];
 
   const addCategory = async () => { 
     if (text.trim() === '') return;
-    if (filteredCategories.length >= MAX_CATEGORIES) {
-      Alert.alert('개수 초과', '최대 5개까지만 생성 가능합니다.');
+    
+
+    if (filteredTags.length >= MAX_CATEGORIES) {
+      Alert.alert('개수 초과', `태그는 최대 ${MAX_CATEGORIES}개까지만 생성 가능합니다.`);
       return;
     }
-    await onAdd(text.trim(), selectedCategory);
+
+    await onAdd(text.trim());
     setText(''); 
   };
 
@@ -30,7 +39,7 @@ const CategoryCreate = ({ categories, onAdd, onDelete, onCategoryChange }) => {
         <CategoryDropdown
           isOpen={isOpen}
           selectedCategory={selectedCategory}
-          categories={CATEGORIES}
+          categories={majorCategoryNames} 
           onToggle={() => setIsOpen(!isOpen)}
           onSelect={(cat) => {
             setSelectedCategory(cat);
@@ -45,11 +54,15 @@ const CategoryCreate = ({ categories, onAdd, onDelete, onCategoryChange }) => {
           selectedCategory={selectedCategory}
         />
       </View>
+
+      {/* 서버에서 가져온 태그 리스트를 보여줌 */}
       <CategoryList
-        categories={filteredCategories}
+        categories={filteredTags} 
         selectedCategory={selectedCategory}
         onRemoveCategory={onDelete}
       />
+
+      {/* 드롭다운 열렸을 때 배경 터치 시 닫기 */}
       {isOpen && (
         <TouchableOpacity
           style={StyleSheet.absoluteFill}
