@@ -6,6 +6,7 @@ import Header from './components/Header';
 import CategoryCreate from '../../components/CategoryCreate';
 import { categoryApi } from '../../api/category';
 
+<<<<<<< HEAD
 const CATEGORY_MAP = {
   암기: 1,
   이해: 2,
@@ -18,8 +19,33 @@ const CustomTag = ({ navigation, route }) => {
   const [tags, setTags] = useState([]);
   const [selectedCategoryName, setSelectedCategoryName] = useState('암기');
   const { accumulatedData } = route.params || {};
+=======
+const CustomTag = () => {
+  const [majorCategories, setMajorCategories] = useState([]); 
+  const [tags, setTags] = useState([]); 
+  const [selectedCategory, setSelectedCategory] = useState(null); 
+
+  const fetchMajors = useCallback(async () => {
+    try {
+      const response = await categoryApi.getMajorCategories();
+      // console.log("대분류 목록 API", response.data.result);
+      
+      const majors = response.data.result || [];
+      setMajorCategories(majors);
+
+      if (majors.length > 0) {
+        setSelectedCategory(majors[0]);
+        fetchTags(majors[0].id);
+      }
+    } catch (error) {
+      Alert.alert('에러', '대분류를 불러오지 못했습니다.');
+    }
+  }, []);
+
+>>>>>>> a2d07a7d0128ca3dfb6d13d7f8a6e9abe7f0b6c9
 
   const fetchTags = useCallback(async (majorId) => {
+    if (!majorId) return;
     try {
       const response = await categoryApi.getCustomTags(majorId);
       setTags(response.data.result || []);
@@ -29,10 +55,12 @@ const CustomTag = ({ navigation, route }) => {
   }, []);
 
   useEffect(() => {
-    fetchTags(CATEGORY_MAP['암기']);
-  }, [fetchTags]);
+    fetchMajors();
+  }, [fetchMajors]);
+
 
   const handleCategoryChange = (categoryName) => {
+<<<<<<< HEAD
     setSelectedCategoryName(categoryName);
     const majorId = CATEGORY_MAP[categoryName];
     fetchTags(majorId);
@@ -47,13 +75,33 @@ const CustomTag = ({ navigation, route }) => {
       await fetchTags(majorId);
     } catch (error) {
       Alert.alert('알림', '태그 생성 실패');
+=======
+    const target = majorCategories.find(c => c.name === categoryName);
+    if (target) {
+      setSelectedCategory(target);
+      fetchTags(target.id);
+>>>>>>> a2d07a7d0128ca3dfb6d13d7f8a6e9abe7f0b6c9
     }
   };
+
+  const handleAddTag = async (tagName) => {
+    if (!tagName.trim() || !selectedCategory) return;
+    try {
+      const response = await categoryApi.createCustomTag(tagName.trim(), selectedCategory.id);
+      // console.log("[API 성공] 태그 생성 완료:", response.data);
+      await fetchTags(selectedCategory.id);
+    } catch (error) {
+      const errorMsg = error.response?.data?.message || '태그 생성 실패';
+      Alert.alert('알림', errorMsg);
+    }
+  };
+
 
   const handleDeleteTag = async (tagId) => {
     try {
       await categoryApi.deleteCustomTag(tagId);
-      await fetchTags(CATEGORY_MAP[selectedCategoryName]);
+      // console.log("[API 성공] 태그 삭제 완료");
+      await fetchTags(selectedCategory.id);
     } catch (error) {
       Alert.alert('알림', '삭제 실패');
     }
@@ -81,12 +129,27 @@ const CustomTag = ({ navigation, route }) => {
           <Text style={styles.subTitle}>자유롭게 커스텀 태그를 만들어보세요.</Text>
         </View>
 
+<<<<<<< HEAD
         <CategoryCreate
           categories={tags}
           onAdd={handleAddTag}
           onDelete={handleDeleteTag}
           onCategoryChange={handleCategoryChange}
         />
+=======
+        {majorCategories.length > 0 ? (
+          <CategoryCreate 
+            majorCategoryNames={majorCategories.map(c => c.name)} 
+            currentTags={tags} 
+            onAdd={handleAddTag}
+            onDelete={handleDeleteTag}
+            onCategoryChange={handleCategoryChange} 
+            initialCategory={selectedCategory?.name}
+          />
+        ) : (
+          <Text style={{ marginTop: 20 }}>카테고리를 불러오는 중입니다...</Text>
+        )}
+>>>>>>> a2d07a7d0128ca3dfb6d13d7f8a6e9abe7f0b6c9
 
         <CustomButton text={'다음'} style={styles.button} onPress={handleNext} />
       </View>
