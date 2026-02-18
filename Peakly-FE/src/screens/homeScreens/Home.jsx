@@ -1,9 +1,22 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, ScrollView, SafeAreaView, TouchableOpacity } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import React, { useState, useEffect } from 'react';
+import {
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+  SafeAreaView,
+  TouchableOpacity,
+} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation, useIsFocused } from '@react-navigation/native';
 import Svg, { Circle } from 'react-native-svg';
 import Peakly from '../../../assets/img/homeScreens/Peakly.svg';
 import Talkbox from '../../../assets/img/homeScreens/talkbox.svg';
+import Character0 from '../../../assets/img/homeScreens/character.svg';
+import Character1 from '../../../assets/img/homeScreens/character1.svg';
+import Character2 from '../../../assets/img/homeScreens/character2.svg';
+import Character3 from '../../../assets/img/homeScreens/character3.svg';
+import Character4 from '../../../assets/img/homeScreens/character4.svg';
 import { colors } from '../../styles/colors';
 import HomeFooter from './homeComponents/HomeFooter';
 import PeakTimeline from './homeComponents/PeakTimeline';
@@ -11,12 +24,88 @@ import PeakTimechart from './homeComponents/PeakTimechart';
 import TimerSetup from '../../screens/timerScreens/TimerSetup';
 import { useCondition } from '../../contexts/ConditionContext';
 import { useSleep } from '../../contexts/SleepContext';
+import { dailyApi } from '../../api/dailycheckin';
 
 const Home = () => {
   const navigation = useNavigation();
-  const { conditionData } = useCondition();
-  const { sleepData } = useSleep();
+  const isFocused = useIsFocused();
+  const { conditionData, setConditionData } = useCondition();
+  const { sleepData, setSleepData } = useSleep();
   const [isTimerVisible, setIsTimerVisible] = useState(false);
+
+  const characterImages = [
+    Character4,
+    Character3,
+    Character2,
+    Character1,
+    Character0,
+  ];
+  const conditions = [
+    '최악이에요',
+    '별로예요',
+    '보통이에요',
+    '좋아요',
+    '최고예요!',
+  ];
+
+  useEffect(() => {
+    const fetchAndCheckData = async () => {
+      try {
+        const now = new Date();
+        const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+
+        const response = await dailyApi.getCheckIn(todayStr);
+
+        if (response.data.isSuccess && response.data.result) {
+          const res = response.data.result;
+
+          const [bH, bM] = res.bedTime.split(':');
+          const [wH, wM] = res.wakeTime.split(':');
+
+          const start = new Date();
+          start.setHours(parseInt(bH, 10), parseInt(bM, 10), 0, 0);
+          let end = new Date();
+          end.setHours(parseInt(wH, 10), parseInt(wM, 10), 0, 0);
+
+          if (end <= start) {
+            end.setDate(end.getDate() + 1);
+          }
+
+          const diffMs = end - start;
+          const diffHours = diffMs / (1000 * 60 * 60);
+
+          setSleepData({
+            startTime: start.toISOString(),
+            endTime: end.toISOString(),
+            hours: Math.floor(diffHours),
+            minutes: Math.round((diffHours % 1) * 60),
+            totalHours: diffHours,
+          });
+
+          const scoreIndex = res.sleepScore - 1;
+          setConditionData({
+            text: conditions[scoreIndex],
+            image: characterImages[scoreIndex],
+            value: scoreIndex * 25,
+          });
+
+          await AsyncStorage.setItem('LAST_CHECKIN_DATE', todayStr);
+          console.log('Home: Sync successful');
+        } else {
+          const lastCheckinDate = await AsyncStorage.getItem('LAST_CHECKIN_DATE');
+          if (lastCheckinDate !== todayStr && isFocused) {
+            navigation.navigate('DailyCheckin1', { mode: 'onboarding' });
+          }
+        }
+      } catch (error) {
+        console.log('Home Fetch Error:', error.message);
+      }
+    };
+
+    if (isFocused) {
+      fetchAndCheckData();
+    }
+  }, [isFocused]);
 
   const size = 100;
   const strokeWidth = 12;
@@ -26,28 +115,30 @@ const Home = () => {
   const progress = sleepData.totalHours / 24;
   const strokeDashoffset = circumference * (1 - progress);
 
-  // 컨디션 SVG 컴포넌트 추출
-  const ConditionCharacter = conditionData.image;
+  const ConditionCharacter = conditionData.image || Character2;
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView 
-        contentContainerStyle={styles.scrollContent} 
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
         <Peakly style={styles.logo} />
 
-        {/* 피크타임 카드 */}
         <View style={styles.peakCard}>
           <View style={styles.yellowBanner}>
-            <Text style={styles.bannerText}>오후 2시에 집중력이 폭발할 예정이에요!</Text>
+            <Text style={styles.bannerText}>
+              오후 2시에 집중력이 폭발할 예정이에요!
+            </Text>
           </View>
-          <View style={styles.cardPadding}>
+          <View className="cardPadding" style={styles.cardPadding}>
             <Text style={styles.cardTitle}>지금은 피크타임이에요!</Text>
-            <Text style={styles.cardSubTitle}>오늘의 집중 피크타임을 확인해보세요.</Text>
-            <TouchableOpacity 
-              activeOpacity={0.7} 
-              style={styles.timeChartPlaceholder} 
+            <Text style={styles.cardSubTitle}>
+              오늘의 집중 피크타임을 확인해보세요.
+            </Text>
+            <TouchableOpacity
+              activeOpacity={0.7}
+              style={styles.timeChartPlaceholder}
               onPress={() => navigation.navigate('PeakTimeline')}
             >
               <PeakTimeline style={{ flex: 1 }} />
@@ -55,7 +146,6 @@ const Home = () => {
           </View>
         </View>
 
-        {/* 누적 시간 카드 */}
         <View style={styles.card}>
           <Text style={styles.cardDateTitle}>2월 23일 누적 집중 시간</Text>
           <View style={styles.timerWrapper}>
@@ -68,13 +158,15 @@ const Home = () => {
           </View>
         </View>
 
-        {/* 하단 2열 카드 섹션 */}
         <View style={styles.row}>
-          {/* 숙면시간 */}
-          <TouchableOpacity 
-            activeOpacity={0.7} 
-            style={[styles.card, styles.halfCard]} 
-            onPress={() => navigation.navigate('DailyCheckin1', { mode: 'edit' })} 
+          <TouchableOpacity
+            activeOpacity={0.7}
+            style={[styles.card, styles.halfCard]}
+            onPress={() =>
+              navigation.navigate('DailyCheckin1', {
+                mode: 'edit',
+              })
+            }
           >
             <Text style={styles.smallCardTitle}>숙면시간</Text>
             <View style={styles.circleGraphContainer}>
@@ -109,23 +201,24 @@ const Home = () => {
             </View>
           </TouchableOpacity>
 
-          {/* 컨디션 */}
-          <TouchableOpacity 
-            activeOpacity={0.7} 
-            style={[styles.card, styles.halfCard]} 
-            onPress={() => navigation.navigate('DailyCheckin2', { mode: 'edit' })}
+          <TouchableOpacity
+            activeOpacity={0.7}
+            style={[styles.card, styles.halfCard]}
+            onPress={() =>
+              navigation.navigate('DailyCheckin2', {
+                mode: 'edit',
+              })
+            }
           >
             <Text style={styles.smallCardTitle}>컨디션</Text>
             <View style={styles.characterContainer}>
-              {/* SVG 캐릭터 렌더링 */}
-              <ConditionCharacter 
-                width={70} 
-                height={90} 
-              />
+              <ConditionCharacter width={70} height={90} />
               <View style={styles.talkboxWrapper}>
                 <Talkbox style={styles.conditionTalkbox} />
                 <View style={styles.talkboxTextContainer}>
-                  <Text style={styles.conditionTagText}>{conditionData.text}</Text>
+                  <Text style={styles.conditionTagText}>
+                    {conditionData.text}
+                  </Text>
                 </View>
               </View>
             </View>
@@ -134,16 +227,13 @@ const Home = () => {
       </ScrollView>
 
       <HomeFooter onFocusPress={() => setIsTimerVisible(true)} />
-
-      <TimerSetup 
-        isVisible={isTimerVisible} 
-        onClose={() => setIsTimerVisible(false)} 
+      <TimerSetup
+        isVisible={isTimerVisible}
+        onClose={() => setIsTimerVisible(false)}
       />
     </SafeAreaView>
   );
 };
-
-export default Home;
 
 const styles = StyleSheet.create({
   container: {
@@ -157,7 +247,7 @@ const styles = StyleSheet.create({
   logo: {
     width: 100,
     height: 40,
-    marginLeft: 118,
+    alignSelf: 'center',
     marginBottom: 20,
   },
   peakCard: {
@@ -285,3 +375,5 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
 });
+
+export default Home;
