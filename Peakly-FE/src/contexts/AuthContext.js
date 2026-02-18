@@ -6,6 +6,9 @@ import {
   getRefreshToken,
   setRefreshToken,
   removeRefreshToken,
+  getInitialData,
+  setInitialData,
+  removeInitialData,
 } from '../utils/storage';
 
 const AuthContext = createContext();
@@ -13,17 +16,15 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasCompleteOnboarding, setHasCompleteOnboarding] = useState(false);
 
   useEffect(() => {
     const initAuth = async () => {
       try {
-        const token = await getToken();
+        const [token, initialData] = await Promise.all([getToken(), getInitialData()]);
 
-        if (token) {
-          setIsLoggedIn(true);
-        } else {
-          setIsLoggedIn(false);
-        }
+        setIsLoggedIn(!!token);
+        setHasCompleteOnboarding(!!initialData);
       } catch (e) {
         console.error('인증 초기화 실패: ', e);
         setIsLoggedIn(false);
@@ -39,22 +40,34 @@ export const AuthProvider = ({ children }) => {
     if (refresh_token) {
       await setRefreshToken(refresh_token);
     }
+
+    const onboardingDone = await getInitialData();
+    setHasCompleteOnboarding(onboardingDone);
     setIsLoggedIn(true);
   };
 
   const logout = async () => {
-    await Promise.all([removeToken(), removeRefreshToken()]);
+    await Promise.all([removeToken(), removeRefreshToken(), removeInitialData()]);
     setIsLoggedIn(false);
+    setHasCompleteOnboarding(false);
+  };
+
+  const completeOnboarding = async (data) => {
+    const dataToSave = data || true;
+    await setInitialData(dataToSave);
+    setHasCompleteOnboarding(true);
   };
 
   const contextValue = useMemo(
     () => ({
       isLoggedIn,
       isLoading,
+      hasCompleteOnboarding,
       login,
       logout,
+      completeOnboarding,
     }),
-    [isLoggedIn, isLoading],
+    [isLoggedIn, isLoading, hasCompleteOnboarding],
   );
 
   return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;

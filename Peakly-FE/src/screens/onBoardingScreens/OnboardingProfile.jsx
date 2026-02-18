@@ -6,7 +6,7 @@ import Input from '../../components/Input';
 import { TextInput } from 'react-native-paper';
 import CustomButton from '../../components/CustomButton';
 
-const OnboardingProfile = () => {
+const OnboardingProfile = ({ navigation }) => {
   const [profileImage, setProfileImage] = useState(null);
   const [nickname, setNickname] = useState('');
   const MAX_LENGTH = 10;
@@ -46,7 +46,11 @@ const OnboardingProfile = () => {
         props={inputProps}
         {...inputProps}
       />
-      <CustomButton text={'완료'} style={styles.button} />
+      <CustomButton
+        text={'완료'}
+        style={styles.button}
+        onPress={() => navigation.navigate('ChronoType')}
+      />
     </View>
   );
 };

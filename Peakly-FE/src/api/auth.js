@@ -39,6 +39,8 @@ export const sendVerifyEmail = async (email) => {
 
 // 이메일 인증 토큰 검증 (email-verify)
 export const verifyEmail = async (token) => {
-  const response = await client.post('auth/email-verify', { token });
+  const response = await client.get('auth/email-verify', {
+    params: { token },
+  });
   return response.data;
 };

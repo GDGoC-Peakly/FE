@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const TOKEN_KEY = '@peakly/token';
 const REFRESH_KEY = '@peakly/refresh_token';
+const ONBOARDING_KEY = '@peakly/onboarding.key';
 
 // Access Token 관련 함수
 export const getToken = async () => {
@@ -54,5 +55,33 @@ export const removeRefreshToken = async () => {
     await AsyncStorage.removeItem(REFRESH_KEY);
   } catch (e) {
     console.error('리프레시 토큰 삭제 실패:', e);
+  }
+};
+
+// initial-data 관련 함수
+
+export const getInitialData = async () => {
+  try {
+    const data = await AsyncStorage.getItem(ONBOARDING_KEY);
+    return data ? JSON.parse(data) : null;
+  } catch (e) {
+    console.error('초기 데이터 가져오기 실패: ', e);
+    return null;
+  }
+};
+
+export const setInitialData = async (data) => {
+  try {
+    await AsyncStorage.setItem(ONBOARDING_KEY, JSON.stringify(data));
+  } catch (e) {
+    console.error('초기 데이터 저장 실패: ', e);
+  }
+};
+
+export const removeInitialData = async () => {
+  try {
+    await AsyncStorage.removeItem(ONBOARDING_KEY);
+  } catch (e) {
+    console.error('초기 데이터 삭제 실패: ', e);
   }
 };

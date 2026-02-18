@@ -6,6 +6,20 @@ import Header from './components/Header';
 import CategoryCreate from '../../components/CategoryCreate';
 import { categoryApi } from '../../api/category';
 
+<<<<<<< HEAD
+const CATEGORY_MAP = {
+  암기: 1,
+  이해: 2,
+  '논리·사고': 3,
+  반복: 4,
+  '창의·구상': 5,
+};
+
+const CustomTag = ({ navigation, route }) => {
+  const [tags, setTags] = useState([]);
+  const [selectedCategoryName, setSelectedCategoryName] = useState('암기');
+  const { accumulatedData } = route.params || {};
+=======
 const CustomTag = () => {
   const [majorCategories, setMajorCategories] = useState([]); 
   const [tags, setTags] = useState([]); 
@@ -28,6 +42,7 @@ const CustomTag = () => {
     }
   }, []);
 
+>>>>>>> a2d07a7d0128ca3dfb6d13d7f8a6e9abe7f0b6c9
 
   const fetchTags = useCallback(async (majorId) => {
     if (!majorId) return;
@@ -45,10 +60,27 @@ const CustomTag = () => {
 
 
   const handleCategoryChange = (categoryName) => {
+<<<<<<< HEAD
+    setSelectedCategoryName(categoryName);
+    const majorId = CATEGORY_MAP[categoryName];
+    fetchTags(majorId);
+  };
+
+  const handleAddTag = async (tagName, selectedCategory) => {
+    if (!tagName.trim()) return;
+    const majorId = CATEGORY_MAP[selectedCategory];
+
+    try {
+      await categoryApi.createCustomTag(tagName, majorId);
+      await fetchTags(majorId);
+    } catch (error) {
+      Alert.alert('알림', '태그 생성 실패');
+=======
     const target = majorCategories.find(c => c.name === categoryName);
     if (target) {
       setSelectedCategory(target);
       fetchTags(target.id);
+>>>>>>> a2d07a7d0128ca3dfb6d13d7f8a6e9abe7f0b6c9
     }
   };
 
@@ -75,16 +107,36 @@ const CustomTag = () => {
     }
   };
 
+  const handleNext = async () => {
+    navigation.navigate('CompleteScreen', {
+      accumulatedData: accumulatedData,
+    });
+  };
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
-        <Header totalStep={7} currentStep={6} />
+        <Header
+          totalStep={7}
+          currentStep={6}
+          onPress={() => {
+            navigation.goBack();
+          }}
+        />
 
         <View style={styles.titleWrapper}>
           <Text style={styles.title}>커스텀 태그</Text>
           <Text style={styles.subTitle}>자유롭게 커스텀 태그를 만들어보세요.</Text>
         </View>
 
+<<<<<<< HEAD
+        <CategoryCreate
+          categories={tags}
+          onAdd={handleAddTag}
+          onDelete={handleDeleteTag}
+          onCategoryChange={handleCategoryChange}
+        />
+=======
         {majorCategories.length > 0 ? (
           <CategoryCreate 
             majorCategoryNames={majorCategories.map(c => c.name)} 
@@ -97,8 +149,9 @@ const CustomTag = () => {
         ) : (
           <Text style={{ marginTop: 20 }}>카테고리를 불러오는 중입니다...</Text>
         )}
+>>>>>>> a2d07a7d0128ca3dfb6d13d7f8a6e9abe7f0b6c9
 
-        <CustomButton text={'다음'} style={styles.button} onPress={() => {}} />
+        <CustomButton text={'다음'} style={styles.button} onPress={handleNext} />
       </View>
     </TouchableWithoutFeedback>
   );
@@ -107,29 +160,29 @@ const CustomTag = () => {
 export default CustomTag;
 
 const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
-    backgroundColor: colors.grayscale[100], 
-    alignItems: 'center', 
-    paddingHorizontal: 20 
+  container: {
+    flex: 1,
+    backgroundColor: colors.grayscale[100],
+    alignItems: 'center',
+    paddingHorizontal: 20,
   },
-  titleWrapper: { 
-    alignItems: 'center', 
-    gap: 8, 
-    marginBottom: 135, 
-    marginTop: 50 
+  titleWrapper: {
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 135,
+    marginTop: 50,
   },
-  title: { 
-    fontFamily: 'Pretendard-Bold', 
-    fontSize: 28 
+  title: {
+    fontFamily: 'Pretendard-Bold',
+    fontSize: 28,
   },
-  subTitle: { 
-    fontFamily: 'Pretendard-Bold', 
-    fontSize: 16, 
-    color: colors.primary[500] 
+  subTitle: {
+    fontFamily: 'Pretendard-Bold',
+    fontSize: 16,
+    color: colors.primary[500],
   },
-  button: { 
-    position: 'absolute', 
-    bottom: 50 
+  button: {
+    position: 'absolute',
+    bottom: 50,
   },
 });
