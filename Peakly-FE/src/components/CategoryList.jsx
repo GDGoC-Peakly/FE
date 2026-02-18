@@ -3,9 +3,9 @@ import { StyleSheet, Text, View, TouchableOpacity, ScrollView } from 'react-nati
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../styles/colors';
 
-const CategoryList = ({ categories, selectedCategory, onRemoveCategory }) => {
+const CategoryList = ({ categories, selectedCategory, onRemoveCategory, style }) => {
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, style]}>
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={true}

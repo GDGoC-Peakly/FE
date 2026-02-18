@@ -5,25 +5,22 @@ import { colors } from '../../styles/colors';
 import Profile from '../../../assets/img/settingScreens/profile.svg'; // SVG 컴포넌트
 import Moreicon from '../../../assets/img/settingScreens/more_icon.svg';
 import SettingHeader from '../settingScreens/settingComponents/SettingHeader';
+import { useAuth } from '../../contexts/AuthContext';
 
 const Setting = ({ onBack }) => {
   const navigation = useNavigation();
   const [isNotificationsEnabled, setIsNotificationsEnabled] = useState(true);
+  const { logout } = useAuth();
 
   return (
-    <View 
-      style={styles.container}
-    >
-      <SettingHeader 
-        title="설정" 
-        onBack={onBack} 
-      />
+    <View style={styles.container}>
+      <SettingHeader title="설정" onBack={onBack} />
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <TouchableOpacity style={styles.profileCard}>
           <View style={styles.profileInfo}>
             {/* Image 대신 SVG 컴포넌트 사용 (필요시 width, height 조절) */}
-            <Profile width={60} height={60} /> 
+            <Profile width={60} height={60} />
             <View style={styles.profileText}>
               <Text style={styles.nickname}>냐옹</Text>
               <Text style={styles.userCode}>#000000</Text>
@@ -54,9 +51,11 @@ const Setting = ({ onBack }) => {
             <Text style={styles.infoLabel}>직업</Text>
             <Text style={styles.infoValue}>대학생</Text>
           </View>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.editButton}
-            onPress={() => { navigation.navigate('SettingInfo'); }}
+            onPress={() => {
+              navigation.navigate('SettingInfo');
+            }}
           >
             <Text style={styles.editButtonText}>수정하기</Text>
           </TouchableOpacity>
@@ -73,9 +72,11 @@ const Setting = ({ onBack }) => {
               ))}
             </View>
           </View>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.editButton}
-            onPress={() => { navigation.navigate('SettingTag'); }}
+            onPress={() => {
+              navigation.navigate('SettingTag');
+            }}
           >
             <Text style={styles.editButtonText}>수정하기</Text>
           </TouchableOpacity>
@@ -99,7 +100,7 @@ const Setting = ({ onBack }) => {
           <TouchableOpacity style={styles.otherItem}>
             <Text style={styles.infoLabel}>공지사항</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.otherItem}>
+          <TouchableOpacity style={styles.otherItem} onPress={logout}>
             <Text style={styles.infoLabel}>로그아웃</Text>
           </TouchableOpacity>
         </View>
