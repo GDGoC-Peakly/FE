@@ -1,78 +1,98 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, TouchableWithoutFeedback } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import React, { useState, useEffect, useCallback } from 'react';
+import { StyleSheet, Text, View, TouchableWithoutFeedback, Keyboard, Alert } from 'react-native';
 import { colors } from '../../styles/colors';
+import CustomButton from '../../components/CustomButton';
 import SettingHeader from './settingComponents/SettingHeader';
-import Button from '../../components/Button';
-import { Ionicons } from '@expo/vector-icons';
+import CategoryCreate from '../../components/CategoryCreate';
+import { categoryApi } from '../../api/category';
 
-const SettingTag = ({ navigation }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState('암기');
-  const categories = ['암기', '이해', '논리·사고', '반복', '창의·구상'];
+const SettingTag = () => {
+  const [majorCategories, setMajorCategories] = useState([]);
+  const [tags, setTags] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+
+  const fetchMajors = useCallback(async () => {
+    try {
+      const response = await categoryApi.getMajorCategories();
+
+      const majors = response.data.result || [];
+      setMajorCategories(majors);
+
+      if (majors.length > 0) {
+        setSelectedCategory(majors[0]);
+        fetchTags(majors[0].id);
+      }
+    } catch (error) {
+      Alert.alert('에러', '대분류를 불러오지 못했습니다.');
+    }
+  }, []);
+
+  const fetchTags = useCallback(async (majorId) => {
+    if (!majorId) return;
+    try {
+      const response = await categoryApi.getCustomTags(majorId);
+      setTags(response.data.result || []);
+    } catch (error) {
+      setTags([]);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchMajors();
+  }, [fetchMajors]);
+
+  const handleCategoryChange = (categoryName) => {
+    const target = majorCategories.find((c) => c.name === categoryName);
+    if (target) {
+      setSelectedCategory(target);
+      fetchTags(target.id);
+    }
+  };
+
+  const handleAddTag = async (tagName) => {
+    if (!tagName.trim() || !selectedCategory) return;
+    try {
+      const response = await categoryApi.createCustomTag(tagName.trim(), selectedCategory.id);
+      await fetchTags(selectedCategory.id);
+    } catch (error) {
+      const errorMsg = error.response?.data?.message || '태그 생성 실패';
+      Alert.alert('알림', errorMsg);
+    }
+  };
+
+  const handleDeleteTag = async (tagId) => {
+    try {
+      await categoryApi.deleteCustomTag(tagId);
+      await fetchTags(selectedCategory.id);
+    } catch (error) {
+      Alert.alert('알림', '삭제 실패');
+    }
+  };
+
+  const handleNext = async () => {
+    navigation.navigate('CompleteScreen', {
+      accumulatedData: accumulatedData,
+    });
+  };
 
   return (
-    <TouchableWithoutFeedback onPress={() => setIsOpen(false)}>
-      <View style={styles.container} edges={['top']}>
-        <SettingHeader title="커스텀 태그" onBack={() => navigation?.goBack()} />
-
-        <View style={styles.content}>
-          <View style={styles.inputRow}>
-            {/* 드롭다운 영역 */}
-            <View style={styles.dropdownContainer}>
-              <TouchableOpacity 
-                style={[styles.categorySelector, isOpen && styles.categorySelectorOpen]} 
-                activeOpacity={0.7}
-                onPress={() => setIsOpen(!isOpen)}
-              >
-                <Text style={styles.categoryText}>{selectedCategory}</Text>
-                <Ionicons name={isOpen ? "chevron-up" : "chevron-down"} size={16} color={colors.grayscale[500]} />
-              </TouchableOpacity>
-
-              {isOpen && (
-                <View style={styles.optionsWrapper}>
-                  {categories.map((item, index) => (
-                    <TouchableOpacity 
-                      key={index} 
-                      style={styles.optionItem}
-                      onPress={() => {
-                        setSelectedCategory(item);
-                        setIsOpen(false);
-                      }}
-                    >
-                      <Text style={[
-                        styles.optionText, 
-                        item === selectedCategory && styles.selectedOptionText
-                      ]}>
-                        {item}
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              )}
-            </View>
-
-            {/* 태그 입력 영역 */}
-            <View style={styles.tagInputContainer}>
-              <TextInput 
-                style={styles.tagInput}
-                placeholder="커스텀 태그를 작성해보세요."
-                placeholderTextColor={colors.grayscale[400]}
-              />
-            </View>
-          </View>
-
-          {/* 태그 박스 영역 */}
-          <View style={styles.tagBoxContainer}>
-          </View>
-        </View>
-
-        <Button 
-          text="완료" 
-          bgColor="#111" 
-          textColor="#FFF" 
-          onPress={() => navigation?.goBack()}
-        />
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <View style={styles.container}>
+        <SettingHeader title={'커스텀 태그'} />
+        {majorCategories.length > 0 ? (
+          <CategoryCreate
+            majorCategoryNames={majorCategories.map((c) => c.name)}
+            currentTags={tags}
+            onAdd={handleAddTag}
+            onDelete={handleDeleteTag}
+            onCategoryChange={handleCategoryChange}
+            initialCategory={selectedCategory?.name}
+            style={styles.list}
+          />
+        ) : (
+          <Text style={{ marginTop: 20 }}>카테고리를 불러오는 중입니다...</Text>
+        )}
+        <CustomButton text={'다음'} style={styles.button} onPress={handleNext} />
       </View>
     </TouchableWithoutFeedback>
   );
@@ -84,85 +104,29 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.grayscale[100],
-  },
-  content: {
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    zIndex: 1, 
-  },
-  inputRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start', 
-    gap: 8,
-    marginBottom: 12,
-  },
-  dropdownContainer: {
-    width: 95, 
-    zIndex: 10,
-  },
-  categorySelector: {
-    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    height: 44,
-    borderWidth: 1,
-    borderColor: colors.grayscale[300],
-    borderRadius: 12,
-    paddingHorizontal: 12,
+    paddingHorizontal: 20,
   },
-  categorySelectorOpen: {
-    borderBottomLeftRadius: 0,
-    borderBottomRightRadius: 0,
-    borderBottomWidth: 0,
+  titleWrapper: {
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 135,
+    marginTop: 50,
   },
-  categoryText: {
-    fontSize: 14,
-    fontFamily: 'Pretendard-Medium',
-    color: colors.grayscale[500],
-  },
-  optionsWrapper: {
-    position: 'absolute',
-    top: 44,
-    width: '100%',
-    borderWidth: 1,
-    borderColor: colors.grayscale[300],
-    borderTopWidth: 0,
-    borderBottomLeftRadius: 12,
-    borderBottomRightRadius: 12,
-    backgroundColor: colors.grayscale[100],
-  },
-  optionItem: {
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-  },
-  optionText: {
-    fontSize: 14,
-    fontFamily: 'Pretendard-Medium',
-    color: colors.grayscale[600],
-  },
-  selectedOptionText: {
+  title: {
     fontFamily: 'Pretendard-Bold',
+    fontSize: 28,
   },
-  tagInputContainer: {
-    flex: 1,
-    height: 44,
-    borderWidth: 1,
-    borderColor: colors.grayscale[300],
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    justifyContent: 'center',
+  subTitle: {
+    fontFamily: 'Pretendard-Bold',
+    fontSize: 16,
+    color: colors.primary[500],
   },
-  tagInput: {
-    fontSize: 14,
-    fontFamily: 'Pretendard-Medium',
-    padding: 0, 
+  button: {
+    position: 'absolute',
+    bottom: 50,
   },
-  tagBoxContainer: {
-    width: '100%',
-    height: 527, 
-    borderWidth: 1,
-    borderColor: colors.grayscale[300],
-    borderRadius: 16,
-    backgroundColor: colors.grayscale[100], 
+  list: {
+    height: 600,
   },
 });
