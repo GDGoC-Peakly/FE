@@ -31,51 +31,44 @@ const DailyCheckin2 = ({ navigation, route }) => {
 
   const { sleepData } = useSleep();
   const { conditionData, setConditionData } = useCondition();
-  
   const [value, setValue] = useState(conditionData.value || 100);
 
   const conditions = ['최악이에요', '별로예요', '보통이에요', '좋아요', '최고예요!'];
   const characterImages = [Character4, Character3, Character2, Character1, Character0];
-  
   const currentIndex = Math.round(value / 25);
   const ActiveCharacter = characterImages[currentIndex];
+
+  const getKSTDateString = (offsetDays = 0) => {
+    const now = new Date();
+    const kstOffset = 9 * 60 * 60 * 1000;
+    const kstDate = new Date(now.getTime() + kstOffset);
+    if (offsetDays !== 0) kstDate.setDate(kstDate.getDate() + offsetDays);
+    return kstDate.toISOString().split('T')[0];
+  };
 
   useEffect(() => {
     const fetchExistingData = async () => {
       try {
-        const now = new Date();
-        const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-        
+        const todayStr = getKSTDateString();
         const response = await dailyApi.getCheckIn(todayStr);
-        
         if (response.data.isSuccess && response.data.result) {
-          const score = response.data.result.sleepScore;
-          const sliderValue = (score - 1) * 25;
-          setValue(sliderValue);
-          console.log("Daily2: Get Success (Score:", score, ")");
+          setValue((response.data.result.sleepScore - 1) * 25);
         }
       } catch (error) {
-        console.log("Daily2: Get Failure", error.message);
+        console.log(error.message);
       }
     };
-
-    if (isEditMode) {
-      fetchExistingData();
-    }
+    if (isEditMode) fetchExistingData();
   }, [isEditMode]);
 
   const getTimeString = (dateString) => {
     const d = new Date(dateString);
     if (isNaN(d.getTime())) return "00:00";
-    const hours = String(d.getHours()).padStart(2, '0');
-    const minutes = String(d.getMinutes()).padStart(2, '0');
-    return `${hours}:${minutes}`;
+    return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
   };
 
   const handleComplete = async () => {
-    const now = new Date();
-    const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-
+    const todayStr = getKSTDateString();
     const payload = {
       bedTime: getTimeString(sleepData.startTime),
       wakeTime: getTimeString(sleepData.endTime),
@@ -84,32 +77,42 @@ const DailyCheckin2 = ({ navigation, route }) => {
 
     try {
       if (isEditMode) {
-        console.log("PATCH Condition:", payload);
         await dailyApi.updateCheckIn(todayStr, payload);
       } else {
-        console.log("POST Daily Checkin:", payload);
-        await dailyApi.createCheckIn(payload);
-        await AsyncStorage.setItem('LAST_CHECKIN_DATE', todayStr);
+        try {
+          await dailyApi.createCheckIn(payload);
+        } catch (postError) {
+          if (postError.response && (postError.response.status === 409 || postError.response.data?.code === "SLEEP400_003")) {
+            await dailyApi.updateCheckIn(todayStr, payload);
+          } else {
+            throw postError;
+          }
+        }
       }
 
+      await AsyncStorage.setItem('LAST_CHECKIN_DATE', todayStr);
       setConditionData({
         text: conditions[currentIndex],
         image: characterImages[currentIndex],
         value: value,
       });
-      
-      console.log("Update Success");
       navigation.navigate('Home');
 
     } catch (error) {
-      console.log('--- API Failure ---');
-      const errorMsg = error.response?.data?.message || '정보 저장에 실패했습니다.';
-      Alert.alert('저장 실패', errorMsg);
+      if (error.response && error.response.data?.code === "SLEEP400_004") {
+        try {
+          const yesterdayStr = getKSTDateString(-1);
+          await dailyApi.updateCheckIn(yesterdayStr, payload);
+          await AsyncStorage.setItem('LAST_CHECKIN_DATE', todayStr);
+          navigation.navigate('Home');
+          return;
+        } catch (e) {}
+      }
+      Alert.alert('저장 실패', '정보 저장에 실패했습니다.');
     }
   };
 
-  const availableWidth = SCREEN_WIDTH - 88;
-  const thumbLeft = (value / 100) * availableWidth;
+  const thumbLeft = (value / 100) * (SCREEN_WIDTH - 88);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -122,24 +125,40 @@ const DailyCheckin2 = ({ navigation, route }) => {
         {isEditMode && <Text style={styles.navTitle}>컨디션</Text>}
         {isEditMode && <View style={styles.emptyView} />}
       </View>
-
-      <ScrollView contentContainerStyle={styles.scrollContent} bounces={false}>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        bounces={false}
+      >
         <View style={styles.headerContainer}>
           <Text style={styles.titleText}>데일리 체크인</Text>
           <Text style={styles.subTitleText}>오늘의 컨디션은 어땠나요?</Text>
         </View>
-
         <View style={styles.characterSection}>
-          <ActiveCharacter width={220} height={280} />
+          <ActiveCharacter
+            width={220}
+            height={280}
+          />
         </View>
-
         <View style={styles.whiteCard}>
           <View style={styles.sliderWrapper}>
-            <View style={styles.sliderBackgroundLine} pointerEvents="none">
-              {[0, 1, 2, 3, 4].map((i) => <View key={i} style={styles.sliderDot} />)}
+            <View
+              style={styles.sliderBackgroundLine}
+              pointerEvents="none"
+            >
+              {[0, 1, 2, 3, 4].map((i) => (
+                <View
+                  key={i}
+                  style={styles.sliderDot}
+                />
+              ))}
             </View>
-            <View style={[styles.customThumbContainer, { left: thumbLeft }]} pointerEvents="none">
-              <View style={styles.customThumbOuter}><View style={styles.customThumbInner} /></View>
+            <View
+              style={[styles.customThumbContainer, { left: thumbLeft }]}
+              pointerEvents="none"
+            >
+              <View style={styles.customThumbOuter}>
+                <View style={styles.customThumbInner} />
+              </View>
             </View>
             <Slider
               style={styles.actualSlider}
@@ -156,7 +175,6 @@ const DailyCheckin2 = ({ navigation, route }) => {
           <Text style={styles.conditionText}>{conditions[currentIndex]}</Text>
         </View>
       </ScrollView>
-
       <View style={styles.buttonContainer}>
         <Button
           text={isEditMode ? "저장" : "완료"}

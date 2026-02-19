@@ -4,9 +4,9 @@ import {
   Text,
   View,
   ScrollView,
-  SafeAreaView,
   TouchableOpacity,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
 import Svg, { Circle } from 'react-native-svg';
@@ -33,46 +33,33 @@ const Home = () => {
   const { sleepData, setSleepData } = useSleep();
   const [isTimerVisible, setIsTimerVisible] = useState(false);
 
-  const characterImages = [
-    Character4,
-    Character3,
-    Character2,
-    Character1,
-    Character0,
-  ];
-  const conditions = [
-    '최악이에요',
-    '별로예요',
-    '보통이에요',
-    '좋아요',
-    '최고예요!',
-  ];
+  const characterImages = [Character4, Character3, Character2, Character1, Character0];
+  const conditions = ['최악이에요', '별로예요', '보통이에요', '좋아요', '최고예요!'];
+
+  const getKSTDateString = () => {
+    const now = new Date();
+    const kstDate = new Date(now.getTime() + 9 * 60 * 60 * 1000);
+    return kstDate.toISOString().split('T')[0];
+  };
 
   useEffect(() => {
-    const fetchAndCheckData = async () => {
-      try {
-        const now = new Date();
-        const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    const checkTodayData = async () => {
+      const todayStr = getKSTDateString();
 
+      try {
         const response = await dailyApi.getCheckIn(todayStr);
 
         if (response.data.isSuccess && response.data.result) {
           const res = response.data.result;
-
+ 
           const [bH, bM] = res.bedTime.split(':');
           const [wH, wM] = res.wakeTime.split(':');
-
           const start = new Date();
           start.setHours(parseInt(bH, 10), parseInt(bM, 10), 0, 0);
           let end = new Date();
           end.setHours(parseInt(wH, 10), parseInt(wM, 10), 0, 0);
-
-          if (end <= start) {
-            end.setDate(end.getDate() + 1);
-          }
-
-          const diffMs = end - start;
-          const diffHours = diffMs / (1000 * 60 * 60);
+          if (end <= start) end.setDate(end.getDate() + 1);
+          const diffHours = (end - start) / (1000 * 60 * 60);
 
           setSleepData({
             startTime: start.toISOString(),
@@ -90,20 +77,20 @@ const Home = () => {
           });
 
           await AsyncStorage.setItem('LAST_CHECKIN_DATE', todayStr);
-          console.log('Home: Sync successful');
         } else {
-          const lastCheckinDate = await AsyncStorage.getItem('LAST_CHECKIN_DATE');
-          if (lastCheckinDate !== todayStr && isFocused) {
-            navigation.navigate('DailyCheckin1', { mode: 'onboarding' });
-          }
+          navigation.navigate('DailyCheckin1', { mode: 'onboarding' });
         }
       } catch (error) {
-        console.log('Home Fetch Error:', error.message);
+        console.log('데이터 확인 실패:', error.response?.status);
+        
+        if (isFocused) {
+          navigation.navigate('DailyCheckin1', { mode: 'onboarding' });
+        }
       }
     };
 
     if (isFocused) {
-      fetchAndCheckData();
+      checkTodayData();
     }
   }, [isFocused]);
 
@@ -115,8 +102,6 @@ const Home = () => {
   const progress = sleepData.totalHours / 24;
   const strokeDashoffset = circumference * (1 - progress);
 
-  const ConditionCharacter = conditionData.image || Character2;
-
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView
@@ -124,21 +109,17 @@ const Home = () => {
         showsVerticalScrollIndicator={false}
       >
         <Peakly style={styles.logo} />
-
+        
         <View style={styles.peakCard}>
           <View style={styles.yellowBanner}>
-            <Text style={styles.bannerText}>
-              오후 2시에 집중력이 폭발할 예정이에요!
-            </Text>
+            <Text style={styles.bannerText}>오후 2시에 집중력이 폭발할 예정이에요!</Text>
           </View>
-          <View className="cardPadding" style={styles.cardPadding}>
+          <View style={styles.cardPadding}>
             <Text style={styles.cardTitle}>지금은 피크타임이에요!</Text>
-            <Text style={styles.cardSubTitle}>
-              오늘의 집중 피크타임을 확인해보세요.
-            </Text>
-            <TouchableOpacity
-              activeOpacity={0.7}
-              style={styles.timeChartPlaceholder}
+            <Text style={styles.cardSubTitle}>오늘의 집중 피크타임을 확인해보세요.</Text>
+            <TouchableOpacity 
+              activeOpacity={0.7} 
+              style={styles.timeChartPlaceholder} 
               onPress={() => navigation.navigate('PeakTimeline')}
             >
               <PeakTimeline style={{ flex: 1 }} />
@@ -159,66 +140,47 @@ const Home = () => {
         </View>
 
         <View style={styles.row}>
-          <TouchableOpacity
-            activeOpacity={0.7}
-            style={[styles.card, styles.halfCard]}
-            onPress={() =>
-              navigation.navigate('DailyCheckin1', {
-                mode: 'edit',
-              })
-            }
+          <TouchableOpacity 
+            activeOpacity={0.7} 
+            style={[styles.card, styles.halfCard]} 
+            onPress={() => navigation.navigate('DailyCheckin1', { mode: 'edit' })}
           >
             <Text style={styles.smallCardTitle}>숙면시간</Text>
             <View style={styles.circleGraphContainer}>
               <View style={styles.graphWrapper}>
                 <Svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-                  <Circle
-                    cx={center}
-                    cy={center}
-                    r={radius}
-                    stroke={colors.grayscale[200]}
-                    strokeWidth={strokeWidth}
-                    fill="none"
-                  />
-                  <Circle
-                    cx={center}
-                    cy={center}
-                    r={radius}
-                    stroke={colors.primary[500]}
-                    strokeWidth={strokeWidth}
-                    strokeDasharray={circumference}
-                    strokeDashoffset={strokeDashoffset}
-                    fill="none"
-                    transform={`rotate(-90 ${center} ${center})`}
+                  <Circle cx={center} cy={center} r={radius} stroke={colors.grayscale[200]} strokeWidth={strokeWidth} fill="none" />
+                  <Circle 
+                    cx={center} 
+                    cy={center} 
+                    r={radius} 
+                    stroke={colors.primary[500]} 
+                    strokeWidth={strokeWidth} 
+                    strokeDasharray={circumference} 
+                    strokeDashoffset={strokeDashoffset} 
+                    fill="none" 
+                    transform={`rotate(-90 ${center} ${center})`} 
                   />
                 </Svg>
                 <View style={styles.centerTextContainer}>
-                  <Text style={styles.sleepText}>
-                    {sleepData.hours}h {sleepData.minutes}m
-                  </Text>
+                  <Text style={styles.sleepText}>{sleepData.hours}h {sleepData.minutes}m</Text>
                 </View>
               </View>
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity
-            activeOpacity={0.7}
-            style={[styles.card, styles.halfCard]}
-            onPress={() =>
-              navigation.navigate('DailyCheckin2', {
-                mode: 'edit',
-              })
-            }
+          <TouchableOpacity 
+            activeOpacity={0.7} 
+            style={[styles.card, styles.halfCard]} 
+            onPress={() => navigation.navigate('DailyCheckin2', { mode: 'edit' })}
           >
             <Text style={styles.smallCardTitle}>컨디션</Text>
             <View style={styles.characterContainer}>
-              <ConditionCharacter width={70} height={90} />
+              {conditionData.image && <conditionData.image width={70} height={90} />}
               <View style={styles.talkboxWrapper}>
                 <Talkbox style={styles.conditionTalkbox} />
                 <View style={styles.talkboxTextContainer}>
-                  <Text style={styles.conditionTagText}>
-                    {conditionData.text}
-                  </Text>
+                  <Text style={styles.conditionTagText}>{conditionData.text}</Text>
                 </View>
               </View>
             </View>
@@ -227,10 +189,7 @@ const Home = () => {
       </ScrollView>
 
       <HomeFooter onFocusPress={() => setIsTimerVisible(true)} />
-      <TimerSetup
-        isVisible={isTimerVisible}
-        onClose={() => setIsTimerVisible(false)}
-      />
+      <TimerSetup isVisible={isTimerVisible} onClose={() => setIsTimerVisible(false)} />
     </SafeAreaView>
   );
 };
@@ -342,7 +301,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: 'Pretendard-Bold',
     color: colors.grayscale[1000],
-    paddingTop: 10,
+    paddingTop: 15,
   },
   circleGraphContainer: {
     alignItems: 'center',
