@@ -33,17 +33,33 @@ const DailyCheckin2 = ({ navigation, route }) => {
   const { conditionData, setConditionData } = useCondition();
   const [value, setValue] = useState(conditionData.value || 100);
 
-  const conditions = ['최악이에요', '별로예요', '보통이에요', '좋아요', '최고예요!'];
-  const characterImages = [Character4, Character3, Character2, Character1, Character0];
+  const conditions = [
+    '최악이에요',
+    '별로예요',
+    '보통이에요',
+    '좋아요',
+    '최고예요!',
+  ];
+  const characterImages = [
+    Character4,
+    Character3,
+    Character2,
+    Character1,
+    Character0,
+  ];
   const currentIndex = Math.round(value / 25);
   const ActiveCharacter = characterImages[currentIndex];
 
   const getKSTDateString = (offsetDays = 0) => {
     const now = new Date();
-    const kstOffset = 9 * 60 * 60 * 1000;
-    const kstDate = new Date(now.getTime() + kstOffset);
-    if (offsetDays !== 0) kstDate.setDate(kstDate.getDate() + offsetDays);
-    return kstDate.toISOString().split('T')[0];
+    if (offsetDays !== 0) now.setDate(now.getDate() + offsetDays);
+
+    return new Intl.DateTimeFormat('en-CA', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      timeZone: 'Asia/Seoul',
+    }).format(now);
   };
 
   useEffect(() => {
@@ -63,8 +79,10 @@ const DailyCheckin2 = ({ navigation, route }) => {
 
   const getTimeString = (dateString) => {
     const d = new Date(dateString);
-    if (isNaN(d.getTime())) return "00:00";
-    return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+    if (isNaN(d.getTime())) return '00:00';
+    return `${String(d.getHours()).padStart(2, '0')}:${String(
+      d.getMinutes(),
+    ).padStart(2, '0')}`;
   };
 
   const handleComplete = async () => {
@@ -72,7 +90,7 @@ const DailyCheckin2 = ({ navigation, route }) => {
     const payload = {
       bedTime: getTimeString(sleepData.startTime),
       wakeTime: getTimeString(sleepData.endTime),
-      sleepScore: Number(currentIndex + 1)
+      sleepScore: Number(currentIndex + 1),
     };
 
     try {
@@ -82,34 +100,45 @@ const DailyCheckin2 = ({ navigation, route }) => {
         try {
           await dailyApi.createCheckIn(payload);
         } catch (postError) {
-          if (postError.response && (postError.response.status === 409 || postError.response.data?.code === "SLEEP400_003")) {
+          const errCode = postError.response?.data?.code;
+          if (
+            errCode === 'SLEEP409_001' ||
+            postError.response?.status === 409
+          ) {
             await dailyApi.updateCheckIn(todayStr, payload);
           } else {
             throw postError;
           }
         }
       }
-
-      await AsyncStorage.setItem('LAST_CHECKIN_DATE', todayStr);
-      setConditionData({
-        text: conditions[currentIndex],
-        image: characterImages[currentIndex],
-        value: value,
-      });
-      navigation.navigate('Home');
-
+      await finishCheckin(todayStr);
     } catch (error) {
-      if (error.response && error.response.data?.code === "SLEEP400_004") {
+      const errData = error.response?.data;
+      if (errData?.code === 'SLEEP400_004') {
         try {
           const yesterdayStr = getKSTDateString(-1);
           await dailyApi.updateCheckIn(yesterdayStr, payload);
-          await AsyncStorage.setItem('LAST_CHECKIN_DATE', todayStr);
-          navigation.navigate('Home');
+          await finishCheckin(todayStr);
           return;
-        } catch (e) {}
+        } catch (retryError) {
+          console.error(retryError.response?.data);
+        }
       }
-      Alert.alert('저장 실패', '정보 저장에 실패했습니다.');
+      Alert.alert('저장 실패', errData?.message || '정보 저장에 실패했습니다.');
     }
+  };
+
+  const finishCheckin = async (dateStr) => {
+    await AsyncStorage.setItem('LAST_CHECKIN_DATE', dateStr);
+    setConditionData({
+      text: conditions[currentIndex],
+      image: characterImages[currentIndex],
+      value: value,
+    });
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'Home' }],
+    });
   };
 
   const thumbLeft = (value / 100) * (SCREEN_WIDTH - 88);
@@ -177,7 +206,7 @@ const DailyCheckin2 = ({ navigation, route }) => {
       </ScrollView>
       <View style={styles.buttonContainer}>
         <Button
-          text={isEditMode ? "저장" : "완료"}
+          text={isEditMode ? '저장' : '완료'}
           bgColor={colors.grayscale[1000]}
           textColor={colors.grayscale[100]}
           onPress={handleComplete}
