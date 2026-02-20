@@ -1,34 +1,31 @@
-import React, { useState } from 'react'; 
+import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Svg, { Circle, Path, Defs, LinearGradient as SvgGradient, Stop } from 'react-native-svg';
 import { colors } from '../../styles/colors.js';
-import TM_Modal4 from './timerComponents/TimerStopModal.jsx'; 
 
-const TM02_Card = () => {
-  const [isPaused, setIsPaused] = useState(false);
-  const [isModalVisible, setIsModalVisible] = useState(false); 
-
+const TM02_Card = ({
+  accumulatedTime,
+  remainingTime,
+  currentTime,
+  isPaused,
+  onPausePress,
+  onEndPress,
+  progress = 0,
+}) => {
   const activeColor = isPaused ? colors.grayscale[500] : colors.sub[200];
   const gradientStart = isPaused ? colors.grayscale[300] : colors.sub[100];
-  
-  const accumulatedTime = "00 : 38 : 41";
-
-  const handleConfirmExit = () => {
-    setIsModalVisible(false);
-    console.log("집중모드 종료가 확정되었습니다.");
-  };
 
   return (
     <View style={styles.cardContainer}>
       <View style={styles.timeTag}>
-        <Text style={styles.timeTagText}>11 : 32 AM</Text>
+        <Text style={styles.timeTagText}>{currentTime}</Text>
       </View>
 
       <View style={styles.headerRow}>
         <Text style={styles.headerText}>목표시간까지</Text>
         <View style={styles.timerBadge}>
-          <Text style={styles.timerBadgeText}>01:21:19</Text>
+          <Text style={styles.timerBadgeText}>{remainingTime}</Text>
         </View>
         <Text style={styles.headerText}>남았어요</Text>
       </View>
@@ -42,24 +39,24 @@ const TM02_Card = () => {
                 <Stop offset="100%" stopColor={activeColor} stopOpacity="1" />
               </SvgGradient>
             </Defs>
-            
+
             {Array.from({ length: 60 }).map((_, i) => (
               <Circle
                 key={i}
-                cx="50" cy="50" r="48"
+                cx="50"
+                cy="50"
+                r="48"
                 fill="none"
                 stroke="#fff"
                 strokeWidth={i % 5 === 0 ? 5 : 1}
                 strokeDasharray="1, 314"
                 transform={`rotate(${i * 6}, 50, 50)`}
+                opacity={isPaused ? 0.3 : 1}
               />
             ))}
 
-            <Path
-              d="M 50 10 A 40 40 0 0 1 90 50 L 50 50 Z"
-              fill="url(#grad)"
-            />
-            
+            <Path d="M 50 10 A 40 40 0 0 1 90 50 L 50 50 Z" fill="url(#grad)" />
+
             <Circle cx="50" cy="50" r="4" fill="white" />
           </Svg>
         </View>
@@ -73,38 +70,17 @@ const TM02_Card = () => {
       </View>
 
       <View style={styles.footerRow}>
-        <TouchableOpacity 
-          style={styles.pauseButton} 
-          onPress={() => setIsPaused(!isPaused)}
-        >
-          <Ionicons 
-            name={isPaused ? "play" : "pause"} 
-            size={20} 
-            color= {colors.primary[600]}
-          />
+        <TouchableOpacity style={styles.pauseButton} onPress={onPausePress}>
+          <Ionicons name={isPaused ? 'play' : 'pause'} size={20} color={colors.primary[600]} />
         </TouchableOpacity>
-        
-        {/* 3. 버튼 클릭 시 모달 열기 */}
-        <TouchableOpacity 
-          style={styles.exitButton} 
-          onPress={() => setIsModalVisible(true)}
-        >
+
+        <TouchableOpacity style={styles.exitButton} onPress={onEndPress}>
           <Text style={styles.exitButtonText}>집중모드 종료</Text>
         </TouchableOpacity>
       </View>
-
-      {/* 4. TM_Modal4 컴포넌트 배치 */}
-      <TM_Modal4 
-        visible={isModalVisible}
-        onClose={() => setIsModalVisible(false)}
-        time={accumulatedTime}
-        onConfirm={handleConfirmExit}
-      />
     </View>
   );
 };
-
-export default TM02_Card;
 
 const styles = StyleSheet.create({
   cardContainer: {
@@ -117,7 +93,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     justifyContent: 'space-between',
     position: 'absolute',
-    top: '40%',
+    top: '15%',
     zIndex: 100,
   },
   timeTag: {
@@ -212,3 +188,5 @@ const styles = StyleSheet.create({
     fontFamily: 'Pretendard-Bold',
   },
 });
+
+export default TM02_Card;

@@ -16,6 +16,7 @@ import Button from '../../components/Button.jsx';
 import { colors } from '../../styles/colors.js';
 import { useNavigation } from '@react-navigation/native';
 import client from '../../api/client';
+import { startSession } from '../../api/sessions.js';
 
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
 const ITEM_HEIGHT = 44;
@@ -30,7 +31,7 @@ const TimerSetup = ({ isVisible, onClose }) => {
 
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
   const [selectedTagId, setSelectedTagId] = useState(null);
-  
+
   const [fatigue, setFatigue] = useState(50);
   const [caffeine, setCaffeine] = useState(50);
   const [noise, setNoise] = useState(0);
@@ -49,7 +50,7 @@ const TimerSetup = ({ isVisible, onClose }) => {
     try {
       setIsLoading(true);
       const response = await client.get('/categories/all');
-      
+
       if (response.data.isSuccess) {
         const result = response.data.result;
         setRawContent(result);
@@ -58,28 +59,50 @@ const TimerSetup = ({ isVisible, onClose }) => {
         }
       }
     } catch (error) {
-      console.error("카테고리 로딩 실패:", error);
+      console.error('카테고리 로딩 실패:', error);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleStart = () => {
-    onClose();
-    navigation.navigate('TimerRunning', {
-      categoryId: selectedCategoryId,
-      tagId: selectedTagId,
-      fatigue,
-      caffeine,
-      noise,
-      time: { hour, min, sec }
-    });
+  const handleStart = async () => {
+    const totalDurationSec = hour * 3600 + min * 60 + sec;
+
+    if (totalDurationSec <= 0) {
+      alert('목표 시간을 설정해주세요.');
+      return;
+    }
+
+    const requestBody = {
+      majorCategoryId: selectedCategoryId,
+      categoryId: selectedTagId,
+      startedAt: new Date().toISOString().split('.')[0],
+      goalDurationSec: totalDurationSec,
+      fatigueLevel: fatigue / 25 + 1,
+      caffeineIntakeLevel: caffeine / 50,
+      noiseLevel: noise / 50,
+    };
+
+    console.log('🚀 서버로 보낼 데이터:', JSON.stringify(requestBody, null, 2));
+    try {
+      const result = await startSession(requestBody);
+
+      onClose();
+
+      navigation.navigate('TimerRunning', {
+        sessionId: result.result.sessionId,
+        goalDurationSec: totalDurationSec,
+        expectedEndAt: result.expectedEndAt,
+      });
+    } catch (error) {
+      alert(error.message || '세션을 시작할 수 없습니다.');
+    }
   };
 
   const currentCategoryData = rawContent.find(
-    (item) => item.majorCategory.id === selectedCategoryId
+    (item) => item.majorCategory.id === selectedCategoryId,
   );
-  
+
   const availableTags = currentCategoryData ? currentCategoryData.customTags : [];
 
   const getFatigueText = (val) => {
@@ -103,18 +126,9 @@ const TimerSetup = ({ isVisible, onClose }) => {
   };
 
   return (
-    <Modal
-      visible={isVisible}
-      animationType="slide"
-      transparent={true}
-      onRequestClose={onClose}
-    >
+    <Modal visible={isVisible} animationType="slide" transparent={true} onRequestClose={onClose}>
       <View style={styles.modalOverlay}>
-        <TouchableOpacity
-          style={styles.topDismiss}
-          activeOpacity={1}
-          onPress={onClose}
-        />
+        <TouchableOpacity style={styles.topDismiss} activeOpacity={1} onPress={onClose} />
         <View style={styles.sheetContainer}>
           <View style={styles.handle} />
 
@@ -217,11 +231,7 @@ const TimerSetup = ({ isVisible, onClose }) => {
           )}
 
           <View style={styles.bottomWrapper}>
-            <Button
-              text="▶  집중모드 시작"
-              onPress={handleStart}
-              bgColor={colors.sub[200]}
-            />
+            <Button text="▶  집중모드 시작" onPress={handleStart} bgColor={colors.sub[200]} />
           </View>
         </View>
       </View>
@@ -245,12 +255,7 @@ const WheelPicker = ({ data, selected, onSelect, label }) => {
       >
         {data.map((item) => (
           <View key={item} style={styles.itemWrapper}>
-            <Text
-              style={[
-                styles.itemText,
-                selected === item && styles.selectedItemText,
-              ]}
-            >
+            <Text style={[styles.itemText, selected === item && styles.selectedItemText]}>
               {item}
               {selected === item && <Text style={styles.unitText}> {label}</Text>}
             </Text>
@@ -271,12 +276,8 @@ const ConditionSlider = ({
   step,
   dotCount,
 }) => {
-  const dots = Array.from(
-    { length: dotCount },
-    (_, i) => (100 / (dotCount - 1)) * i
-  );
-  const availableWidth =
-    SCREEN_WIDTH - PADDING_HORIZONTAL * 2 - SLIDER_CONTAINER_PADDING * 2;
+  const dots = Array.from({ length: dotCount }, (_, i) => (100 / (dotCount - 1)) * i);
+  const availableWidth = SCREEN_WIDTH - PADDING_HORIZONTAL * 2 - SLIDER_CONTAINER_PADDING * 2;
   const thumbSize = 24;
   const left = (value / 100) * availableWidth;
 

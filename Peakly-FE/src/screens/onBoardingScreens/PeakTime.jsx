@@ -2,10 +2,10 @@ import { StyleSheet, Text, View, Alert } from 'react-native';
 import React, { useState } from 'react';
 import Header from './components/Header';
 import { colors } from '../../styles/colors';
-import OnBording from '../../../assets/img/Onboarding/onboarding1.svg';
 import Button from './components/Button';
 import InteractiveDonutChart from './components/Chart';
 import CustomButton from '../../components/CustomButton';
+
 const PeakTime = ({ navigation, route }) => {
   const [selected, setSelected] = useState('');
   const { accumulatedData } = route.params || {};
@@ -46,6 +46,7 @@ const PeakTime = ({ navigation, route }) => {
       },
     });
   };
+
   return (
     <View style={styles.container}>
       <Header totalStep={7} currentStep={2} onPress={() => navigation.goBack()} />
@@ -53,7 +54,9 @@ const PeakTime = ({ navigation, route }) => {
         <Text style={styles.title}>스스로 생각하는 피크타임</Text>
         <Text style={[styles.title, styles.subtitle]}>언제 가장 집중이 잘 되나요?</Text>
       </View>
-      <InteractiveDonutChart onSelect={handleChartSelect} />
+      <View style={styles.chartContainer}>
+        <InteractiveDonutChart onSelect={handleChartSelect} />
+      </View>
       <CustomButton style={styles.button} text={'다음'} onPress={handleNext} />
     </View>
   );
@@ -66,8 +69,20 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     backgroundColor: colors.grayscale[100],
-    gap: 60,
     paddingHorizontal: 20,
+    paddingBottom: 50,
+  },
+  titleContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: 60,
+  },
+  chartContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
   },
   title: {
     fontSize: 28,
@@ -78,17 +93,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.primary[500],
   },
-  titleContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: 8,
-  },
-  buttonContainer: {
-    gap: 16,
-  },
   button: {
-    position: 'absolute',
-    bottom: 50,
     width: '100%',
+    marginTop: 'auto',
   },
 });

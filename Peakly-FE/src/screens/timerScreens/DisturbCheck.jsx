@@ -5,7 +5,7 @@ import Disturb from '../../../assets/img/TM/disturb.svg';
 import DisturbCategories from '../../components/DisturbCategories';
 import CustomButton from '../../components/CustomButton';
 
-const DisturbCheck = () => {
+const DisturbCheck = ({ navigation, route }) => {
   return (
     <LinearGradient
       colors={[colors.grayscale[100], colors.primary[50]]}
@@ -29,7 +29,7 @@ const DisturbCheck = () => {
         </View>
       </View>
       <View style={styles.button}>
-        <CustomButton text="완료" />
+        <CustomButton text="다음" onPress={() => navigation.navigate('TimerResult')} />
       </View>
     </LinearGradient>
   );

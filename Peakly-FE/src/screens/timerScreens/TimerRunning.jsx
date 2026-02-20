@@ -1,18 +1,52 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, View, Text, ScrollView, SafeAreaView, Dimensions,} from 'react-native';
+import { StyleSheet, View, Text, ScrollView, SafeAreaView, Dimensions } from 'react-native';
 import { colors } from '../../styles/colors.js';
 import TimerRunningCard from './TimerRunningCard.jsx';
+import TimerModal from './timerComponents/TimerModal.jsx';
+import { pauseSession, resumeSession, endSession } from '../../api/sessions.js';
 
 const { width, height } = Dimensions.get('window');
 const HOUR_HEIGHT = 100;
+const peakStartTime = 11;
+const peakDuration = 1;
 
-export default function TimerRunning() {
+export default function TimerRunning({ navigation, route }) {
   const scrollViewRef = useRef(null);
 
-  const peakStartTime = 11; // 11:00 AM
-  const peakDuration = 1;  // n시간동안
-
   const hoursArray = Array.from({ length: 24 }, (_, i) => i);
+  const { sessionId, goalDurationSec = 7200 } = route.params || {};
+  const [status, setStatus] = useState('RUNNING');
+  const [elapsedSec, setElapsedSec] = useState(0);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
+  const formatTime = (seconds) => {
+    const s = Math.max(0, seconds);
+    const h = Math.floor(s / 3600);
+    const m = Math.floor((s % 3600) / 60);
+    const sec = s % 60;
+    return `${h.toString().padStart(2, '0')} : ${m.toString().padStart(2, '0')} : ${sec.toString().padStart(2, '0')}`;
+  };
+
+  const getCurrentTimeText = () => {
+    const now = new Date();
+    let h = now.getHours();
+    const m = now.getMinutes();
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    h = h % 12 || 12;
+    return `${h.toString().padStart(2, '0')} : ${m.toString().padStart(2, '0')} ${ampm}`;
+  };
+
+  useEffect(() => {
+    let timerInterval = null;
+    if (status === 'RUNNING') {
+      timerInterval = setInterval(() => {
+        setElapsedSec((prev) => prev + 1);
+      }, 1000);
+    } else {
+      clearInterval(timerInterval);
+    }
+    return () => clearInterval(timerInterval);
+  }, [status]);
 
   useEffect(() => {
     const scrollToCurrentTime = () => {
@@ -31,15 +65,66 @@ export default function TimerRunning() {
     return () => clearTimeout(timer);
   }, []);
 
+  const handlePause = async () => {
+    try {
+      await pauseSession(sessionId);
+      setStatus('PAUSED');
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
+  const handleResume = async () => {
+    try {
+      const result = await resumeSession(sessionId);
+      setElapsedSec(result.result.totalFocusSec);
+      setStatus('RUNNING');
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
+  const handleEndClick = () => {
+    if (elapsedSec < 300) {
+      setIsModalVisible(true);
+    } else {
+      callEndApi(true);
+    }
+  };
+
+  const callEndApi = async (isRecorded) => {
+    try {
+      const requestBody = {
+        totalFocusTime: elapsedSec,
+        isRecorded: isRecorded,
+      };
+
+      const response = await endSession(sessionId, requestBody);
+      navigation.replace('FocusReview', {
+        finalData: response.result,
+        sessionId: sessionId,
+      });
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
   const formatHourLabel = (hour) => {
-    if (hour === 0) return "00 : 00 AM";
+    if (hour === 0) return '00 : 00 AM';
     if (hour < 12) return `${hour.toString().padStart(2, '0')} : 00 AM`;
     return `${hour.toString().padStart(2, '0')} : 00 PM`;
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <TimerRunningCard/>
+      <TimerRunningCard
+        currentTime={getCurrentTimeText()}
+        accumulatedTime={formatTime(elapsedSec)}
+        remainingTime={formatTime(goalDurationSec - elapsedSec)}
+        isPaused={status === 'PAUSED'}
+        onPausePress={status === 'RUNNING' ? handlePause : handleResume}
+        onEndPress={handleEndClick}
+      />
 
       <View style={styles.fixedHeader}>
         <View style={styles.statusChip}>
@@ -51,19 +136,21 @@ export default function TimerRunning() {
         </View>
       </View>
 
-      <ScrollView 
+      <ScrollView
         ref={scrollViewRef}
         style={styles.scrollContainer}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <View style={[
-          styles.peakTimeBox, 
-          { 
-            top: peakStartTime * HOUR_HEIGHT + 20, 
-            height: peakDuration * HOUR_HEIGHT 
-          }
-        ]}>
+        <View
+          style={[
+            styles.peakTimeBox,
+            {
+              top: peakStartTime * HOUR_HEIGHT + 20,
+              height: peakDuration * HOUR_HEIGHT,
+            },
+          ]}
+        >
           <View style={styles.peakBadge}>
             <Text style={styles.peakBadgeText}>오늘의 예상 PeakTime</Text>
           </View>
@@ -78,6 +165,15 @@ export default function TimerRunning() {
           </View>
         ))}
       </ScrollView>
+      <TimerModal
+        visible={isModalVisible}
+        title={'5분 미만 집중은 통계에\n반영되지 않아요.\n그래도 종료할까요?'}
+        onClose={() => setIsModalVisible(false)}
+        onConfirm={() => {
+          setIsModalVisible(false);
+          callEndApi(true);
+        }}
+      />
     </SafeAreaView>
   );
 }
@@ -125,20 +221,20 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingVertical: 20,
-    paddingBottom: height / 2, 
+    paddingBottom: height / 2,
   },
   hourRow: {
     flexDirection: 'row',
     alignItems: 'center',
     height: HOUR_HEIGHT,
     paddingHorizontal: 20,
-    zIndex: 2, 
+    zIndex: 2,
   },
   timeLabelContainer: {
     width: 90,
   },
   hourLabel: {
-    color: colors.grayscale[100], 
+    color: colors.grayscale[100],
     fontSize: 12,
     fontFamily: 'Pretendard-Bold',
   },
@@ -154,12 +250,12 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 110,
     right: 20,
-    backgroundColor: colors.grayscale[800], 
+    backgroundColor: colors.grayscale[800],
     zIndex: 1,
   },
   peakBadge: {
     position: 'absolute',
-    top: -12, 
+    top: -12,
     right: 10,
     backgroundColor: colors.grayscale[100],
     paddingHorizontal: 10,
