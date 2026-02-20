@@ -3,7 +3,6 @@ import TimeComparisonChart from './timerComponents/TimeComparisonChart';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors } from '../../styles/colors';
 import Focus from '../../../assets/img/TM/focus.svg';
-import CustomButton from '../../components/CustomButton';
 import { useState, useEffect } from 'react';
 import { getPeaktimeOverlaps } from '../../api/sessions';
 
