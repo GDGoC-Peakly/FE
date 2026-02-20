@@ -31,85 +31,112 @@ const DailyCheckin2 = ({ navigation, route }) => {
 
   const { sleepData } = useSleep();
   const { conditionData, setConditionData } = useCondition();
-  
   const [value, setValue] = useState(conditionData.value || 100);
 
-  const conditions = ['최악이에요', '별로예요', '보통이에요', '좋아요', '최고예요!'];
-  const characterImages = [Character4, Character3, Character2, Character1, Character0];
-  
+  const conditions = [
+    '최악이에요',
+    '별로예요',
+    '보통이에요',
+    '좋아요',
+    '최고예요!',
+  ];
+  const characterImages = [
+    Character4,
+    Character3,
+    Character2,
+    Character1,
+    Character0,
+  ];
   const currentIndex = Math.round(value / 25);
   const ActiveCharacter = characterImages[currentIndex];
+
+  const getKSTDateString = (offsetDays = 0) => {
+    const now = new Date();
+    const kstDate = new Date(now.getTime() + 9 * 60 * 60 * 1000);
+    if (kstDate.getUTCHours() < 5) {
+      kstDate.setUTCDate(kstDate.getUTCDate() - 1);
+    }
+    if (offsetDays !== 0) kstDate.setDate(kstDate.getDate() + offsetDays);
+    return kstDate.toISOString().split('T')[0];
+  };
 
   useEffect(() => {
     const fetchExistingData = async () => {
       try {
-        const now = new Date();
-        const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-        
-        const response = await dailyApi.getCheckIn(todayStr);
-        
+        const targetStr = getKSTDateString();
+        const response = await dailyApi.getCheckIn(targetStr);
         if (response.data.isSuccess && response.data.result) {
-          const score = response.data.result.sleepScore;
-          const sliderValue = (score - 1) * 25;
-          setValue(sliderValue);
-          console.log("Daily2: Get Success (Score:", score, ")");
+          setValue((response.data.result.sleepScore - 1) * 25);
         }
       } catch (error) {
-        console.log("Daily2: Get Failure", error.message);
+        console.log(error.message);
       }
     };
-
-    if (isEditMode) {
-      fetchExistingData();
-    }
+    if (isEditMode) fetchExistingData();
   }, [isEditMode]);
 
   const getTimeString = (dateString) => {
     const d = new Date(dateString);
-    if (isNaN(d.getTime())) return "00:00";
-    const hours = String(d.getHours()).padStart(2, '0');
-    const minutes = String(d.getMinutes()).padStart(2, '0');
-    return `${hours}:${minutes}`;
+    if (isNaN(d.getTime())) return '00:00';
+    return `${String(d.getHours()).padStart(2, '0')}:${String(
+      d.getMinutes(),
+    ).padStart(2, '0')}`;
   };
 
   const handleComplete = async () => {
-    const now = new Date();
-    const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-
+    const targetStr = getKSTDateString();
     const payload = {
       bedTime: getTimeString(sleepData.startTime),
       wakeTime: getTimeString(sleepData.endTime),
-      sleepScore: Number(currentIndex + 1)
+      sleepScore: Number(currentIndex + 1),
     };
 
     try {
       if (isEditMode) {
-        console.log("PATCH Condition:", payload);
-        await dailyApi.updateCheckIn(todayStr, payload);
+        await dailyApi.updateCheckIn(targetStr, payload);
       } else {
-        console.log("POST Daily Checkin:", payload);
-        await dailyApi.createCheckIn(payload);
-        await AsyncStorage.setItem('LAST_CHECKIN_DATE', todayStr);
+        try {
+          await dailyApi.createCheckIn(payload);
+        } catch (postError) {
+          const errCode = postError.response?.data?.code;
+          if (errCode === 'SLEEP409_001' || postError.response?.status === 409) {
+            await dailyApi.updateCheckIn(targetStr, payload);
+          } else {
+            throw postError;
+          }
+        }
       }
-
-      setConditionData({
-        text: conditions[currentIndex],
-        image: characterImages[currentIndex],
-        value: value,
-      });
-      
-      console.log("Update Success");
-      navigation.navigate('Home');
-
+      await finishCheckin(targetStr);
     } catch (error) {
-      console.log('--- API Failure ---');
-      const errorMsg = error.response?.data?.message || '정보 저장에 실패했습니다.';
-      Alert.alert('저장 실패', errorMsg);
+      const errData = error.response?.data;
+      if (errData?.code === 'SLEEP400_004') {
+        try {
+          const yesterdayStr = getKSTDateString(-1);
+          await dailyApi.updateCheckIn(yesterdayStr, payload);
+          await finishCheckin(targetStr);
+          return;
+        } catch (retryError) {
+          console.error(retryError.response?.data);
+        }
+      }
+      Alert.alert('저장 실패', errData?.message || '정보 저장에 실패했습니다.');
     }
   };
 
-  const availableWidth = SCREEN_WIDTH - 88;
-  const thumbLeft = (value / 100) * availableWidth;
+  const finishCheckin = async (dateStr) => {
+    await AsyncStorage.setItem('LAST_CHECKIN_DATE', dateStr);
+    setConditionData({
+      text: conditions[currentIndex],
+      image: characterImages[currentIndex],
+      value: value,
+    });
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'Home' }],
+    });
+  };
+
+  const thumbLeft = (value / 100) * (SCREEN_WIDTH - 88);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -122,24 +149,40 @@ const DailyCheckin2 = ({ navigation, route }) => {
         {isEditMode && <Text style={styles.navTitle}>컨디션</Text>}
         {isEditMode && <View style={styles.emptyView} />}
       </View>
-
-      <ScrollView contentContainerStyle={styles.scrollContent} bounces={false}>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        bounces={false}
+      >
         <View style={styles.headerContainer}>
           <Text style={styles.titleText}>데일리 체크인</Text>
           <Text style={styles.subTitleText}>오늘의 컨디션은 어땠나요?</Text>
         </View>
-
         <View style={styles.characterSection}>
-          <ActiveCharacter width={220} height={280} />
+          <ActiveCharacter
+            width={220}
+            height={280}
+          />
         </View>
-
         <View style={styles.whiteCard}>
           <View style={styles.sliderWrapper}>
-            <View style={styles.sliderBackgroundLine} pointerEvents="none">
-              {[0, 1, 2, 3, 4].map((i) => <View key={i} style={styles.sliderDot} />)}
+            <View
+              style={styles.sliderBackgroundLine}
+              pointerEvents="none"
+            >
+              {[0, 1, 2, 3, 4].map((i) => (
+                <View
+                  key={i}
+                  style={styles.sliderDot}
+                />
+              ))}
             </View>
-            <View style={[styles.customThumbContainer, { left: thumbLeft }]} pointerEvents="none">
-              <View style={styles.customThumbOuter}><View style={styles.customThumbInner} /></View>
+            <View
+              style={[styles.customThumbContainer, { left: thumbLeft }]}
+              pointerEvents="none"
+            >
+              <View style={styles.customThumbOuter}>
+                <View style={styles.customThumbInner} />
+              </View>
             </View>
             <Slider
               style={styles.actualSlider}
@@ -156,10 +199,9 @@ const DailyCheckin2 = ({ navigation, route }) => {
           <Text style={styles.conditionText}>{conditions[currentIndex]}</Text>
         </View>
       </ScrollView>
-
       <View style={styles.buttonContainer}>
         <Button
-          text={isEditMode ? "저장" : "완료"}
+          text={isEditMode ? '저장' : '완료'}
           bgColor={colors.grayscale[1000]}
           textColor={colors.grayscale[100]}
           onPress={handleComplete}
