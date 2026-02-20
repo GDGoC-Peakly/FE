@@ -38,8 +38,10 @@ const DailyCheckin1 = ({ navigation, route }) => {
 
   const getKSTDateString = (offsetDays = 0) => {
     const now = new Date();
-    const kstOffset = 9 * 60 * 60 * 1000;
-    const kstDate = new Date(now.getTime() + kstOffset);
+    const kstDate = new Date(now.getTime() + 9 * 60 * 60 * 1000);
+    if (kstDate.getUTCHours() < 5) {
+      kstDate.setUTCDate(kstDate.getUTCDate() - 1);
+    }
     if (offsetDays !== 0) kstDate.setDate(kstDate.getDate() + offsetDays);
     return kstDate.toISOString().split('T')[0];
   };
@@ -49,7 +51,11 @@ const DailyCheckin1 = ({ navigation, route }) => {
     if (diff < 0) diff += 24 * 60 * 60 * 1000;
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    return { hours, minutes, totalHours: diff / (1000 * 60 * 60) };
+    return {
+      hours,
+      minutes,
+      totalHours: diff / (1000 * 60 * 60)
+    };
   };
 
   const { hours, minutes, totalHours } = calculateDuration();
@@ -65,7 +71,7 @@ const DailyCheckin1 = ({ navigation, route }) => {
     };
 
     if (isEditMode) {
-      const todayStr = getKSTDateString();
+      const targetStr = getKSTDateString();
       const payload = {
         bedTime: getTimeString(startTime),
         wakeTime: getTimeString(endTime),
@@ -73,7 +79,7 @@ const DailyCheckin1 = ({ navigation, route }) => {
       };
 
       try {
-        await dailyApi.updateCheckIn(todayStr, payload);
+        await dailyApi.updateCheckIn(targetStr, payload);
         setSleepData(updatedSleep);
         navigation.navigate('Home');
       } catch (error) {
@@ -92,7 +98,9 @@ const DailyCheckin1 = ({ navigation, route }) => {
       }
     } else {
       setSleepData(updatedSleep);
-      navigation.navigate('DailyCheckin2', { mode: 'onboarding' });
+      navigation.navigate('DailyCheckin2', {
+        mode: 'onboarding'
+      });
     }
   };
 
@@ -122,20 +130,57 @@ const DailyCheckin1 = ({ navigation, route }) => {
       <View style={styles.timeCardRow}>
         <TimeCard
           label="취침시간"
-          time={startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}
-          onPress={() => { setPickerType('start'); setTempDate(startTime); setShowPicker(true); }}
+          time={startTime.toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false
+          })}
+          onPress={() => {
+            setPickerType('start');
+            setTempDate(startTime);
+            setShowPicker(true);
+          }}
         />
         <TimeCard
           label="기상시간"
-          time={endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}
-          onPress={() => { setPickerType('end'); setTempDate(endTime); setShowPicker(true); }}
+          time={endTime.toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false
+          })}
+          onPress={() => {
+            setPickerType('end');
+            setTempDate(endTime);
+            setShowPicker(true);
+          }}
         />
       </View>
       <View style={styles.circleGraphSection}>
         <View style={styles.graphWrapper}>
-          <Svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-            <Circle cx={center} cy={center} r={radius} stroke={colors.grayscale[200]} strokeWidth={strokeWidth} fill="none" />
-            <Circle cx={center} cy={center} r={radius} stroke={colors.primary[500]} strokeWidth={strokeWidth} strokeDasharray={circumference} strokeDashoffset={strokeDashoffset} fill="none" transform={`rotate(-90 ${center} ${center})`} />
+          <Svg
+            width={size}
+            height={size}
+            viewBox={`0 0 ${size} ${size}`}
+          >
+            <Circle
+              cx={center}
+              cy={center}
+              r={radius}
+              stroke={colors.grayscale[200]}
+              strokeWidth={strokeWidth}
+              fill="none"
+            />
+            <Circle
+              cx={center}
+              cy={center}
+              r={radius}
+              stroke={colors.primary[500]}
+              strokeWidth={strokeWidth}
+              strokeDasharray={circumference}
+              strokeDashoffset={strokeDashoffset}
+              fill="none"
+              transform={`rotate(-90 ${center} ${center})`}
+            />
           </Svg>
           <View style={styles.centerTextContainer}>
             <Text style={styles.centerLabel}>숙면 시간</Text>
@@ -146,7 +191,11 @@ const DailyCheckin1 = ({ navigation, route }) => {
           </View>
         </View>
       </View>
-      <Modal visible={showPicker} transparent animationType="fade">
+      <Modal
+        visible={showPicker}
+        transparent
+        animationType="fade"
+      >
         <View style={styles.modalOverlay}>
           <View style={styles.pickerSheet}>
             <View style={styles.pickerHeader}>
@@ -161,7 +210,13 @@ const DailyCheckin1 = ({ navigation, route }) => {
                 <Text style={styles.confirmText}>확인</Text>
               </TouchableOpacity>
             </View>
-            <DateTimePicker value={tempDate} mode="time" display="spinner" is24Hour={true} onChange={(e, d) => d && setTempDate(d)} />
+            <DateTimePicker
+              value={tempDate}
+              mode="time"
+              display="spinner"
+              is24Hour={true}
+              onChange={(e, d) => d && setTempDate(d)}
+            />
           </View>
         </View>
       </Modal>

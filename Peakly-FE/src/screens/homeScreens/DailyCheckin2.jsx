@@ -52,21 +52,19 @@ const DailyCheckin2 = ({ navigation, route }) => {
 
   const getKSTDateString = (offsetDays = 0) => {
     const now = new Date();
-    if (offsetDays !== 0) now.setDate(now.getDate() + offsetDays);
-
-    return new Intl.DateTimeFormat('en-CA', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      timeZone: 'Asia/Seoul',
-    }).format(now);
+    const kstDate = new Date(now.getTime() + 9 * 60 * 60 * 1000);
+    if (kstDate.getUTCHours() < 5) {
+      kstDate.setUTCDate(kstDate.getUTCDate() - 1);
+    }
+    if (offsetDays !== 0) kstDate.setDate(kstDate.getDate() + offsetDays);
+    return kstDate.toISOString().split('T')[0];
   };
 
   useEffect(() => {
     const fetchExistingData = async () => {
       try {
-        const todayStr = getKSTDateString();
-        const response = await dailyApi.getCheckIn(todayStr);
+        const targetStr = getKSTDateString();
+        const response = await dailyApi.getCheckIn(targetStr);
         if (response.data.isSuccess && response.data.result) {
           setValue((response.data.result.sleepScore - 1) * 25);
         }
@@ -86,7 +84,7 @@ const DailyCheckin2 = ({ navigation, route }) => {
   };
 
   const handleComplete = async () => {
-    const todayStr = getKSTDateString();
+    const targetStr = getKSTDateString();
     const payload = {
       bedTime: getTimeString(sleepData.startTime),
       wakeTime: getTimeString(sleepData.endTime),
@@ -95,30 +93,27 @@ const DailyCheckin2 = ({ navigation, route }) => {
 
     try {
       if (isEditMode) {
-        await dailyApi.updateCheckIn(todayStr, payload);
+        await dailyApi.updateCheckIn(targetStr, payload);
       } else {
         try {
           await dailyApi.createCheckIn(payload);
         } catch (postError) {
           const errCode = postError.response?.data?.code;
-          if (
-            errCode === 'SLEEP409_001' ||
-            postError.response?.status === 409
-          ) {
-            await dailyApi.updateCheckIn(todayStr, payload);
+          if (errCode === 'SLEEP409_001' || postError.response?.status === 409) {
+            await dailyApi.updateCheckIn(targetStr, payload);
           } else {
             throw postError;
           }
         }
       }
-      await finishCheckin(todayStr);
+      await finishCheckin(targetStr);
     } catch (error) {
       const errData = error.response?.data;
       if (errData?.code === 'SLEEP400_004') {
         try {
           const yesterdayStr = getKSTDateString(-1);
           await dailyApi.updateCheckIn(yesterdayStr, payload);
-          await finishCheckin(todayStr);
+          await finishCheckin(targetStr);
           return;
         } catch (retryError) {
           console.error(retryError.response?.data);

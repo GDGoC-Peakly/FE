@@ -39,15 +39,18 @@ const Home = () => {
   const getKSTDateString = () => {
     const now = new Date();
     const kstDate = new Date(now.getTime() + 9 * 60 * 60 * 1000);
+    if (kstDate.getUTCHours() < 5) {
+      kstDate.setUTCDate(kstDate.getUTCDate() - 1);
+    }
     return kstDate.toISOString().split('T')[0];
   };
 
   useEffect(() => {
     const checkTodayData = async () => {
-      const todayStr = getKSTDateString();
+      const targetStr = getKSTDateString();
 
       try {
-        const response = await dailyApi.getCheckIn(todayStr);
+        const response = await dailyApi.getCheckIn(targetStr);
 
         if (response.data.isSuccess && response.data.result) {
           const res = response.data.result;
@@ -76,13 +79,11 @@ const Home = () => {
             value: scoreIndex * 25,
           });
 
-          await AsyncStorage.setItem('LAST_CHECKIN_DATE', todayStr);
+          await AsyncStorage.setItem('LAST_CHECKIN_DATE', targetStr);
         } else {
           navigation.navigate('DailyCheckin1', { mode: 'onboarding' });
         }
       } catch (error) {
-        console.log('데이터 확인 실패:', error.response?.status);
-        
         if (isFocused) {
           navigation.navigate('DailyCheckin1', { mode: 'onboarding' });
         }
@@ -109,7 +110,6 @@ const Home = () => {
         showsVerticalScrollIndicator={false}
       >
         <Peakly style={styles.logo} />
-        
         <View style={styles.peakCard}>
           <View style={styles.yellowBanner}>
             <Text style={styles.bannerText}>오후 2시에 집중력이 폭발할 예정이에요!</Text>
@@ -126,7 +126,6 @@ const Home = () => {
             </TouchableOpacity>
           </View>
         </View>
-
         <View style={styles.card}>
           <Text style={styles.cardDateTitle}>2월 23일 누적 집중 시간</Text>
           <View style={styles.timerWrapper}>
@@ -138,7 +137,6 @@ const Home = () => {
             <PeakTimechart />
           </View>
         </View>
-
         <View style={styles.row}>
           <TouchableOpacity 
             activeOpacity={0.7} 
@@ -149,7 +147,14 @@ const Home = () => {
             <View style={styles.circleGraphContainer}>
               <View style={styles.graphWrapper}>
                 <Svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-                  <Circle cx={center} cy={center} r={radius} stroke={colors.grayscale[200]} strokeWidth={strokeWidth} fill="none" />
+                  <Circle
+                    cx={center}
+                    cy={center}
+                    r={radius}
+                    stroke={colors.grayscale[200]}
+                    strokeWidth={strokeWidth}
+                    fill="none"
+                  />
                   <Circle 
                     cx={center} 
                     cy={center} 
@@ -168,7 +173,6 @@ const Home = () => {
               </View>
             </View>
           </TouchableOpacity>
-
           <TouchableOpacity 
             activeOpacity={0.7} 
             style={[styles.card, styles.halfCard]} 
@@ -187,9 +191,11 @@ const Home = () => {
           </TouchableOpacity>
         </View>
       </ScrollView>
-
       <HomeFooter onFocusPress={() => setIsTimerVisible(true)} />
-      <TimerSetup isVisible={isTimerVisible} onClose={() => setIsTimerVisible(false)} />
+      <TimerSetup
+        isVisible={isTimerVisible}
+        onClose={() => setIsTimerVisible(false)}
+      />
     </SafeAreaView>
   );
 };
@@ -197,61 +203,61 @@ const Home = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F0F0F0',
+    backgroundColor: '#F0F0F0'
   },
   scrollContent: {
     padding: 20,
-    paddingBottom: 120,
+    paddingBottom: 120
   },
   logo: {
     width: 100,
     height: 40,
     alignSelf: 'center',
-    marginBottom: 20,
+    marginBottom: 20
   },
   peakCard: {
     backgroundColor: colors.grayscale[100],
     borderRadius: 12,
-    marginBottom: 12,
+    marginBottom: 12
   },
   yellowBanner: {
     backgroundColor: colors.sub[200],
     paddingVertical: 9,
     borderTopLeftRadius: 12,
     borderTopRightRadius: 12,
-    alignItems: 'center',
+    alignItems: 'center'
   },
   bannerText: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#000',
+    color: '#000'
   },
   cardPadding: {
-    padding: 12,
+    padding: 12
   },
   cardTitle: {
     fontSize: 24,
     fontFamily: 'Pretendard-Bold',
-    marginBottom: 4,
+    marginBottom: 4
   },
   cardSubTitle: {
     fontSize: 12,
-    marginBottom: 15,
+    marginBottom: 15
   },
   card: {
     backgroundColor: colors.grayscale[100],
     borderRadius: 12,
     padding: 12,
-    marginBottom: 12,
+    marginBottom: 12
   },
   cardDateTitle: {
     fontSize: 20,
     fontFamily: 'Pretendard-Bold',
-    marginBottom: 12,
+    marginBottom: 12
   },
   timerWrapper: {
     alignItems: 'center',
-    marginBottom: 25,
+    marginBottom: 25
   },
   customTimerBox: {
     backgroundColor: colors.primary[500],
@@ -259,80 +265,80 @@ const styles = StyleSheet.create({
     height: 58,
     borderRadius: 16,
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   customTimerText: {
     color: colors.grayscale[100],
     fontSize: 32,
-    fontFamily: 'Pretendard-Bold',
+    fontFamily: 'Pretendard-Bold'
   },
   row: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'space-between'
   },
   halfCard: {
     width: '48%',
-    height: 227,
+    height: 227
   },
   smallCardTitle: {
     fontSize: 20,
-    fontFamily: 'Pretendard-Bold',
+    fontFamily: 'Pretendard-Bold'
   },
   characterContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    flex: 1,
+    flex: 1
   },
   talkboxWrapper: {
     width: 90,
     height: 40,
     marginTop: 5,
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   conditionTalkbox: {
-    position: 'absolute',
+    position: 'absolute'
   },
   talkboxTextContainer: {
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   conditionTagText: {
     fontSize: 14,
     fontFamily: 'Pretendard-Bold',
     color: colors.grayscale[1000],
-    paddingTop: 15,
+    paddingTop: 15
   },
   circleGraphContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    flex: 1,
+    flex: 1
   },
   graphWrapper: {
     position: 'relative',
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   centerTextContainer: {
-    position: 'absolute',
+    position: 'absolute'
   },
   sleepText: {
     fontSize: 14,
     fontFamily: 'Pretendard-Bold',
-    color: colors.primary[500],
+    color: colors.primary[500]
   },
   timeChartPlaceholder: {
     width: '100%',
     height: 150,
     marginTop: 10,
-    overflow: 'hidden',
+    overflow: 'hidden'
   },
   barChartPlaceholder: {
     height: 100,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 10,
-  },
+    borderRadius: 10
+  }
 });
 
 export default Home;
