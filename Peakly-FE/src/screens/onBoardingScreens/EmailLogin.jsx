@@ -48,7 +48,7 @@ const EmailLogin = ({ navigation }) => {
     try {
       const data = await loginApi(email, password);
       await authLogin(data.accessToken, data.refreshToken);
-      navigation.replace('Stack');
+      navigation.replace('MainStack');
     } catch (error) {
       console.error('Login Error', error);
       if (error.response) {

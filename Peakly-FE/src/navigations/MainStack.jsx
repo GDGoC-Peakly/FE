@@ -17,6 +17,9 @@ import DailyCheckin2 from '../screens/homeScreens/DailyCheckin2';
 import TimerSetup from '../screens/timerScreens/TimerSetup';
 import TimerRunning from '../screens/timerScreens/TimerRunning';
 import TimerResult from '../screens/timerScreens/TimerResult';
+import DisturbCheck from '../screens/timerScreens/DisturbCheck';
+import FocusReview from '../screens/timerScreens/FocusReview';
+import FocusRateCheck from '../screens/timerScreens/FocusRateCheck';
 
 {
   /* --- ST 스크린--- */
@@ -49,6 +52,15 @@ const MainStack = () => {
           <Stack.Screen name="TimerSetup" component={TimerSetup} />
           <Stack.Screen name="TimerRunning" component={TimerRunning} />
           <Stack.Screen name="TimerResult" component={TimerResult} />
+          <Stack.Screen name="FocusRateCheck" component={FocusRateCheck} />
+          <Stack.Screen name="FocusReview" component={FocusReview} />
+          <Stack.Screen
+            name="DisturbCheck"
+            component={DisturbCheck}
+            options={{
+              animation: 'slide_from_bottom',
+            }}
+          />
 
           {/* --- ST 관련 스택 --- */}
           <Stack.Screen name="Setting" component={Setting} />

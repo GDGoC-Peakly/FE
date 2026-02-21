@@ -5,6 +5,34 @@ import { colors } from '../../../styles/colors';
 
 const { width } = Dimensions.get('window');
 const chartSize = Math.min(width - 40, 292);
+const SCALE = chartSize / 292;
+
+const CX = 145.599;
+const CY = 145.599;
+const OUTER_RADIUS = 145.099;
+const INNER_RADIUS = 57;
+
+const getSegmentId = (touchX, touchY) => {
+  const svgX = touchX / SCALE;
+  const svgY = touchY / SCALE;
+
+  const dx = svgX - CX;
+  const dy = svgY - CY;
+  const distance = Math.sqrt(dx * dx + dy * dy);
+
+  if (distance < INNER_RADIUS || distance > OUTER_RADIUS) return null;
+
+  let angle = Math.atan2(dy, dx) * (180 / Math.PI);
+  if (angle < 0) angle += 360;
+
+  if (angle >= 241 || angle < 1) return 1; // 새벽
+  if (angle >= 1 && angle < 60) return 2; // 아침
+  if (angle >= 60 && angle < 89) return 3; // 낮
+  if (angle >= 89 && angle < 165) return 4; // 저녁
+  if (angle >= 165 && angle < 241) return 5; // 밤
+
+  return null;
+};
 
 export default function InteractiveDonutChart({ onSelect }) {
   const [selectedSegment, setSelectedSegment] = useState(null);
@@ -73,17 +101,17 @@ export default function InteractiveDonutChart({ onSelect }) {
     },
   ];
 
-  const handleSegmentPress = (id) => {
+  const handlePress = (evt) => {
+    const { locationX, locationY } = evt.nativeEvent;
+    const id = getSegmentId(locationX, locationY);
+    if (id === null) return;
+
     const nextSelected = selectedSegment === id ? null : id;
     setSelectedSegment(nextSelected);
 
     if (onSelect) {
-      if (nextSelected) {
-        const segment = segments.find((s) => s.id === nextSelected);
-        onSelect(segment.label);
-      } else {
-        onSelect('');
-      }
+      const segment = segments.find((s) => s.id === nextSelected);
+      onSelect(nextSelected ? segment.label : '');
     }
   };
 
@@ -92,14 +120,13 @@ export default function InteractiveDonutChart({ onSelect }) {
   return (
     <View style={styles.container}>
       <View style={styles.chartContainer}>
-        <Svg width={chartSize} height={chartSize} viewBox="0 0 292 292">
+        <Svg width={chartSize} height={chartSize} viewBox="0 0 292 292" onPress={handlePress}>
           <G>
             {segments.map((segment) => (
               <Path
                 key={`fill-${segment.id}`}
                 d={segment.fillPath}
                 fill={selectedSegment === segment.id ? colors.primary[500] : colors.primary[50]}
-                onPress={() => handleSegmentPress(segment.id)}
               />
             ))}
             {segments.map((segment) => (
@@ -109,28 +136,24 @@ export default function InteractiveDonutChart({ onSelect }) {
                   fill="none"
                   stroke={colors.primary[500]}
                   strokeWidth="1"
-                  pointerEvents="none"
                 />
                 <Path
                   d={segment.strokePath2}
                   fill="none"
                   stroke={colors.primary[500]}
                   strokeWidth="1"
-                  pointerEvents="none"
                 />
                 <Path
                   d={segment.strokePath3}
                   fill="none"
                   stroke={colors.primary[500]}
                   strokeWidth="1"
-                  pointerEvents="none"
                 />
                 <Path
                   d={segment.strokePath4}
                   fill="none"
                   stroke={colors.primary[500]}
                   strokeWidth="1"
-                  pointerEvents="none"
                 />
               </G>
             ))}
@@ -150,7 +173,6 @@ export default function InteractiveDonutChart({ onSelect }) {
 const styles = StyleSheet.create({
   container: {},
   chartContainer: {
-    position: 'relative',
     width: chartSize,
     height: chartSize,
     alignItems: 'center',
@@ -165,7 +187,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     justifyContent: 'center',
     alignItems: 'center',
-    zIndex: 1,
   },
   title: {
     fontSize: 24,

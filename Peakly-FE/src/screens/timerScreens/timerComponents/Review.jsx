@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Pressable, StyleSheet } from 'react-native';
-import Star from '../../assets/img/TM/star.svg';
-import EmptyStar from '../../assets/img/TM/emptyStar.svg';
+import Star from '../../../../assets/img/TM/star.svg';
+import EmptyStar from '../../../../assets/img/TM/emptyStar.svg';
 
 const Review = ({ score = 0, onRate }) => {
   return (
