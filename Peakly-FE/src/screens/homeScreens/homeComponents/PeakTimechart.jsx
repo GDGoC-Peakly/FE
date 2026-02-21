@@ -1,29 +1,42 @@
 import React from 'react';
-import { StyleSheet, View, Text, Dimensions } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 import { colors } from '../../../styles/colors';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const PeakTimechart = ({ totalFocusSec = 0, baseDate = "" }) => {
+  const formatTime = (seconds) => {
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = seconds % 60;
+    return `${String(h).padStart(2, '0')} : ${String(m).padStart(2, '0')} : ${String(s).padStart(2, '0')}`;
+  };
 
-const PeakTimechart = () => {
-  // 2시간 단위 데이터 (총 12개)
-  const data = [10, 25, 15, 30, 60, 40, 20, 0, 0, 0, 10, 5];
-  const MAX_VALUE = 60; 
-  const CHART_HEIGHT = 100;
-  const VERTICAL_LINES = 12; 
+  const formatDate = (dateStr) => {
+    if (!dateStr) return "";
+    const [year, month, day] = dateStr.split('-');
+    return `${parseInt(month)}월 ${parseInt(day)}일`;
+  };
+
+  const data = [2, 5, 20, 60, 0, 0, 0, 0, 0, 0, 0, 0];
+  const MAX_VALUE = 60;
+  const CHART_HEIGHT = 80;
 
   return (
-    <View style={styles.container}>
+    <View style={styles.card}>
+      <Text style={styles.cardTitle}>{formatDate(baseDate)} 누적 집중 시간</Text>
+      
+      <View style={styles.timerBox}>
+        <Text style={styles.timerText}>{formatTime(totalFocusSec)}</Text>
+      </View>
+
       <View style={styles.chartWrapper}>
-        
         <View style={styles.gridLayer}>
           <View style={styles.horizontalGrid}>
-            <View style={[styles.hLine, styles.dashedLine]} /> 
-            <View style={[styles.hLine, styles.solidLine]} />  
-            <View style={[styles.hLine, styles.baseLine]} />  
+            <View style={[styles.hLine, styles.dashedLine]} />
+            <View style={[styles.hLine, styles.solidLine]} />
+            <View style={[styles.hLine, styles.baseLine]} />
           </View>
-
           <View style={styles.verticalGrid}>
-            {Array.from({ length: VERTICAL_LINES + 1 }).map((_, i) => (
+            {Array.from({ length: 13 }).map((_, i) => (
               <View key={i} style={styles.vLine} />
             ))}
           </View>
@@ -47,13 +60,13 @@ const PeakTimechart = () => {
         <View style={styles.yAxis}>
           <Text style={styles.axisText}>60분</Text>
           <Text style={styles.axisText}>30분</Text>
-          <View style={{ height: 12 }} /> 
+          <View style={{ height: 10 }} />
         </View>
       </View>
 
       <View style={styles.xAxis}>
-        <Text style={styles.xAxisText}>오전 5시 (23일)</Text>
-        <Text style={styles.xAxisText}>오후 5시</Text>
+        <Text style={styles.xAxisText}>오전 5시 ({parseInt(baseDate.split('-')[2])}일)</Text>
+        <Text style={styles.xAxisText}>오전 5시</Text>
       </View>
     </View>
   );
@@ -62,12 +75,35 @@ const PeakTimechart = () => {
 export default PeakTimechart;
 
 const styles = StyleSheet.create({
-  container: {
-    width: '100%',
+  card: {
+    backgroundColor: colors.grayscale[100],
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+  },
+  cardTitle: {
+    fontSize: 20,
+    fontFamily: 'Pretendard-Bold',
+    color: colors.grayscale[1000],
+    marginBottom: 12,
+  },
+  timerBox: {
+    backgroundColor: '#6371F2',
+    borderRadius: 16,
+    height: 58,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  timerText: {
+    fontSize: 36,
+    fontFamily: 'Pretendard-Bold',
+    color: colors.grayscale[100],
+    letterSpacing: 2,
   },
   chartWrapper: {
     flexDirection: 'row',
-    height: 100,
+    height: 80,
     position: 'relative',
   },
   gridLayer: {
@@ -76,7 +112,7 @@ const styles = StyleSheet.create({
   },
   horizontalGrid: {
     ...StyleSheet.absoluteFillObject,
-    justifyContent: 'space-between', 
+    justifyContent: 'space-between',
   },
   verticalGrid: {
     ...StyleSheet.absoluteFillObject,
@@ -95,7 +131,7 @@ const styles = StyleSheet.create({
   },
   dashedLine: {
     borderBottomWidth: 1,
-    borderColor: colors.grayscale[300]
+    borderColor: colors.grayscale[300],
   },
   solidLine: {
     borderBottomWidth: 1,
@@ -122,7 +158,7 @@ const styles = StyleSheet.create({
   },
   bar: {
     width: '80%',
-    backgroundColor: colors.primary[500],
+    backgroundColor: '#6371F2',
   },
   yAxis: {
     width: 45,
@@ -130,12 +166,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'flex-end',
     position: 'absolute',
-    right: 10,
+    right: 0,
   },
   xAxis: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 4,
+    marginTop: 8,
     paddingRight: 45,
   },
   axisText: {

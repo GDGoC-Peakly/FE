@@ -1,5 +1,4 @@
-import React from 'react';
-import { useRef, useEffect } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { StyleSheet, View, Text, ScrollView } from 'react-native';
 import { colors } from '../../../styles/colors';
 
@@ -9,22 +8,21 @@ const END_HOUR = 24;
 const TOTAL_HOURS = END_HOUR - START_HOUR + 1;
 const CONTENT_WIDTH = TOTAL_HOURS * HOUR_WIDTH;
 
-const PeakTimeline = () => {
+const PeakTimeline = ({ windows = [] }) => {
   const scrollRef = useRef(null); 
 
-  const schedules = [
-    { start: 11, end: 12.5, label: '피크 타임' },
-    { start: 14, end: 18, label: '피크 타임' },
-  ];
+  const getHourValue = (dateStr) => {
+    const d = new Date(dateStr);
+    return d.getHours() + d.getMinutes() / 60;
+  };
 
   useEffect(() => {
     const currentHour = new Date().getHours();
     const scrollToX = currentHour * HOUR_WIDTH;
-
     setTimeout(() => {
-      scrollRef.current?.scrollTo({
-        x: scrollToX - 20, 
-        animated: true,
+      scrollRef.current?.scrollTo({ 
+        x: Math.max(0, scrollToX - 20), 
+        animated: true 
       });
     }, 100);
   }, []);
@@ -39,19 +37,13 @@ const PeakTimeline = () => {
         contentContainerStyle={{ width: CONTENT_WIDTH + 20 }}
       >
         <View style={{ width: CONTENT_WIDTH }}>
-          
           <View style={styles.timeHeaderContainer}>
             <View style={styles.timeHeaderRow}>
-              {Array.from({ length: TOTAL_HOURS }).map((_, i) => {
-                const hour = START_HOUR + i;
-                const formattedHour = String(hour).padStart(2, '0');
-                
-                return (
-                  <View key={i} style={{ width: HOUR_WIDTH }}>
-                    <Text style={styles.timeText}>{formattedHour}</Text>
-                  </View>
-                );
-              })}
+              {Array.from({ length: TOTAL_HOURS }).map((_, i) => (
+                <View key={i} style={{ width: HOUR_WIDTH }}>
+                  <Text style={styles.timeText}>{String(START_HOUR + i).padStart(2, '0')}</Text>
+                </View>
+              ))}
             </View>
           </View>
 
@@ -62,20 +54,31 @@ const PeakTimeline = () => {
               ))}
             </View>
 
-            {schedules.map((item, index) => {
-              const left = (item.start - START_HOUR) * HOUR_WIDTH;
-              const width = (item.end - item.start) * HOUR_WIDTH;
+            {windows.map((item, index) => {
+              const startVal = getHourValue(item.startedAt);
+              const endVal = getHourValue(item.endedAt);
+              const left = startVal * HOUR_WIDTH;
+              const width = (endVal - startVal) * HOUR_WIDTH;
+              
+              const startLabel = new Date(item.startedAt).toLocaleTimeString([], { 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                hour12: false 
+              });
+              const endLabel = new Date(item.endedAt).toLocaleTimeString([], { 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                hour12: false 
+              });
+
               return (
                 <View key={index} style={[styles.peakBlock, { left, width }]}>
-                  <Text style={styles.peakLabel}>{item.label}</Text>
-                  <Text style={styles.peakTimeText}>
-                    {`${Math.floor(item.start)}:00 ~ ${Math.floor(item.end)}:00`}
-                  </Text>
+                  <Text style={styles.peakLabel}>피크 타임</Text>
+                  <Text style={styles.peakTimeText}>{`${startLabel} ~ ${endLabel}`}</Text>
                 </View>
               );
             })}
           </View>
-
           <View style={styles.bottomBorderLine} />
         </View>
       </ScrollView>
@@ -107,7 +110,7 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   gridOverlay: {
-    ...StyleSheet.absoluteFillObject, 
+    ...StyleSheet.absoluteFillObject,
     flexDirection: 'row',
     zIndex: 0,
   },
@@ -116,7 +119,7 @@ const styles = StyleSheet.create({
     height: '100%',
     borderLeftWidth: 1,
     borderColor: colors.grayscale[300],
-    borderStyle: 'dashed', 
+    borderStyle: 'dashed',
   },
   peakBlock: {
     position: 'absolute',
@@ -124,7 +127,7 @@ const styles = StyleSheet.create({
     height: 72,
     backgroundColor: colors.primary[50],
     padding: 12,
-    zIndex: 1, 
+    zIndex: 1,
   },
   peakLabel: {
     fontSize: 14,

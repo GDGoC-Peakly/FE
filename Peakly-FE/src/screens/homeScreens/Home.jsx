@@ -26,8 +26,7 @@ import PeakTimechart from './homeComponents/PeakTimechart';
 import TimerSetup from '../../screens/timerScreens/TimerSetup';
 import { useCondition } from '../../contexts/ConditionContext';
 import { useSleep } from '../../contexts/SleepContext';
-
-import { dailyApi } from '../../api/dailycheckin';
+import { homeApi } from '../../api/home';
 
 const Home = () => {
   const navigation = useNavigation();
@@ -37,6 +36,7 @@ const Home = () => {
   
   const [isTimerVisible, setIsTimerVisible] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [homeData, setHomeData] = useState(null);
 
   const characterImages = [Character4, Character3, Character2, Character1, Character0];
   const conditions = ['최악이에요', '별로예요', '보통이에요', '좋아요', '최고예요!'];
@@ -46,49 +46,70 @@ const Home = () => {
       if (!isFocused) return;
       setLoading(true);
 
+      // 1. 날짜 계산 확인용 로그
       const now = new Date();
       const kstDate = new Date(now.getTime() + 9 * 60 * 60 * 1000);
       if (kstDate.getUTCHours() < 5) kstDate.setUTCDate(kstDate.getUTCDate() - 1);
       const targetDate = kstDate.toISOString().split('T')[0];
-
-      console.log('--- [Home] API Fetch Start ---');
+      
+      console.log('--- [API Request] ---');
       console.log('Target Date:', targetDate);
 
       try {
-        const response = await dailyApi.getCheckIn(targetDate);
+        const response = await homeApi.getHomeData(targetDate);
         const res = response.data;
-        
-        console.log('Home API Response:', res);
+
+        // 2. 서버 응답 전체 구조 확인
+        console.log('--- [API Response Success] ---');
+        console.log('Full Response:', JSON.stringify(res, null, 2));
 
         if (res.isSuccess && res.result) {
-          const data = res.result;
-          const hMatch = data.durationDisplay.match(/(\d+)h/);
-          const mMatch = data.durationDisplay.match(/(\d+)m/);
+          setHomeData(res.result);
+          const { summary, peaktime } = res.result;
+          
+          // 3. 주요 데이터 가공 전 로그
+          console.log('Summary Data:', summary);
+          console.log('PeakTime Windows Count:', peaktime?.windows?.length);
+
+          // 수면 데이터 가공
+          const totalSec = summary.sleep.sleepSec;
+          const h = Math.floor(totalSec / 3600);
+          const m = Math.floor((totalSec % 3600) / 60);
           
           setSleepData({
-            startTime: data.bedTime.substring(0, 5),
-            endTime: data.wakeTime.substring(0, 5),
-            hours: hMatch ? parseInt(hMatch[1]) : 0,
-            minutes: mMatch ? parseInt(mMatch[1]) : 0,
-            totalHours: (parseInt(hMatch ? hMatch[1] : 0)) + (parseInt(mMatch ? mMatch[1] : 0) / 60),
+            hours: h,
+            minutes: m,
+            totalHours: totalSec / 3600,
           });
 
-          const scoreIndex = Math.max(0, Math.min(Math.round(data.sleepScore) - 1, 4));
+          // 컨디션 캐릭터 인덱스 계산 로그
+          const score = summary.sleep.sleepScore;
+          const scoreIndex = Math.max(0, Math.min(Math.round(score) - 1, 4));
+          console.log('Sleep Score:', score, '-> Calculated Index:', scoreIndex);
+          
           setConditionData({
             text: conditions[scoreIndex],
             image: characterImages[scoreIndex],
             value: scoreIndex * 25,
           });
-          console.log('Context Update Complete:', { scoreIndex, sleepScore: data.sleepScore });
         }
       } catch (error) {
-        console.error('Home API Error:', error.response?.data || error.message);
-        if (error.response?.status === 404 || error.response?.data?.code === 'DAILY500_001') {
-          console.log('No Data Found, Navigating to Onboarding...');
-          navigation.navigate('DailyCheckin1', { mode: 'onboarding' });
+        // 4. 에러 발생 시 상세 정보 로그
+        console.error('--- [API Response Error] ---');
+        if (error.response) {
+          console.error('Status:', error.response.status);
+          console.error('Data:', error.response.data);
+          
+          if (error.response.data.code === 'DAILY500_001') {
+            console.log('Redirecting to DailyCheckin1 (Daily Info Missing)');
+            navigation.navigate('DailyCheckin1', { mode: 'onboarding' });
+          }
+        } else {
+          console.error('Error Message:', error.message);
         }
       } finally {
         setLoading(false);
+        console.log('--- [Fetch End] ---');
       }
     };
 
@@ -103,9 +124,6 @@ const Home = () => {
     );
   }
 
-  const size = 100;
-  const radius = 44;
-  const circumference = 2 * Math.PI * radius;
   const progress = Math.min((sleepData.totalHours || 0) / 24, 1);
 
   return (
@@ -115,26 +133,32 @@ const Home = () => {
         showsVerticalScrollIndicator={false}
       >
         <Peakly style={styles.logo} />
+        
         <View style={styles.peakCard}>
           <View style={styles.yellowBanner}>
             <Text style={styles.bannerText}>오늘의 집중 피크타임을 확인해보세요.</Text>
           </View>
           <View style={styles.cardPadding}>
-            <Text style={styles.cardTitle}>지금은 피크타임이에요!</Text>
+            <Text style={styles.cardTitle}>
+              {homeData?.peaktime?.isNowInPeakTime ? "지금은 피크타임이에요!" : "집중할 준비가 되었나요?"}
+            </Text>
             <Text style={styles.cardSubTitle}>오늘의 집중 피크타임을 확인해보세요.</Text>
             <TouchableOpacity 
               activeOpacity={0.7} 
-              onPress={() => navigation.navigate('PeakTimeline')}
+              onPress={() => {
+                console.log('Navigating to PeakTimeline with:', homeData?.peaktime?.windows);
+                navigation.navigate('PeakTimeline');
+              }}
             >
-              <PeakTimeline />
+              <PeakTimeline windows={homeData?.peaktime?.windows} />
             </TouchableOpacity>
           </View>
         </View>
 
-        <View style={styles.card}>
-          <Text style={styles.cardDateTitle}>누적 집중 시간</Text>
-          <PeakTimechart />
-        </View>
+        <PeakTimechart 
+          totalFocusSec={homeData?.summary?.totalFocusSec} 
+          baseDate={homeData?.baseDate}
+        />
 
         <View style={styles.row}>
           <TouchableOpacity
@@ -144,17 +168,25 @@ const Home = () => {
           >
             <Text style={styles.smallCardTitle}>숙면시간</Text>
             <View style={styles.graphWrapper}>
-              <Svg width={size} height={size}>
+              <Svg width={100} height={100}>
                 <Circle 
-                  cx={50} cy={50} r={radius} 
-                  stroke={colors.grayscale[200]} strokeWidth={12} fill="none" 
+                  cx={50} 
+                  cy={50} 
+                  r={44} 
+                  stroke={colors.grayscale[200]} 
+                  strokeWidth={12} 
+                  fill="none" 
                 />
                 <Circle
-                  cx={50} cy={50} r={radius}
-                  stroke={colors.primary[500]} strokeWidth={12}
-                  strokeDasharray={circumference}
-                  strokeDashoffset={circumference * (1 - progress)}
-                  fill="none" transform="rotate(-90 50 50)"
+                  cx={50}
+                  cy={50}
+                  r={44}
+                  stroke={colors.primary[500]}
+                  strokeWidth={12}
+                  strokeDasharray={2 * Math.PI * 44}
+                  strokeDashoffset={2 * Math.PI * 44 * (1 - progress)}
+                  fill="none"
+                  transform="rotate(-90 50 50)"
                 />
               </Svg>
               <View style={styles.centerTextContainer}>
@@ -243,12 +275,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.grayscale[100],
     borderRadius: 12,
     padding: 12,
-    marginBottom: 12,
-  },
-  cardDateTitle: {
-    fontSize: 20,
-    fontFamily: 'Pretendard-Bold',
-    color: colors.grayscale[1000],
     marginBottom: 12,
   },
   row: {
