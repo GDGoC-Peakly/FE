@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   StyleSheet,
   Text,
@@ -21,120 +21,111 @@ import { dailyApi } from '../../api/dailycheckin';
 const DailyCheckin1 = ({ navigation, route }) => {
   const { sleepData, setSleepData } = useSleep();
   const { conditionData } = useCondition();
-  const mode = route?.params?.mode || 'onboarding';
-  const isEditMode = mode === 'edit';
+  const isEditMode = route?.params?.mode === 'edit';
 
-  const [startTime, setStartTime] = useState(new Date(sleepData.startTime));
-  const [endTime, setEndTime] = useState(new Date(sleepData.endTime));
+  const parseToValidDate = (timeStr) => {
+    const now = new Date();
+    if (!timeStr || typeof timeStr !== 'string') return now;
+    const parts = timeStr.split(':');
+    now.setHours(parseInt(parts[0], 10) || 0);
+    now.setMinutes(parseInt(parts[1], 10) || 0);
+    now.setSeconds(0);
+    return now;
+  };
+
+  const [startTime, setStartTime] = useState(() => parseToValidDate(sleepData?.startTime));
+  const [endTime, setEndTime] = useState(() => parseToValidDate(sleepData?.endTime));
   const [showPicker, setShowPicker] = useState(false);
   const [pickerType, setPickerType] = useState('start');
   const [tempDate, setTempDate] = useState(new Date());
 
-  const getTimeString = (date) => {
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    return `${hours}:${minutes}`;
+  const getHHMM = (date) => {
+    const h = String(date.getHours()).padStart(2, '0');
+    const m = String(date.getMinutes()).padStart(2, '0');
+    return `${h}:${m}`;
   };
 
-  const getKSTDateString = (offsetDays = 0) => {
-    const now = new Date();
-    const kstDate = new Date(now.getTime() + 9 * 60 * 60 * 1000);
-    if (kstDate.getUTCHours() < 5) {
-      kstDate.setUTCDate(kstDate.getUTCDate() - 1);
-    }
-    if (offsetDays !== 0) kstDate.setDate(kstDate.getDate() + offsetDays);
-    return kstDate.toISOString().split('T')[0];
-  };
-
-  const calculateDuration = () => {
+  const durationObj = useMemo(() => {
     let diff = endTime.getTime() - startTime.getTime();
     if (diff < 0) diff += 24 * 60 * 60 * 1000;
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    return {
-      hours,
-      minutes,
-      totalHours: diff / (1000 * 60 * 60)
-    };
-  };
+    const h = Math.floor(diff / (1000 * 60 * 60));
+    const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    return { h, m, total: diff / (1000 * 60 * 60) };
+  }, [startTime, endTime]);
 
-  const { hours, minutes, totalHours } = calculateDuration();
-
-  const handlePressNext = async () => {
-    const duration = calculateDuration();
-    const updatedSleep = {
-      startTime: startTime.toISOString(),
-      endTime: endTime.toISOString(),
-      hours: duration.hours,
-      minutes: duration.minutes,
-      totalHours: duration.totalHours,
-    };
+  const handleNext = async () => {
+    const startStr = getHHMM(startTime);
+    const endStr = getHHMM(endTime);
 
     if (isEditMode) {
-      const targetStr = getKSTDateString();
-      const payload = {
-        bedTime: getTimeString(startTime),
-        wakeTime: getTimeString(endTime),
-        sleepScore: Math.round(conditionData.value / 25 + 1),
-      };
-
       try {
-        await dailyApi.updateCheckIn(targetStr, payload);
-        setSleepData(updatedSleep);
-        navigation.navigate('Home');
+        const now = new Date();
+        const kstDate = new Date(now.getTime() + 9 * 60 * 60 * 1000);
+        if (kstDate.getUTCHours() < 5) kstDate.setUTCDate(kstDate.getUTCDate() - 1);
+        const targetDate = kstDate.toISOString().split('T')[0];
+
+        const payload = {
+          bedTime: startStr,
+          wakeTime: endStr,
+          sleepScore: parseFloat((conditionData.value / 25) + 1),
+        };
+
+        await dailyApi.updateCheckIn(targetDate, payload);
+
+        setSleepData({
+          ...sleepData,
+          startTime: startStr,
+          endTime: endStr,
+        });
+
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Home' }],
+        });
       } catch (error) {
-        if (error.response && error.response.data?.code === "SLEEP400_004") {
-          try {
-            const yesterdayStr = getKSTDateString(-1);
-            await dailyApi.updateCheckIn(yesterdayStr, payload);
-            setSleepData(updatedSleep);
-            navigation.navigate('Home');
-          } catch (retryError) {
-            Alert.alert("저장 실패", "수정 가능한 날짜가 아닙니다.");
-          }
-        } else {
-          Alert.alert("저장 실패", "네트워크 에러가 발생했습니다.");
-        }
+        Alert.alert('오류', '데이터 저장에 실패했습니다.');
       }
     } else {
-      setSleepData(updatedSleep);
-      navigation.navigate('DailyCheckin2', {
-        mode: 'onboarding'
+      setSleepData({
+        ...sleepData,
+        startTime: startStr,
+        endTime: endStr,
       });
+      navigation.navigate('DailyCheckin2', { mode: route?.params?.mode });
     }
   };
 
-  const size = 250;
-  const strokeWidth = 45;
+  const size = 260;
+  const strokeWidth = 40; 
   const center = size / 2;
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
-  const progress = totalHours / 24;
+  const progress = Math.min(durationObj.total / 24, 1);
   const strokeDashoffset = circumference * (1 - progress);
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={isEditMode ? styles.navBar : styles.spacer}>
-        {isEditMode && (
+      <View style={styles.navBar}>
+        {isEditMode ? (
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <Backicon style={styles.backIconStyle} />
           </TouchableOpacity>
+        ) : (
+          <View style={styles.emptyView} />
         )}
         {isEditMode && <Text style={styles.navTitle}>숙면시간</Text>}
-        {isEditMode && <View style={styles.emptyView} />}
+        <View style={styles.emptyView} />
       </View>
+
       <View style={styles.headerContainer}>
         <Text style={styles.titleText}>데일리 체크인</Text>
         <Text style={styles.subTitleText}>전날의 숙면 시간을 알려주세요.</Text>
       </View>
+
       <View style={styles.timeCardRow}>
         <TimeCard
           label="취침시간"
-          time={startTime.toLocaleTimeString([], {
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: false
-          })}
+          time={getHHMM(startTime)}
           onPress={() => {
             setPickerType('start');
             setTempDate(startTime);
@@ -143,11 +134,7 @@ const DailyCheckin1 = ({ navigation, route }) => {
         />
         <TimeCard
           label="기상시간"
-          time={endTime.toLocaleTimeString([], {
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: false
-          })}
+          time={getHHMM(endTime)}
           onPress={() => {
             setPickerType('end');
             setTempDate(endTime);
@@ -155,18 +142,15 @@ const DailyCheckin1 = ({ navigation, route }) => {
           }}
         />
       </View>
+
       <View style={styles.circleGraphSection}>
         <View style={styles.graphWrapper}>
-          <Svg
-            width={size}
-            height={size}
-            viewBox={`0 0 ${size} ${size}`}
-          >
+          <Svg width={size} height={size}>
             <Circle
               cx={center}
               cy={center}
               r={radius}
-              stroke={colors.grayscale[200]}
+              stroke="#2C2C2E" 
               strokeWidth={strokeWidth}
               fill="none"
             />
@@ -174,7 +158,7 @@ const DailyCheckin1 = ({ navigation, route }) => {
               cx={center}
               cy={center}
               r={radius}
-              stroke={colors.primary[500]}
+              stroke="#6366F1"
               strokeWidth={strokeWidth}
               strokeDasharray={circumference}
               strokeDashoffset={strokeDashoffset}
@@ -185,12 +169,13 @@ const DailyCheckin1 = ({ navigation, route }) => {
           <View style={styles.centerTextContainer}>
             <Text style={styles.centerLabel}>숙면 시간</Text>
             <View style={styles.centerTimeRow}>
-              <Text style={styles.timeValue}>{hours}h</Text>
-              <Text style={styles.timeValue}> {minutes}m</Text>
+              <Text style={styles.timeValue}>{durationObj.h}h</Text>
+              <Text style={styles.timeValue}> {durationObj.m}m</Text>
             </View>
           </View>
         </View>
       </View>
+
       <Modal
         visible={showPicker}
         transparent
@@ -202,11 +187,13 @@ const DailyCheckin1 = ({ navigation, route }) => {
               <TouchableOpacity onPress={() => setShowPicker(false)}>
                 <Text style={styles.cancelText}>취소</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => {
-                if (pickerType === 'start') setStartTime(tempDate);
-                else setEndTime(tempDate);
-                setShowPicker(false);
-              }}>
+              <TouchableOpacity
+                onPress={() => {
+                  if (pickerType === 'start') setStartTime(tempDate);
+                  else setEndTime(tempDate);
+                  setShowPicker(false);
+                }}
+              >
                 <Text style={styles.confirmText}>확인</Text>
               </TouchableOpacity>
             </View>
@@ -220,12 +207,13 @@ const DailyCheckin1 = ({ navigation, route }) => {
           </View>
         </View>
       </Modal>
+
       <View style={styles.buttonContainer}>
         <Button
-          text={isEditMode ? "저장" : "다음"}
+          text={isEditMode ? '저장' : '다음'}
           bgColor={colors.grayscale[1000]}
           textColor={colors.grayscale[100]}
-          onPress={handlePressNext}
+          onPress={handleNext}
         />
       </View>
     </SafeAreaView>
@@ -235,7 +223,7 @@ const DailyCheckin1 = ({ navigation, route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.grayscale[100]
+    backgroundColor: colors.grayscale[100],
   },
   navBar: {
     flexDirection: 'row',
@@ -243,98 +231,95 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     height: 60,
     paddingHorizontal: 21,
-    marginBottom: 58
   },
   backIconStyle: {
     width: 34,
-    height: 14
+    height: 14,
   },
   navTitle: {
     fontSize: 24,
     fontFamily: 'Pretendard-Bold',
-    color: colors.grayscale[1000]
+    color: colors.grayscale[1000],
   },
   emptyView: {
-    width: 34
-  },
-  spacer: {
-    height: 60
+    width: 34,
   },
   headerContainer: {
     alignItems: 'center',
-    marginBottom: 40
+    marginTop: 20,
+    marginBottom: 40,
   },
   titleText: {
     fontSize: 28,
     fontFamily: 'Pretendard-Bold',
     color: colors.grayscale[1000],
-    marginBottom: 8
+    marginBottom: 8,
   },
   subTitleText: {
     fontSize: 16,
     fontFamily: 'Pretendard-Medium',
-    color: colors.primary[500]
+    color: colors.primary[500],
   },
   timeCardRow: {
     flexDirection: 'row',
     justifyContent: 'center',
-    gap: 12
+    gap: 12,
   },
   circleGraphSection: {
     flex: 1,
-    marginTop: 30
+    marginBottom: 150,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   graphWrapper: {
     position: 'relative',
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   centerTextContainer: {
     position: 'absolute',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   centerLabel: {
-    fontSize: 20,
+    fontSize: 22,
     fontFamily: 'Pretendard-Bold',
     color: colors.grayscale[1000],
-    marginBottom: 4
+    marginBottom: 4,
   },
   centerTimeRow: {
-    flexDirection: 'row'
+    flexDirection: 'row',
   },
   timeValue: {
     fontSize: 36,
     fontFamily: 'Pretendard-Bold',
-    color: colors.primary[500]
+    color: colors.primary[500],
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.25)',
-    justifyContent: 'flex-end'
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-end',
   },
   pickerSheet: {
     backgroundColor: 'white',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    paddingBottom: 40
+    paddingBottom: 40,
   },
   pickerHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 15,
+    padding: 20,
     borderBottomWidth: 1,
-    borderBottomColor: colors.grayscale[200]
+    borderBottomColor: '#eee',
   },
   cancelText: {
     fontSize: 16,
-    color: colors.grayscale[500]
+    color: '#999',
   },
   confirmText: {
     fontSize: 16,
     color: colors.primary[500],
-    fontFamily: 'Pretendard-Bold'
+    fontWeight: 'bold',
   },
 });
 
