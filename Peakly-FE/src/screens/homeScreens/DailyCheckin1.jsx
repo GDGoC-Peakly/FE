@@ -58,6 +58,7 @@ const DailyCheckin1 = ({ navigation, route }) => {
     const endStr = getHHMM(endTime);
 
     if (isEditMode) {
+      console.log('--- [DailyCheckin1] Update Mode ---');
       try {
         const now = new Date();
         const kstDate = new Date(now.getTime() + 9 * 60 * 60 * 1000);
@@ -70,7 +71,11 @@ const DailyCheckin1 = ({ navigation, route }) => {
           sleepScore: parseFloat((conditionData.value / 25) + 1),
         };
 
-        await dailyApi.updateCheckIn(targetDate, payload);
+        console.log('Update Request Date:', targetDate);
+        console.log('Update Payload:', payload);
+
+        const response = await dailyApi.updateCheckIn(targetDate, payload);
+        console.log('Update Response:', response.data);
 
         setSleepData({
           ...sleepData,
@@ -83,9 +88,11 @@ const DailyCheckin1 = ({ navigation, route }) => {
           routes: [{ name: 'Home' }],
         });
       } catch (error) {
+        console.error('Update Error:', error.response?.data || error.message);
         Alert.alert('오류', '데이터 저장에 실패했습니다.');
       }
     } else {
+      console.log('--- [DailyCheckin1] Next Step (Local) ---');
       setSleepData({
         ...sleepData,
         startTime: startStr,

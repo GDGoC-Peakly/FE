@@ -11,7 +11,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
 import Svg, { Circle } from 'react-native-svg';
 
-// 기존 이미지 및 아이콘
 import Peakly from '../../../assets/img/homeScreens/Peakly.svg';
 import Talkbox from '../../../assets/img/homeScreens/talkbox.svg';
 import Character0 from '../../../assets/img/homeScreens/character.svg';
@@ -20,7 +19,6 @@ import Character2 from '../../../assets/img/homeScreens/character2.svg';
 import Character3 from '../../../assets/img/homeScreens/character3.svg';
 import Character4 from '../../../assets/img/homeScreens/character4.svg';
 
-// 공통 스타일 및 컴포넌트
 import { colors } from '../../styles/colors';
 import HomeFooter from './homeComponents/HomeFooter';
 import PeakTimeline from './homeComponents/PeakTimeline';
@@ -29,7 +27,6 @@ import TimerSetup from '../../screens/timerScreens/TimerSetup';
 import { useCondition } from '../../contexts/ConditionContext';
 import { useSleep } from '../../contexts/SleepContext';
 
-// API
 import { dailyApi } from '../../api/dailycheckin';
 
 const Home = () => {
@@ -49,21 +46,22 @@ const Home = () => {
       if (!isFocused) return;
       setLoading(true);
 
-      // KST 기준 baseDate 계산
       const now = new Date();
       const kstDate = new Date(now.getTime() + 9 * 60 * 60 * 1000);
       if (kstDate.getUTCHours() < 5) kstDate.setUTCDate(kstDate.getUTCDate() - 1);
       const targetDate = kstDate.toISOString().split('T')[0];
 
+      console.log('--- [Home] API Fetch Start ---');
+      console.log('Target Date:', targetDate);
+
       try {
-        // HM-02 명세서 기반 GET 요청
         const response = await dailyApi.getCheckIn(targetDate);
         const res = response.data;
+        
+        console.log('Home API Response:', res);
 
         if (res.isSuccess && res.result) {
           const data = res.result;
-          
-          // 1. Sleep Context 업데이트 ("HH:mm:ss" -> "HH:mm")
           const hMatch = data.durationDisplay.match(/(\d+)h/);
           const mMatch = data.durationDisplay.match(/(\d+)m/);
           
@@ -75,17 +73,18 @@ const Home = () => {
             totalHours: (parseInt(hMatch ? hMatch[1] : 0)) + (parseInt(mMatch ? mMatch[1] : 0) / 60),
           });
 
-          // 2. Condition Context 업데이트 (1~5 score -> index)
           const scoreIndex = Math.max(0, Math.min(Math.round(data.sleepScore) - 1, 4));
           setConditionData({
             text: conditions[scoreIndex],
             image: characterImages[scoreIndex],
             value: scoreIndex * 25,
           });
+          console.log('Context Update Complete:', { scoreIndex, sleepScore: data.sleepScore });
         }
       } catch (error) {
-        // 404 에러나 데이터가 없는 경우 온보딩으로 유도
+        console.error('Home API Error:', error.response?.data || error.message);
         if (error.response?.status === 404 || error.response?.data?.code === 'DAILY500_001') {
+          console.log('No Data Found, Navigating to Onboarding...');
           navigation.navigate('DailyCheckin1', { mode: 'onboarding' });
         }
       } finally {
@@ -104,7 +103,6 @@ const Home = () => {
     );
   }
 
-  // 원형 그래프 계산
   const size = 100;
   const radius = 44;
   const circumference = 2 * Math.PI * radius;
@@ -117,8 +115,6 @@ const Home = () => {
         showsVerticalScrollIndicator={false}
       >
         <Peakly style={styles.logo} />
-
-        {/* 피크타임 카드 영역 */}
         <View style={styles.peakCard}>
           <View style={styles.yellowBanner}>
             <Text style={styles.bannerText}>오늘의 집중 피크타임을 확인해보세요.</Text>
@@ -135,13 +131,11 @@ const Home = () => {
           </View>
         </View>
 
-        {/* 누적 시간 및 차트 영역 */}
         <View style={styles.card}>
           <Text style={styles.cardDateTitle}>누적 집중 시간</Text>
           <PeakTimechart />
         </View>
 
-        {/* 숙면시간 & 컨디션 2열 카드 */}
         <View style={styles.row}>
           <TouchableOpacity
             activeOpacity={0.7}

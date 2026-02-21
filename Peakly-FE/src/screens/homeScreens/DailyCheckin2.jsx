@@ -29,7 +29,6 @@ const DailyCheckin2 = ({ navigation, route }) => {
   const ActiveCharacter = characterImages[currentIndex];
 
   const handleComplete = async () => {
-    // API 명세서 연동 부분
     const now = new Date();
     const kstDate = new Date(now.getTime() + 9 * 60 * 60 * 1000);
     if (kstDate.getUTCHours() < 5) kstDate.setUTCDate(kstDate.getUTCDate() - 1);
@@ -38,14 +37,20 @@ const DailyCheckin2 = ({ navigation, route }) => {
     const payload = {
       bedTime: sleepData.startTime, 
       wakeTime: sleepData.endTime,
-      sleepScore: parseFloat(currentIndex + 1), // 명세서 Float 반영
+      sleepScore: parseFloat(currentIndex + 1), 
     };
 
+    console.log(`--- [DailyCheckin2] ${isEditMode ? 'Update' : 'Create'} Mode ---`);
+    console.log('Final Payload:', payload);
+
     try {
+      let response;
       if (isEditMode) {
-        await dailyApi.updateCheckIn(targetDate, payload);
+        response = await dailyApi.updateCheckIn(targetDate, payload);
+        console.log('API Update Result:', response.data);
       } else {
-        await dailyApi.createCheckIn(1, payload); // 임시 ID 1
+        response = await dailyApi.createCheckIn(1, payload); 
+        console.log('API Create Result:', response.data);
       }
 
       setConditionData({
@@ -56,6 +61,7 @@ const DailyCheckin2 = ({ navigation, route }) => {
 
       navigation.reset({ index: 0, routes: [{ name: 'Home' }] });
     } catch (error) {
+      console.error('Final Save Error:', error.response?.data || error.message);
       Alert.alert('오류', '데이터 저장에 실패했습니다.');
     }
   };
@@ -89,13 +95,28 @@ const DailyCheckin2 = ({ navigation, route }) => {
             <View style={[styles.customThumbContainer, { left: thumbLeft }]} pointerEvents="none">
               <View style={styles.customThumbOuter}><View style={styles.customThumbInner} /></View>
             </View>
-            <Slider style={styles.actualSlider} minimumValue={0} maximumValue={100} step={25} value={value} onValueChange={setValue} minimumTrackTintColor="transparent" maximumTrackTintColor="transparent" thumbTintColor="transparent" />
+            <Slider 
+              style={styles.actualSlider} 
+              minimumValue={0} 
+              maximumValue={100} 
+              step={25} 
+              value={value} 
+              onValueChange={setValue} 
+              minimumTrackTintColor="transparent" 
+              maximumTrackTintColor="transparent" 
+              thumbTintColor="transparent" 
+            />
           </View>
           <Text style={styles.conditionText}>{conditions[currentIndex]}</Text>
         </View>
       </ScrollView>
       <View style={styles.buttonContainer}>
-        <Button text={isEditMode ? '저장' : '완료'} bgColor={colors.grayscale[1000]} textColor={colors.grayscale[100]} onPress={handleComplete} />
+        <Button 
+          text={isEditMode ? '저장' : '완료'} 
+          bgColor={colors.grayscale[1000]} 
+          textColor={colors.grayscale[100]} 
+          onPress={handleComplete} 
+        />
       </View>
     </SafeAreaView>
   );
@@ -211,6 +232,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Pretendard-Bold',
     marginTop: 10,
   },
+
 });
 
 export default DailyCheckin2;
