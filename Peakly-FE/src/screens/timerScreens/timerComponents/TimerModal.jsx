@@ -3,7 +3,7 @@ import { Modal, View, Text, StyleSheet, Pressable, Image } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors } from '../../../styles/colors.js';
-import timer_icon from '../../../../assets/img/timerScreens/timer_icon.svg';
+import Timer from '../../../../assets/img/timerScreens/timer_icon.svg';
 import ModalFooter from '../../../components/ModalFooter.jsx';
 
 const TimerModal = ({ visible, onClose, title, onConfirm }) => {
@@ -19,7 +19,7 @@ const TimerModal = ({ visible, onClose, title, onConfirm }) => {
               <View style={styles.handle} />
 
               <View style={styles.iconContainer}>
-                <Image source={timer_icon} style={styles.icon} resizeMode="contain" />
+                <Timer width={106} height={134} />
               </View>
 
               <View style={styles.textContainer}>

@@ -24,8 +24,6 @@ const FocusRateCheck = ({ navigation, route }) => {
       try {
         const data = await getPeaktimeOverlaps(sessionId);
         const { session, windows, baseDate } = data.result;
-
-        // 1. 데이터는 왔지만 windows(피크타임 구간)가 비어있는 경우
         if (!windows || windows.length === 0) {
           navigation.replace('DisturbCheck', { sessionId });
           return;
