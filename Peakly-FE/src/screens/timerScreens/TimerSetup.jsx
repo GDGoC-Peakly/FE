@@ -373,7 +373,6 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     gap: 10,
     marginTop: 20,
-    // 구분선(borderTop)과 불필요한 패딩(paddingTop)을 제거했습니다.
   },
   conditionItem: {
     marginBottom: 14,
@@ -486,12 +485,6 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     top: ITEM_HEIGHT,
     backgroundColor: colors.primary[50],
-  },
-  bottomWrapper: {
-    paddingHorizontal: PADDING_HORIZONTAL,
-    paddingBottom: 40,
-    paddingTop: 10,
-    backgroundColor: colors.grayscale[200],
   },
 });
 

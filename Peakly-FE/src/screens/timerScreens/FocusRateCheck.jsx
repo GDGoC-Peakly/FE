@@ -25,6 +25,7 @@ const FocusRateCheck = ({ navigation, route }) => {
         const data = await getPeaktimeOverlaps(sessionId);
         const { session, windows, baseDate } = data.result;
 
+        // 1. 데이터는 왔지만 windows(피크타임 구간)가 비어있는 경우
         if (!windows || windows.length === 0) {
           navigation.replace('DisturbCheck', { sessionId });
           return;
@@ -44,6 +45,10 @@ const FocusRateCheck = ({ navigation, route }) => {
           endAt: session.endedAt,
         });
       } catch (error) {
+        if (error.message === '해당 날짜의 피크타임 예측 결과가 없습니다.') {
+          navigation.replace('DisturbCheck', { sessionId });
+          return;
+        }
         Alert.alert('조회 실패', error.message);
       } finally {
         setIsLoading(false);
