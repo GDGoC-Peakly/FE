@@ -104,7 +104,7 @@ const TimerResult = ({ navigation, route }) => {
             </View>
           </View>
           <View style={styles.card}>
-            <Text style={styles.cardTitle}>주변 환경</Text>
+            <Text style={styles.cardTitle1}>주변 환경</Text>
             <View style={styles.infoRow}>
               <Text style={styles.infoLabel}>피로도</Text>
               <Text style={styles.infoValue}>
@@ -182,6 +182,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'Pretendard-Bold',
     textAlign: 'center',
+  },
+  cardTitle1: {
+    marginTop: 10,
+    color: colors.grayscale[1000],
+    fontSize: 16,
+    fontFamily: 'Pretendard-Bold',
+    textAlign: 'center',
+    marginBottom: 30,
   },
   graphPlaceholder: {
     justifyContent: 'center',

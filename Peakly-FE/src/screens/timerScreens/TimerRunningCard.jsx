@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     justifyContent: 'space-between',
     position: 'absolute',
-    top: '15%',
+    top: '40%',
     zIndex: 100,
   },
   timeTag: {

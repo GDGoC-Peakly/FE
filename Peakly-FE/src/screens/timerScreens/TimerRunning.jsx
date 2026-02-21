@@ -191,6 +191,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.grayscale[1000],
     zIndex: 20,
   },
+  cardWrapper: {},
   statusChip: {
     flexDirection: 'row',
     alignItems: 'center',
