@@ -45,13 +45,10 @@ const FocusRateCheck = ({ navigation, route }) => {
           endAt: session.endedAt,
         });
       } catch (error) {
-        // 🚨 2. API 자체에서 "예측 결과가 없습니다"(404) 에러를 던진 경우
         if (error.message === '해당 날짜의 피크타임 예측 결과가 없습니다.') {
           navigation.replace('DisturbCheck', { sessionId });
-          return; // 여기서 함수를 종료하여 Alert나 렌더링을 막습니다.
+          return;
         }
-
-        // 그 외의 진짜 네트워크 에러나 서버 에러인 경우에만 알림창을 띄웁니다.
         Alert.alert('조회 실패', error.message);
       } finally {
         setIsLoading(false);
