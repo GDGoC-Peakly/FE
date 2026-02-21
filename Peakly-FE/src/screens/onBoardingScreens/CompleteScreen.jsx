@@ -11,7 +11,7 @@ import { useAuth } from '../../contexts/AuthContext';
 
 const CompleteScreen = ({ route }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const { completeOnboarding, logout } = useAuth();
+  const { completeOnboarding } = useAuth();
   const { accumulatedData } = route.params || {};
 
   const handleComplete = async () => {

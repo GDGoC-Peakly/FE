@@ -4,9 +4,9 @@ import { PieChart } from 'react-native-gifted-charts';
 import { colors } from '../../../styles/colors';
 import { getProgressData } from '../../../utils/getProgressData';
 
-const ReportPieChart = ({ title, percent, status }) => {
+const ReportPieChart = ({ title, percent, status, style }) => {
   return (
-    <View style={styles.rateRectangle}>
+    <View style={[styles.rateRectangle, style]}>
       <View style={styles.rateTextWrapper}>
         <Text style={styles.rateText}>{title}</Text>
         {status && <Text style={styles.statusText}>{status}</Text>}

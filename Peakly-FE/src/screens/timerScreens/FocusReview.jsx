@@ -39,7 +39,7 @@ const FocusReview = ({ navigation, route }) => {
     try {
       await feedbackSession(sessionId, { focusScore: score });
 
-      navigation.navigate('FocusRateCheck');
+      navigation.navigate('FocusRateCheck', { sessionId });
     } catch (error) {
       Alert.alert('평가 실패', error.message);
     } finally {
@@ -67,11 +67,7 @@ const FocusReview = ({ navigation, route }) => {
           <Review score={score} onRate={setScore} />
         </View>
         <View style={styles.button}>
-          <CustomButton
-            text={isLoading ? '처리 중...' : '다음'}
-            onPress={handleSubmit}
-            // disabled={isLoading} // CustomButton 컴포넌트가 disabled prop을 지원한다면 주석을 해제하세요.
-          />
+          <CustomButton text={isLoading ? '처리 중...' : '다음'} onPress={handleSubmit} />
         </View>
       </View>
     </LinearGradient>
